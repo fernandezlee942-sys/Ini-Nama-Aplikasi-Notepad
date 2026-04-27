@@ -1,0 +1,34 @@
+# --- Qt Creator / User Specific ---
+*.user
+*.user.*
+.qt_cleanups
+.qtcreator/
+
+# --- Build Directories ---
+# This ignores all build folders regardless of name (e.g., build/, build-debug/)
+build*/
+out/
+bin/
+
+# --- CMake Generated Files ---
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+Makefile
+install_manifest.txt
+compile_commands.json
+
+# --- Compiled Binaries ---
+*.exe
+*.o
+*.obj
+*.dll
+*.so
+*.a
+*.lib
+
+# --- OS / System Junk ---
+.DS_Store
+Thumbs.db
+desktop.ini
