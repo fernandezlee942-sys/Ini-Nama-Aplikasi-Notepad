@@ -1,0 +1,9 @@
+D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir
+D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/edit_cache.dir
+D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/rebuild_cache.dir
+D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/list_install_components.dir
+D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/install.dir
+D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/install/local.dir
+D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/install/strip.dir
+D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen_timestamp_deps.dir
+D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen.dir

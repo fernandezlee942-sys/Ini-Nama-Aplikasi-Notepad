@@ -1,0 +1,79 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-Debug-74839d8ea562eb4d4628.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Ini_Nama_Aplikasi_Notepad",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "Ini_Nama_Aplikasi_Notepad::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Ini_Nama_Aplikasi_Notepad-Debug-62ae837c5bc0163bd4e0.json",
+					"name" : "Ini_Nama_Aplikasi_Notepad",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Ini_Nama_Aplikasi_Notepad_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Ini_Nama_Aplikasi_Notepad_autogen-Debug-5b27e98c5f012830278e.json",
+					"name" : "Ini_Nama_Aplikasi_Notepad_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "Ini_Nama_Aplikasi_Notepad_autogen_timestamp_deps::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Ini_Nama_Aplikasi_Notepad_autogen_timestamp_deps-Debug-da062a5fb29b0111464c.json",
+					"name" : "Ini_Nama_Aplikasi_Notepad_autogen_timestamp_deps",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug",
+		"source" : "D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 7
+	}
+}
