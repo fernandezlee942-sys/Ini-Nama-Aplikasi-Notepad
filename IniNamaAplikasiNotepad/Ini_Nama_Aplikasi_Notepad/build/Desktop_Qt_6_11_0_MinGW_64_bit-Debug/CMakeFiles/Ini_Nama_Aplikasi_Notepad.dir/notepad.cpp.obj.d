@@ -406,6 +406,37 @@ CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/notepad.cpp.obj: \
  D:/QT/6.11.0/mingw_64/include/QtWidgets/QMenuBar \
  D:/QT/6.11.0/mingw_64/include/QtWidgets/qmenubar.h \
  D:/QT/6.11.0/mingw_64/include/QtWidgets/qmenu.h \
+ D:/QT/6.11.0/mingw_64/include/QtWidgets/QPlainTextEdit \
+ D:/QT/6.11.0/mingw_64/include/QtWidgets/qplaintextedit.h \
+ D:/QT/6.11.0/mingw_64/include/QtWidgets/qtextedit.h \
+ D:/QT/6.11.0/mingw_64/include/QtWidgets/qabstractscrollarea.h \
+ D:/QT/6.11.0/mingw_64/include/QtWidgets/qframe.h \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qtextdocument.h \
+ D:/QT/6.11.0/mingw_64/include/QtCore/qurl.h \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qtextoption.h \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qtextcursor.h \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qtextformat.h \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qpen.h \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qabstracttextdocumentlayout.h \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qtextlayout.h \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qevent.h \
+ D:/QT/6.11.0/mingw_64/include/QtCore/qiodevice.h \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qeventpoint.h \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qvector2d.h \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qvectornd.h \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qpointingdevice.h \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qinputdevice.h \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qscreen.h \
+ D:/QT/6.11.0/mingw_64/include/QtCore/QList \
+ D:/QT/6.11.0/mingw_64/include/QtCore/QObject \
+ D:/QT/6.11.0/mingw_64/include/QtCore/QRect \
+ D:/QT/6.11.0/mingw_64/include/QtCore/QSize \
+ D:/QT/6.11.0/mingw_64/include/QtCore/QSizeF \
+ D:/QT/6.11.0/mingw_64/include/QtGui/QTransform \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qscreen_platform.h \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qglyphrun.h \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qrawfont.h \
+ D:/QT/6.11.0/mingw_64/include/QtGui/qfontdatabase.h \
  D:/QT/6.11.0/mingw_64/include/QtWidgets/QStatusBar \
  D:/QT/6.11.0/mingw_64/include/QtWidgets/qstatusbar.h \
  D:/QT/6.11.0/mingw_64/include/QtWidgets/QWidget

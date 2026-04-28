@@ -13,6 +13,7 @@
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenuBar>
+#include <QtWidgets/QPlainTextEdit>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QWidget>
 
@@ -22,6 +23,7 @@ class Ui_Notepad
 {
 public:
     QWidget *centralwidget;
+    QPlainTextEdit *plainTextEdit;
     QMenuBar *menubar;
     QStatusBar *statusbar;
 
@@ -32,10 +34,13 @@ public:
         Notepad->resize(800, 600);
         centralwidget = new QWidget(Notepad);
         centralwidget->setObjectName("centralwidget");
+        plainTextEdit = new QPlainTextEdit(centralwidget);
+        plainTextEdit->setObjectName("plainTextEdit");
+        plainTextEdit->setGeometry(QRect(110, 70, 104, 70));
         Notepad->setCentralWidget(centralwidget);
         menubar = new QMenuBar(Notepad);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 800, 17));
+        menubar->setGeometry(QRect(0, 0, 800, 21));
         Notepad->setMenuBar(menubar);
         statusbar = new QStatusBar(Notepad);
         statusbar->setObjectName("statusbar");
@@ -49,6 +54,7 @@ public:
     void retranslateUi(QMainWindow *Notepad)
     {
         Notepad->setWindowTitle(QCoreApplication::translate("Notepad", "Notepad", nullptr));
+        plainTextEdit->setPlainText(QCoreApplication::translate("Notepad", "Hello World", nullptr));
     } // retranslateUi
 
 };
