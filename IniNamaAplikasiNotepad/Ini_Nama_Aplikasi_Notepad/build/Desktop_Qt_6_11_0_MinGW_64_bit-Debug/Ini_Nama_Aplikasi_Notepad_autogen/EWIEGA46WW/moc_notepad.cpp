@@ -7,6 +7,7 @@
 *****************************************************************************/
 
 #include "../../../../notepad.h"
+#include <QtGui/qtextcursor.h>
 #include <QtCore/qmetatype.h>
 
 #include <QtCore/qtmochelpers.h>
@@ -38,10 +39,41 @@ template <> constexpr inline auto Notepad::qt_create_metaobjectdata<qt_meta_tag_
 {
     namespace QMC = QtMocConstants;
     QtMocHelpers::StringRefStorage qt_stringData {
-        "Notepad"
+        "Notepad",
+        "on_actionNew_triggered",
+        "",
+        "on_actionOpen_triggered",
+        "on_actionSave_as_triggered",
+        "on_actionPrint_triggered",
+        "on_actionExit_triggered",
+        "on_actionCopy_triggered",
+        "on_actionCut_triggered",
+        "on_actionPaste_triggered",
+        "on_actionUndo_triggered",
+        "on_actionRedo_triggered"
     };
 
     QtMocHelpers::UintData qt_methods {
+        // Slot 'on_actionNew_triggered'
+        QtMocHelpers::SlotData<void()>(1, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_actionOpen_triggered'
+        QtMocHelpers::SlotData<void()>(3, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_actionSave_as_triggered'
+        QtMocHelpers::SlotData<void()>(4, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_actionPrint_triggered'
+        QtMocHelpers::SlotData<void()>(5, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_actionExit_triggered'
+        QtMocHelpers::SlotData<void()>(6, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_actionCopy_triggered'
+        QtMocHelpers::SlotData<void()>(7, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_actionCut_triggered'
+        QtMocHelpers::SlotData<void()>(8, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_actionPaste_triggered'
+        QtMocHelpers::SlotData<void()>(9, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_actionUndo_triggered'
+        QtMocHelpers::SlotData<void()>(10, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_actionRedo_triggered'
+        QtMocHelpers::SlotData<void()>(11, 2, QMC::AccessPrivate, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -63,9 +95,21 @@ Q_CONSTINIT const QMetaObject Notepad::staticMetaObject = { {
 void Notepad::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void **_a)
 {
     auto *_t = static_cast<Notepad *>(_o);
-    (void)_t;
-    (void)_c;
-    (void)_id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        switch (_id) {
+        case 0: _t->on_actionNew_triggered(); break;
+        case 1: _t->on_actionOpen_triggered(); break;
+        case 2: _t->on_actionSave_as_triggered(); break;
+        case 3: _t->on_actionPrint_triggered(); break;
+        case 4: _t->on_actionExit_triggered(); break;
+        case 5: _t->on_actionCopy_triggered(); break;
+        case 6: _t->on_actionCut_triggered(); break;
+        case 7: _t->on_actionPaste_triggered(); break;
+        case 8: _t->on_actionUndo_triggered(); break;
+        case 9: _t->on_actionRedo_triggered(); break;
+        default: ;
+        }
+    }
     (void)_a;
 }
 
@@ -85,6 +129,18 @@ void *Notepad::qt_metacast(const char *_clname)
 int Notepad::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 {
     _id = QMainWindow::qt_metacall(_c, _id, _a);
+    if (_id < 0)
+        return _id;
+    if (_c == QMetaObject::InvokeMetaMethod) {
+        if (_id < 10)
+            qt_static_metacall(this, _c, _id, _a);
+        _id -= 10;
+    }
+    if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
+        if (_id < 10)
+            *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
+        _id -= 10;
+    }
     return _id;
 }
 QT_WARNING_POP

@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_GENERATOR "MinGW Makefiles")
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
   "D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/CMakeLists.txt"
+  "D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/ResourcesNotepad.qrc"
   ".qtcreator/cmake-helper/maintenance_tool_provider.cmake"
   ".qtcreator/cmake-helper/package-manager.cmake"
   ".qtcreator/cmake-helper/qtcreator-project.cmake"
@@ -158,6 +159,16 @@ set(CMAKE_MAKEFILE_DEPENDS
   "D:/QT/6.11.0/mingw_64/lib/cmake/Qt6GuiTools/Qt6GuiToolsTargets.cmake"
   "D:/QT/6.11.0/mingw_64/lib/cmake/Qt6GuiTools/Qt6GuiToolsTargetsPrecheck.cmake"
   "D:/QT/6.11.0/mingw_64/lib/cmake/Qt6GuiTools/Qt6GuiToolsVersionlessTargets.cmake"
+  "D:/QT/6.11.0/mingw_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportAdditionalTargetInfo.cmake"
+  "D:/QT/6.11.0/mingw_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportConfig.cmake"
+  "D:/QT/6.11.0/mingw_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportConfigVersion.cmake"
+  "D:/QT/6.11.0/mingw_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportConfigVersionImpl.cmake"
+  "D:/QT/6.11.0/mingw_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportDependencies.cmake"
+  "D:/QT/6.11.0/mingw_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportPlugins.cmake"
+  "D:/QT/6.11.0/mingw_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportTargets-relwithdebinfo.cmake"
+  "D:/QT/6.11.0/mingw_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportTargets.cmake"
+  "D:/QT/6.11.0/mingw_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportTargetsPrecheck.cmake"
+  "D:/QT/6.11.0/mingw_64/lib/cmake/Qt6PrintSupport/Qt6PrintSupportVersionlessAliasTargets.cmake"
   "D:/QT/6.11.0/mingw_64/lib/cmake/Qt6Widgets/Qt6QModernWindowsStylePluginAdditionalTargetInfo.cmake"
   "D:/QT/6.11.0/mingw_64/lib/cmake/Qt6Widgets/Qt6QModernWindowsStylePluginConfig.cmake"
   "D:/QT/6.11.0/mingw_64/lib/cmake/Qt6Widgets/Qt6QModernWindowsStylePluginTargets-relwithdebinfo.cmake"
@@ -226,6 +237,7 @@ set(CMAKE_MAKEFILE_OUTPUTS
 # Byproducts of CMake generate step:
 set(CMAKE_MAKEFILE_PRODUCTS
   "CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen.dir/AutogenInfo.json"
+  "CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen.dir/AutoRcc_ResourcesNotepad_EWIEGA46WW_Info.json"
   ".qt/QtDeploySupport.cmake"
   ".qt/QtDeployTargets.cmake"
   "CMakeFiles/CMakeDirectoryInformation.cmake"

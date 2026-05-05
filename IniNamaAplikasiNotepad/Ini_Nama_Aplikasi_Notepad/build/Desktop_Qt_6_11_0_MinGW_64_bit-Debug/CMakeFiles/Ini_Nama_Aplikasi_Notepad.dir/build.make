@@ -75,11 +75,25 @@ Ini_Nama_Aplikasi_Notepad_autogen/timestamp: CMakeFiles/Ini_Nama_Aplikasi_Notepa
 	D:\QT\Tools\CMake_64\bin\cmake.exe -E cmake_autogen D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen.dir/AutogenInfo.json Debug
 	D:\QT\Tools\CMake_64\bin\cmake.exe -E touch D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/Ini_Nama_Aplikasi_Notepad_autogen/timestamp
 
+Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp: D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/ResourcesNotepad.qrc
+Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp: CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen.dir/AutoRcc_ResourcesNotepad_EWIEGA46WW_Info.json
+Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp: D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/Icons/Paste.bmp
+Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp: D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/Icons/Open.bmp
+Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp: D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/Icons/Save.bmp
+Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp: D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/Icons/New.bmp
+Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp: D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/Icons/Cut.bmp
+Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp: D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/Icons/DeleteSticky.bmp
+Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp: D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/Icons/Copy.bmp
+Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp: D:/QT/6.11.0/mingw_64/bin/rcc.exe
+Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp: D:/QT/6.11.0/mingw_64/bin/rcc.exe
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Automatic RCC for ResourcesNotepad.qrc"
+	D:\QT\Tools\CMake_64\bin\cmake.exe -E cmake_autorcc D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen.dir/AutoRcc_ResourcesNotepad_EWIEGA46WW_Info.json Debug
+
 CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/mocs_compilation.cpp.obj: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/flags.make
 CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/mocs_compilation.cpp.obj: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/includes_CXX.rsp
 CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/mocs_compilation.cpp.obj: Ini_Nama_Aplikasi_Notepad_autogen/mocs_compilation.cpp
 CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/mocs_compilation.cpp.obj: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/mocs_compilation.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/mocs_compilation.cpp.obj"
 	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/mocs_compilation.cpp.obj -MF CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\Ini_Nama_Aplikasi_Notepad_autogen\mocs_compilation.cpp.obj.d -o CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\Ini_Nama_Aplikasi_Notepad_autogen\mocs_compilation.cpp.obj -c D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\Ini_Nama_Aplikasi_Notepad_autogen\mocs_compilation.cpp
 
 CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/mocs_compilation.cpp.i: cmake_force
@@ -94,7 +108,7 @@ CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/main.cpp.obj: CMakeFiles/Ini_Nama_Aplik
 CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/main.cpp.obj: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/includes_CXX.rsp
 CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/main.cpp.obj: D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/main.cpp
 CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/main.cpp.obj: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/main.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/main.cpp.obj"
 	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/main.cpp.obj -MF CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\main.cpp.obj.d -o CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\main.cpp.obj -c D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\main.cpp
 
 CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/main.cpp.i: cmake_force
@@ -109,7 +123,7 @@ CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/notepad.cpp.obj: CMakeFiles/Ini_Nama_Ap
 CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/notepad.cpp.obj: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/includes_CXX.rsp
 CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/notepad.cpp.obj: D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/notepad.cpp
 CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/notepad.cpp.obj: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/notepad.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/notepad.cpp.obj"
 	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/notepad.cpp.obj -MF CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\notepad.cpp.obj.d -o CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\notepad.cpp.obj -c D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\notepad.cpp
 
 CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/notepad.cpp.i: cmake_force
@@ -120,11 +134,27 @@ CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/notepad.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/notepad.cpp.s"
 	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\notepad.cpp -o CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\notepad.cpp.s
 
+CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp.obj: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/flags.make
+CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp.obj: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/includes_CXX.rsp
+CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp.obj: Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp
+CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp.obj: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp.obj"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp.obj -MF CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\Ini_Nama_Aplikasi_Notepad_autogen\EWIEGA46WW\qrc_ResourcesNotepad.cpp.obj.d -o CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\Ini_Nama_Aplikasi_Notepad_autogen\EWIEGA46WW\qrc_ResourcesNotepad.cpp.obj -c D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\Ini_Nama_Aplikasi_Notepad_autogen\EWIEGA46WW\qrc_ResourcesNotepad.cpp
+
+CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp.i"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\Ini_Nama_Aplikasi_Notepad_autogen\EWIEGA46WW\qrc_ResourcesNotepad.cpp > CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\Ini_Nama_Aplikasi_Notepad_autogen\EWIEGA46WW\qrc_ResourcesNotepad.cpp.i
+
+CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp.s"
+	D:\QT\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\Ini_Nama_Aplikasi_Notepad_autogen\EWIEGA46WW\qrc_ResourcesNotepad.cpp -o CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\Ini_Nama_Aplikasi_Notepad_autogen\EWIEGA46WW\qrc_ResourcesNotepad.cpp.s
+
 # Object files for target Ini_Nama_Aplikasi_Notepad
 Ini_Nama_Aplikasi_Notepad_OBJECTS = \
 "CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/mocs_compilation.cpp.obj" \
 "CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/main.cpp.obj" \
-"CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/notepad.cpp.obj"
+"CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/notepad.cpp.obj" \
+"CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp.obj"
 
 # External object files for target Ini_Nama_Aplikasi_Notepad
 Ini_Nama_Aplikasi_Notepad_EXTERNAL_OBJECTS =
@@ -132,7 +162,9 @@ Ini_Nama_Aplikasi_Notepad_EXTERNAL_OBJECTS =
 Ini_Nama_Aplikasi_Notepad.exe: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/mocs_compilation.cpp.obj
 Ini_Nama_Aplikasi_Notepad.exe: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/main.cpp.obj
 Ini_Nama_Aplikasi_Notepad.exe: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/notepad.cpp.obj
+Ini_Nama_Aplikasi_Notepad.exe: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp.obj
 Ini_Nama_Aplikasi_Notepad.exe: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/build.make
+Ini_Nama_Aplikasi_Notepad.exe: D:/QT/6.11.0/mingw_64/lib/libQt6PrintSupport.a
 Ini_Nama_Aplikasi_Notepad.exe: D:/QT/6.11.0/mingw_64/lib/libQt6Widgets.a
 Ini_Nama_Aplikasi_Notepad.exe: D:/QT/6.11.0/mingw_64/lib/libQt6Gui.a
 Ini_Nama_Aplikasi_Notepad.exe: D:/QT/6.11.0/mingw_64/lib/libQt6Core.a
@@ -140,7 +172,7 @@ Ini_Nama_Aplikasi_Notepad.exe: D:/QT/6.11.0/mingw_64/lib/libQt6EntryPoint.a
 Ini_Nama_Aplikasi_Notepad.exe: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/linkLibs.rsp
 Ini_Nama_Aplikasi_Notepad.exe: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/objects1.rsp
 Ini_Nama_Aplikasi_Notepad.exe: CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX executable Ini_Nama_Aplikasi_Notepad.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable Ini_Nama_Aplikasi_Notepad.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -151,6 +183,7 @@ CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/clean:
 	$(CMAKE_COMMAND) -P CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\cmake_clean.cmake
 .PHONY : CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/clean
 
+CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/depend: Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp
 CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/depend: Ini_Nama_Aplikasi_Notepad_autogen/timestamp
 	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/depend

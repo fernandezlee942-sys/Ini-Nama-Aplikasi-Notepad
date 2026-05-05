@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp.obj"
+  "CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp.obj.d"
   "CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/mocs_compilation.cpp.obj"
   "CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/Ini_Nama_Aplikasi_Notepad_autogen/mocs_compilation.cpp.obj.d"
   "CMakeFiles/Ini_Nama_Aplikasi_Notepad.dir/main.cpp.obj"
@@ -11,6 +13,7 @@ file(REMOVE_RECURSE
   "Ini_Nama_Aplikasi_Notepad.exe"
   "Ini_Nama_Aplikasi_Notepad.exe.manifest"
   "Ini_Nama_Aplikasi_Notepad.pdb"
+  "Ini_Nama_Aplikasi_Notepad_autogen/EWIEGA46WW/qrc_ResourcesNotepad.cpp"
   "Ini_Nama_Aplikasi_Notepad_autogen/mocs_compilation.cpp"
   "Ini_Nama_Aplikasi_Notepad_autogen/timestamp"
   "libIni_Nama_Aplikasi_Notepad.dll.a"
