@@ -1,91 +1,33 @@
 # =========================================
-# Qt Creator & Project Specifics
+# MinGW & Compiler Specifics
 # =========================================
-*.user
-*.user.*
-*.autosave
-.qt_cleanups
-.qtcreator/
-.qt-project/
-RemoteWebInspector.conf
+*.gch
+*.plist
+*.gcno
+*.gcda
+*.tlog
 
 # =========================================
-# Build & Output Directories
+# Qt Linguist & Resource Compiled Files
 # =========================================
-# Ignores standard build folders and shadow builds
-build*/
-out/
-bin/
-x64/
-x86/
-[Dd]ebug/
-[Rr]elease/
+# File terjemahan (biasanya kita cuma simpan .ts, bukan .qm yang sudah jadi binary)
+*.qm
+# Resource files yang digenerate otomatis
+qrc_*.cpp
+ui_*.h
+moc_*.cpp
+moc_predefs.h
 
 # =========================================
-# CMake Generated Files
+# Clang / Static Analysis Tools
 # =========================================
-CMakeCache.txt
-CMakeFiles/
-CMakeScripts/
-cmake_install.cmake
-Makefile
-install_manifest.txt
-compile_commands.json
-CTestTestfile.cmake
-_deps/
-.cmake/
+.clang-format
+.clangd/
+.cache/
 
 # =========================================
-# Ninja Build System
+# Git / Patch files
 # =========================================
-.ninja_deps
-.ninja_log
-
-# =========================================
-# Compiled Binaries & Libraries
-# =========================================
-*.exe
-*.o
-*.obj
-*.dll
-*.so
-*.so.*
-*.dylib
-*.a
-*.lib
-*.mod
-*.exp
-*.ilk
-*.pdb
-*.map
-
-# =========================================
-# Visual Studio / MSVC (if teammates use it)
-# =========================================
-.vs/
-*.sln
-*.vcxproj
-*.vcxproj.filters
-*.vcxproj.user
-*.suo
-*.db
-*.opendb
-
-# =========================================
-# Python / Data Junk (For scripts/analysis)
-# =========================================
-__pycache__/
-*.pyc
-.ipynb_checkpoints/
-.venv/
-venv/
-env/
-
-# =========================================
-# OS / System Junk
-# =========================================
-.DS_Store
-Thumbs.db
-desktop.ini
-*.swp
-*~
+*.orig
+*.rej
+*.patch
