@@ -43,19 +43,19 @@ cmake_force:
 SHELL = cmd.exe
 
 # The CMake executable.
-CMAKE_COMMAND = D:\QT\Tools\CMake_64\bin\cmake.exe
+CMAKE_COMMAND = C:\Qt\Tools\CMake_64\bin\cmake.exe
 
 # The command to remove a file.
-RM = D:\QT\Tools\CMake_64\bin\cmake.exe -E rm -f
+RM = C:\Qt\Tools\CMake_64\bin\cmake.exe -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad
+CMAKE_SOURCE_DIR = C:\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug
+CMAKE_BINARY_DIR = C:\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug
 
 # Utility rule file for Ini_Nama_Aplikasi_Notepad_autogen_timestamp_deps.
 
@@ -77,6 +77,6 @@ CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen_timestamp_deps.dir/clean:
 .PHONY : CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen_timestamp_deps.dir/clean
 
 CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen_timestamp_deps.dir/depend:
-	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\CMakeFiles\Ini_Nama_Aplikasi_Notepad_autogen_timestamp_deps.dir\DependInfo.cmake "--color=$(COLOR)"
+	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad C:\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad C:\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug C:\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug C:\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\CMakeFiles\Ini_Nama_Aplikasi_Notepad_autogen_timestamp_deps.dir\DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen_timestamp_deps.dir/depend
 

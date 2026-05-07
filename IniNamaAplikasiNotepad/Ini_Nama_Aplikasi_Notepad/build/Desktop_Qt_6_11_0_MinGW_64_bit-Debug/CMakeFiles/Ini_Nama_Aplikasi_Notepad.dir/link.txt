@@ -1,3 +1,3 @@
-D:\QT\Tools\CMake_64\bin\cmake.exe -E rm -f CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir/objects.a
-D:\QT\Tools\mingw1310_64\bin\ar.exe qc CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir/objects.a @CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\objects1.rsp
-D:\QT\Tools\mingw1310_64\bin\g++.exe -g -mwindows -Wl,--whole-archive CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir/objects.a -Wl,--no-whole-archive -o Ini_Nama_Aplikasi_Notepad.exe -Wl,--out-implib,libIni_Nama_Aplikasi_Notepad.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\linkLibs.rsp
+C:\Qt\Tools\CMake_64\bin\cmake.exe -E rm -f CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir/objects.a
+C:\Qt\Tools\mingw1310_64\bin\ar.exe qc CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir/objects.a @CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\objects1.rsp
+C:\Qt\Tools\mingw1310_64\bin\g++.exe -g -mwindows -Wl,--whole-archive CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir/objects.a -Wl,--no-whole-archive -o Ini_Nama_Aplikasi_Notepad.exe -Wl,--out-implib,libIni_Nama_Aplikasi_Notepad.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\Ini_Nama_Aplikasi_Notepad.dir\linkLibs.rsp

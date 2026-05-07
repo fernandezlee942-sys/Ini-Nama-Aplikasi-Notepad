@@ -1,4 +1,4 @@
-# Install script for directory: D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad
+# Install script for directory: C:/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -34,15 +34,15 @@ endif()
 
 # Set path to fallback-tool for dependency-resolution.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "D:/QT/Tools/mingw1310_64/bin/objdump.exe")
+  set(CMAKE_OBJDUMP "C:/Qt/Tools/mingw1310_64/bin/objdump.exe")
 endif()
 
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/Ini_Nama_Aplikasi_Notepad.exe")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/bin" TYPE EXECUTABLE FILES "C:/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/Ini_Nama_Aplikasi_Notepad.exe")
   if(EXISTS "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/Ini_Nama_Aplikasi_Notepad.exe" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/Ini_Nama_Aplikasi_Notepad.exe")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "D:/QT/Tools/mingw1310_64/bin/strip.exe" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/Ini_Nama_Aplikasi_Notepad.exe")
+      execute_process(COMMAND "C:/Qt/Tools/mingw1310_64/bin/strip.exe" "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/Ini_Nama_Aplikasi_Notepad.exe")
     endif()
   endif()
 endif()
@@ -62,6 +62,6 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-  file(WRITE "D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/${CMAKE_INSTALL_MANIFEST}"
+  file(WRITE "C:/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
 endif()

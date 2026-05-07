@@ -43,19 +43,19 @@ cmake_force:
 SHELL = cmd.exe
 
 # The CMake executable.
-CMAKE_COMMAND = D:\QT\Tools\CMake_64\bin\cmake.exe
+CMAKE_COMMAND = C:\Qt\Tools\CMake_64\bin\cmake.exe
 
 # The command to remove a file.
-RM = D:\QT\Tools\CMake_64\bin\cmake.exe -E rm -f
+RM = C:\Qt\Tools\CMake_64\bin\cmake.exe -E rm -f
 
 # Escaping for special characters.
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad
+CMAKE_SOURCE_DIR = C:\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug
+CMAKE_BINARY_DIR = C:\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug
 
 # Utility rule file for Ini_Nama_Aplikasi_Notepad_autogen.
 
@@ -67,12 +67,12 @@ include CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen.dir/progress.make
 
 CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen: Ini_Nama_Aplikasi_Notepad_autogen/timestamp
 
-Ini_Nama_Aplikasi_Notepad_autogen/timestamp: D:/QT/6.11.0/mingw_64/bin/moc.exe
-Ini_Nama_Aplikasi_Notepad_autogen/timestamp: D:/QT/6.11.0/mingw_64/bin/uic.exe
+Ini_Nama_Aplikasi_Notepad_autogen/timestamp: C:/Qt/6.11.0/mingw_64/bin/moc.exe
+Ini_Nama_Aplikasi_Notepad_autogen/timestamp: C:/Qt/6.11.0/mingw_64/bin/uic.exe
 Ini_Nama_Aplikasi_Notepad_autogen/timestamp: CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target Ini_Nama_Aplikasi_Notepad"
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E cmake_autogen D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen.dir/AutogenInfo.json Debug
-	D:\QT\Tools\CMake_64\bin\cmake.exe -E touch D:/GitHub/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/Ini_Nama_Aplikasi_Notepad_autogen/timestamp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=C:\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target Ini_Nama_Aplikasi_Notepad"
+	C:\Qt\Tools\CMake_64\bin\cmake.exe -E cmake_autogen C:/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen.dir/AutogenInfo.json Debug
+	C:\Qt\Tools\CMake_64\bin\cmake.exe -E touch C:/Ini-Nama-Aplikasi-Notepad/IniNamaAplikasiNotepad/Ini_Nama_Aplikasi_Notepad/build/Desktop_Qt_6_11_0_MinGW_64_bit-Debug/Ini_Nama_Aplikasi_Notepad_autogen/timestamp
 
 Ini_Nama_Aplikasi_Notepad_autogen: CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen
 Ini_Nama_Aplikasi_Notepad_autogen: Ini_Nama_Aplikasi_Notepad_autogen/timestamp
@@ -88,6 +88,6 @@ CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen.dir/clean:
 .PHONY : CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen.dir/clean
 
 CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen.dir/depend:
-	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug D:\GitHub\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\CMakeFiles\Ini_Nama_Aplikasi_Notepad_autogen.dir\DependInfo.cmake "--color=$(COLOR)"
+	$(CMAKE_COMMAND) -E cmake_depends "MinGW Makefiles" C:\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad C:\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad C:\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug C:\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug C:\Ini-Nama-Aplikasi-Notepad\IniNamaAplikasiNotepad\Ini_Nama_Aplikasi_Notepad\build\Desktop_Qt_6_11_0_MinGW_64_bit-Debug\CMakeFiles\Ini_Nama_Aplikasi_Notepad_autogen.dir\DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/Ini_Nama_Aplikasi_Notepad_autogen.dir/depend
 
