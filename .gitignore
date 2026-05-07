@@ -1,4 +1,36 @@
 # =========================================
+# Build Directories
+# =========================================
+build/
+build-*/
+cmake-build-*/
+out/
+bin/
+debug/
+release/
+
+# =========================================
+# CMake Generated Files
+# =========================================
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+Testing/
+Makefile
+
+# CMake package/config generated files
+*.cmake
+!CMakeLists.txt
+
+# Ninja / Unix Makefiles
+build.ninja
+.ninja_deps
+.ninja_log
+
+# =========================================
 # MinGW & Compiler Specifics
 # =========================================
 *.gch
@@ -6,28 +38,48 @@
 *.gcno
 *.gcda
 *.tlog
+*.map
+*.nm
+*.o
+*.obj
+*.exe
+*.dll
+*.a
+*.lib
 
 # =========================================
-# Qt Linguist & Resource Compiled Files
+# Qt Generated Files
 # =========================================
-# File terjemahan (biasanya kita cuma simpan .ts, bukan .qm yang sudah jadi binary)
+**/proc_*.cpp
+**/qrc_*.cpp
+**/ui_*.h
+**/moc_*.cpp
+**/moc_predefs.h
+**/qmake_qmake_all.qpc
 *.qm
-# Resource files yang digenerate otomatis
-qrc_*.cpp
-ui_*.h
-moc_*.cpp
-moc_predefs.h
+
+# Qt Creator
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.autosave
 
 # =========================================
-# Clang / Static Analysis Tools
+# Clang / Static Analysis
 # =========================================
-.clang-format
 .clangd/
 .cache/
 
 # =========================================
-# Git / Patch files
+# Git / Patch & Temp Files
 # =========================================
 *.orig
 *.rej
 *.patch
+*.bak
+*.old
+*.tmp
+*.temp
+.qtcreator/
+*.user
+CMakeLists.txt.user
