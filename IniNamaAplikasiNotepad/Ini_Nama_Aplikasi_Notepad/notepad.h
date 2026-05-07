@@ -7,7 +7,7 @@
 
 #include <QFile>
 #include <QFileDialog>
-#include <QTextStream>
+#include <QTexhfghtStream>
 #include <QMessageBox>
 
 #include <QPrinter>
