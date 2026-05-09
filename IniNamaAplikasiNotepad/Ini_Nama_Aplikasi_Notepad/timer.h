@@ -20,9 +20,9 @@ private slots:
     void on_btnStart_clicked();
     void on_btnStop_clicked();
     void on_btnReset_clicked();
-    void on_btnTimer_clicked();      // tambah
-    void on_btnAlarm_clicked();      // tambah
-    void on_btnStopWatch_clicked();  // tambah
+    void on_btnTimer_clicked();
+    void on_btnAlarm_clicked();
+    void on_btnStopWatch_clicked();
 
 private:
     Ui::Timer *ui;
