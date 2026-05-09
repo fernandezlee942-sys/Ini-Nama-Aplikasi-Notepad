@@ -85,6 +85,8 @@ private slots:
 
     void on_actionTimer_triggered();
 
+    void on_actionCalculator_triggered();
+
 private:
     Ui::Notepad *ui;
 
