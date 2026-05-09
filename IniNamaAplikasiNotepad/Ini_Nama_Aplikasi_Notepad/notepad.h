@@ -83,6 +83,8 @@ private slots:
 
     void on_actionRedo_triggered();
 
+    void on_actionTimer_triggered();
+
 private:
     Ui::Notepad *ui;
 
