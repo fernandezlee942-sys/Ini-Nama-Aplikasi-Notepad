@@ -139,5 +139,6 @@ void Notepad::on_actionRedo_triggered()
 void Notepad::on_actionTimer_triggered()
 {
     Timer *tmr = new Timer(nullptr);
+    tmr->setAttribute(Qt::WA_DeleteOnClose);
     tmr->show();
 }
