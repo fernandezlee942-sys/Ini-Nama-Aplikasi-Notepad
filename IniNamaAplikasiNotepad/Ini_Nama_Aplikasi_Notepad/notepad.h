@@ -87,6 +87,8 @@ private slots:
 
     void on_actionCalculator_triggered();
 
+    void on_actionCalendar_triggered();
+
 private:
     Ui::Notepad *ui;
 

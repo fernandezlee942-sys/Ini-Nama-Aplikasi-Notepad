@@ -48,7 +48,7 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -59,9 +59,10 @@
     <addaction name="actionOpen"/>
     <addaction name="actionSave_as"/>
     <addaction name="actionPrint"/>
-    <addaction name="actionSave"/>
-    <addaction name="actionClose_Tab"/>
     <addaction name="actionExit"/>
+    <addaction name="separator"/>
+    <addaction name="actionClose_Tab"/>
+    <addaction name="actionSave"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -69,25 +70,29 @@
     </property>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
+    <addaction name="actionCopy"/>
+    <addaction name="actionCut"/>
+    <addaction name="actionPaste"/>
+    <addaction name="separator"/>
     <addaction name="actionFind"/>
     <addaction name="actionFind_Next"/>
     <addaction name="actionFind_Previous"/>
     <addaction name="actionReplace"/>
-    <addaction name="actionCopy"/>
-    <addaction name="actionPaste"/>
-    <addaction name="actionCut"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
      <string>View</string>
     </property>
+    <addaction name="actionplsceholder"/>
+    <addaction name="separator"/>
     <addaction name="actionStatus_Bar"/>
-    <addaction name="actionWord_Wrap"/>
    </widget>
    <widget class="QMenu" name="menuMusic">
     <property name="title">
      <string>Music</string>
     </property>
+    <addaction name="actionPlaceholder"/>
+    <addaction name="separator"/>
     <addaction name="actionPlaylist_1"/>
     <addaction name="actionNew_Playlist"/>
     <addaction name="actionShow_In_Folder"/>
@@ -96,6 +101,8 @@
     <property name="title">
      <string>Theme</string>
     </property>
+    <addaction name="actionPlaceHolder"/>
+    <addaction name="separator"/>
     <addaction name="actionLight"/>
     <addaction name="actionDark"/>
    </widget>
@@ -104,9 +111,8 @@
      <string>Window</string>
     </property>
     <addaction name="actionCalculator"/>
-    <addaction name="actionAI_Ollama"/>
     <addaction name="actionTimer"/>
-    <addaction name="separator"/>
+    <addaction name="actionCalendar"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -121,7 +127,7 @@
     <string>toolBar</string>
    </property>
    <attribute name="toolBarArea">
-    <enum>RightToolBarArea</enum>
+    <enum>LeftToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
     <bool>false</bool>
@@ -202,11 +208,6 @@
     <string>Status Bar</string>
    </property>
   </action>
-  <action name="actionWord_Wrap">
-   <property name="text">
-    <string>Word Wrap</string>
-   </property>
-  </action>
   <action name="actionRedo">
    <property name="text">
     <string>Redo</string>
@@ -247,11 +248,6 @@
     <string>Calculator</string>
    </property>
   </action>
-  <action name="actionAI_Ollama">
-   <property name="text">
-    <string>AI (Ollama)</string>
-   </property>
-  </action>
   <action name="actionLight">
    <property name="text">
     <string>Light</string>
@@ -270,6 +266,26 @@
   <action name="actionTimer">
    <property name="text">
     <string>Timer</string>
+   </property>
+  </action>
+  <action name="actionCalendar">
+   <property name="text">
+    <string>Calendar</string>
+   </property>
+  </action>
+  <action name="actionplsceholder">
+   <property name="text">
+    <string>plsceholder</string>
+   </property>
+  </action>
+  <action name="actionPlaceholder">
+   <property name="text">
+    <string>Placeholder</string>
+   </property>
+  </action>
+  <action name="actionPlaceHolder">
+   <property name="text">
+    <string>PlaceHolder</string>
    </property>
   </action>
  </widget>

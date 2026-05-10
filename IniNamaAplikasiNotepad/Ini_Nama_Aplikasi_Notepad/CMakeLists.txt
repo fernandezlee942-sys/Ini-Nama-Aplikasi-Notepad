@@ -28,6 +28,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ResourcesNotepad.qrc
         calculator.h calculator.cpp calculator.ui
         timer.h timer.cpp timer.ui
+        calendar.h calendar.cpp calendar.ui
+
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Ini_Nama_Aplikasi_Notepad APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
