@@ -43,3 +43,59 @@ void Calculator::NumPressed(){
         ui->display->setText(QString::number(dblNewVal, 'g', 16));
     }
 }
+
+void Calculator::MathButtonPressed(){
+    bagiTrigger = false;
+    kaliTrigger = false;
+    tambahTrigger = false;
+    kurangTrigger = false;
+
+    QString displayVal = ui->display->text();
+    calcVal = displayVal.toDouble();
+    QPushButton *button =(QPushButton *)sender();
+    QString butval = button -> text();
+
+    if (QString :: compare (butval, "/", Qt :: CaseInsensitive) == 0){
+        bagiTrigger = true;
+    }
+
+    else if (QString :: compare (butval, "*", Qt :: CaseInsensitive) == 0){
+        kaliTrigger = true;
+    }
+
+    else if (QString :: compare (butval, "+", Qt :: CaseInsensitive) == 0){
+        tambahTrigger = true;
+    }
+
+    else {
+        kurangTrigger = true;
+    }
+
+    ui->display->setText("");
+}
+
+void Calculator::EqualButton(){
+    double solution = 0.0;
+    QString displayVal = ui->display->text();
+    double dbldisplayval = displayVal.toDouble();
+
+    if (tambahTrigger || kurangTrigger || kaliTrigger || bagiTrigger){
+        if (tambahTrigger){
+            solution = calcVal + dbldisplayval;
+        }
+
+        else if (kurangTrigger){
+            solution = calcVal - dbldisplayval;
+        }
+
+        else if (kaliTrigger){
+            solution = calcVal * dbldisplayval;
+        }
+
+        else{
+            solution = calcVal / dbldisplayval;
+        }
+    }
+
+    ui ->display->setText(QString::number(solution));
+}

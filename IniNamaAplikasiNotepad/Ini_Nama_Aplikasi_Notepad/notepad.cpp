@@ -2,11 +2,8 @@
 #include "./ui_notepad.h"
 #include "calculator.h"
 #include "timer.h"
-<<<<<<< Updated upstream
 #include "calculator.h"
 #include "calendar.h"
-=======
->>>>>>> Stashed changes
 
 // if you see smtg like label->show(), do not be scared of it cos it just means tht the object label is a pointer, most of the time here we use pointer ask gpt why
 
@@ -150,7 +147,7 @@ void Notepad::on_actionTimer_triggered()
     tmr->show();
 }
 
-<<<<<<< Updated upstream
+
 void Notepad::on_actionCalculator_triggered()
 {
     Calculator *clc = new Calculator(nullptr);
@@ -165,12 +162,6 @@ void Notepad::on_actionCalendar_triggered()
     cld->setAttribute(Qt::WA_DeleteOnClose);
     cld->show();
 }
-=======
 
-void Notepad::on_actionCalculator_triggered()
-{
-    Calculator *calc = new Calculator(nullptr);
-    calc->show();
-}
 
->>>>>>> Stashed changes
+
