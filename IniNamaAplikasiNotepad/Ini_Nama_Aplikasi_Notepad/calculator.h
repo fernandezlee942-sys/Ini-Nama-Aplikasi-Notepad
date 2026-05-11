@@ -17,6 +17,12 @@ public:
 
 private:
     Ui::Calculator *ui;
+
+private slots:
+    void NumPressed();
+    // void MathButtonPressed();
+    // void EqualButton();
+    // void ChangeNumber();
 };
 
 #endif // CALCULATOR_H

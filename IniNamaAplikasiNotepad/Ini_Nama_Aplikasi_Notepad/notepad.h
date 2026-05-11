@@ -87,8 +87,11 @@ private slots:
 
     void on_actionCalculator_triggered();
 
+<<<<<<< Updated upstream
     void on_actionCalendar_triggered();
 
+=======
+>>>>>>> Stashed changes
 private:
     Ui::Notepad *ui;
 
