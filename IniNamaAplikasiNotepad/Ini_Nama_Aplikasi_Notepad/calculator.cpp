@@ -1,5 +1,6 @@
 #include "calculator.h"
 #include "ui_calculator.h"
+#include <QRegularExpression>
 
 double calcVal = 0.0;
 bool bagiTrigger = false;
@@ -22,6 +23,28 @@ Calculator::Calculator(QWidget *parent)
         connect(numButtons[i], SIGNAL(released()), this,
                 SLOT(NumPressed()));
 }
+    connect(ui->tambah, SIGNAL(released()), this,
+            SLOT(MathButtonPressed()));
+    connect(ui->kurang, SIGNAL(released()), this,
+            SLOT(MathButtonPressed()));
+    connect(ui->bagi, SIGNAL(released()), this,
+            SLOT(MathButtonPressed()));
+    connect(ui->kali, SIGNAL(released()), this,
+            SLOT(MathButtonPressed()));
+
+    connect(ui->samadengan, SIGNAL(released()), this,
+            SLOT(EqualButton()));
+
+    connect(ui->change, SIGNAL(released()), this,
+            SLOT(ChangeNumber()));
+
+    connect(ui->del, SIGNAL(released()), this,
+            SLOT(on_del_clicked()));
+
+    connect(ui->c, SIGNAL(released()), this,
+            SLOT(on_c_clicked()));
+
+
 }
 
 Calculator::~Calculator()
@@ -98,4 +121,35 @@ void Calculator::EqualButton(){
     }
 
     ui ->display->setText(QString::number(solution));
+}
+
+void Calculator::ChangeNumber(){
+    QString displayVal = ui->display->text();
+    QRegularExpression reg("[-]?[0-9.]*");
+
+    if (reg.match(displayVal).hasMatch()){
+        double dbldisplayval = displayVal.toDouble();
+        double dbldisplayvalsign = -1 * dbldisplayval;
+        ui->display->setText(QString::number(dbldisplayvalsign));
+    }
+}
+
+void Calculator::on_del_clicked()
+{
+    QString displayVal = ui->display->text();
+
+    if(displayVal.length() > 1)
+    {
+        displayVal.chop(1);
+        ui->display->setText(displayVal);
+    }
+    else
+    {
+        ui->display->setText("0");
+    }
+}
+
+void Calculator::on_c_clicked()
+{
+    ui->display->setText("0");
 }

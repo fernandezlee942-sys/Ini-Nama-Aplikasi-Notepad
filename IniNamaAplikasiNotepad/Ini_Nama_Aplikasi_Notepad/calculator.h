@@ -22,7 +22,9 @@ private slots:
     void NumPressed();
     void MathButtonPressed();
     void EqualButton();
-    // void ChangeNumber();
+    void ChangeNumber();
+    void on_del_clicked();
+    void on_c_clicked();
 };
 
 #endif // CALCULATOR_H

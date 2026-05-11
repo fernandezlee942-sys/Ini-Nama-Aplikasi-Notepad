@@ -131,7 +131,7 @@ QPushButton:pressed {
     </widget>
    </item>
    <item row="4" column="0">
-    <widget class="QPushButton" name="kuadrat">
+    <widget class="QPushButton" name="change">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
@@ -152,7 +152,7 @@ QPushButton:pressed {
 }</string>
      </property>
      <property name="text">
-      <string>^</string>
+      <string>+/-</string>
      </property>
     </widget>
    </item>
@@ -422,7 +422,7 @@ QPushButton:pressed {
     </widget>
    </item>
    <item row="5" column="0">
-    <widget class="QPushButton" name="phi">
+    <widget class="QPushButton" name="c">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
        <horstretch>0</horstretch>
@@ -443,7 +443,7 @@ QPushButton:pressed {
 }</string>
      </property>
      <property name="text">
-      <string>Π</string>
+      <string>c</string>
      </property>
     </widget>
    </item>
