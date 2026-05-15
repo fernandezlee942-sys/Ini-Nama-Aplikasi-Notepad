@@ -2,6 +2,7 @@
 #define TIMER_H
 #include <QWidget>
 #include <QTimer>
+#include <QTime>
 
 namespace Ui {
 class Timer;
@@ -16,21 +17,44 @@ public:
     ~Timer();
 
 private slots:
+    // Stopwatch
     void updateStopwatch();
     void on_btnStart_clicked();
     void on_btnStop_clicked();
     void on_btnReset_clicked();
-    void on_btnTimer_clicked();
-    void on_btnAlarm_clicked();
-    void on_btnStopWatch_clicked();
+
+    // Timer
+    void updateTimer();
+    void on_btnStartTimer_clicked();
+    void on_btnStopTimer_clicked();
+    void on_btnResetTimer_clicked();
+
+    // Alarm
+    void on_btnSetAlarm_clicked();
+    void on_btnStopAlarm_clicked();
+    void checkAlarm();
 
 private:
     Ui::Timer *ui;
+
+    // Stopwatch
     QTimer *timerStopwatch;
     int seconds;
     bool isRunning;
-
     void updateDisplay();
+
+    // Timer
+    QTimer *timerCountdown;
+    int remainingMinutes;
+    int remainingSeconds;
+    int remainingMs;
+    bool timerRunning;
+    void updateTimerDisplay();
+
+    // Alarm
+    QTimer *timerAlarm;
+    QTime alarmTime;
+    bool alarmSet;
 };
 
 #endif // TIMER_H
