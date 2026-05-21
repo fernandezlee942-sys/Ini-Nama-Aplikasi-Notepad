@@ -7,5 +7,23 @@
         <file>Icons/Open.bmp</file>
         <file>Icons/Paste.bmp</file>
         <file>Icons/Save.bmp</file>
+        <file>Icons/Calcu_B.png</file>
+        <file>Icons/Calendar_B.png</file>
+        <file>Icons/favicon.ico</file>
+        <file>Icons/File_B.png</file>
+        <file>Icons/Find_B.png</file>
+        <file>Icons/Highlight.bmp</file>
+        <file>Icons/Music_B.png</file>
+        <file>Icons/NewPlaylist_B.png</file>
+        <file>Icons/NewTab_B.png</file>
+        <file>Icons/Open_B.png</file>
+        <file>Icons/OpenPlaylist_B.png</file>
+        <file>Icons/redo_B.png</file>
+        <file>Icons/Save_B.png</file>
+        <file>Icons/Sticky.bmp</file>
+        <file>Icons/Timer_B.png</file>
+        <file>Icons/Trash_B.png</file>
+        <file>Icons/Turtle.png</file>
+        <file>Icons/undo_B.png</file>
     </qresource>
 </RCC>
