@@ -26,21 +26,15 @@
    <string>Notepad</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="verticalLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>9</x>
-      <y>9</y>
-      <width>341</width>
-      <height>241</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QTextEdit" name="textEdit"/>
-     </item>
-    </layout>
-   </widget>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QTextEdit" name="textEdit"/>
+      </item>
+     </layout>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -48,7 +42,7 @@
      <x>0</x>
      <y>0</y>
      <width>400</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -104,9 +98,9 @@
      <string>Window</string>
     </property>
     <addaction name="actionCalculator"/>
-    <addaction name="actionAI_Ollama"/>
     <addaction name="actionTimer"/>
     <addaction name="separator"/>
+    <addaction name="actionCalendar"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -247,11 +241,6 @@
     <string>Calculator</string>
    </property>
   </action>
-  <action name="actionAI_Ollama">
-   <property name="text">
-    <string>AI (Ollama)</string>
-   </property>
-  </action>
   <action name="actionLight">
    <property name="text">
     <string>Light</string>
@@ -270,6 +259,11 @@
   <action name="actionTimer">
    <property name="text">
     <string>Timer</string>
+   </property>
+  </action>
+  <action name="actionCalendar">
+   <property name="text">
+    <string>Calendar</string>
    </property>
   </action>
  </widget>
