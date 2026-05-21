@@ -1,6 +1,9 @@
 #include "notepad.h"
 #include "./ui_notepad.h"
 #include "timer.h"
+#include "calculator.h"
+#include "calender.h"
+
 // if you see smtg like label->show(), do not be scared of it cos it just means tht the object label is a pointer, most of the time here we use pointer ask gpt why
 
 // a bit of theory, ram itu ada stack (tumpukan, pake last in first out sgt cepat, tpi kecil dan terbatas dipake buat sesuatu ke int x=5; begitu ketemu } ia bakal langsung dihapus memori) dan heap(tumpuka besar/acak, memori yg lbh luas dan bebas, ia berantakan dan g berurut, lbh lambat dri stack diapke untuk sesuatu yg ada new-nya kek, new QLabel(), ia g bakal hilang kecuali kt panggil delete)
@@ -139,5 +142,21 @@ void Notepad::on_actionRedo_triggered()
 void Notepad::on_actionTimer_triggered()
 {
     Timer *tmr = new Timer(nullptr);
+    tmr->setAttribute(Qt::WA_DeleteOnClose);
     tmr->show();
 }
+
+void Notepad::on_actionCalculator_triggered()
+{
+    Calculator *clc = new Calculator(nullptr);
+    clc->setAttribute(Qt::WA_DeleteOnClose);
+    clc->show();
+}
+
+void Notepad::on_actionCalendar_triggered()
+{
+    Calendar *cld = new Calendar(nullptr);
+    cld->setAttribute(Qt::WA_DeleteOnClose);
+    cld->show();
+}
+
