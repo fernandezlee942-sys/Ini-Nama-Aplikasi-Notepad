@@ -2,7 +2,9 @@
 #include "./ui_notepad.h"
 #include "timer.h"
 #include "calculator.h"
-#include "calender.h"
+#include "calendar.h"
+#include <QPalette>
+#include <QStyle>
 
 // if you see smtg like label->show(), do not be scared of it cos it just means tht the object label is a pointer, most of the time here we use pointer ask gpt why
 
@@ -158,5 +160,60 @@ void Notepad::on_actionCalendar_triggered()
     Calendar *cld = new Calendar(nullptr);
     cld->setAttribute(Qt::WA_DeleteOnClose);
     cld->show();
+}
+
+
+void Notepad::on_actionLight_triggered()
+{
+    QPalette lightPalette;
+
+    // Tentukan warna tema terang racikan sendiri (Clean White & Grey)
+    QColor latarBelakangUtama(245, 245, 245);    // Abu-abu sangat muda
+    QColor latarBelakangKetik(255, 255, 255);    // Putih bersih
+    QColor warnaTeksHitam(30, 30, 30);           // Hitam elegan (tidak terlalu pekat)
+    QColor latarBelakangTombol(230, 230, 230);   // Abu-abu untuk button
+    QColor abuAbuMuda(200, 200, 200);
+
+    // Tuangkan warna ke elemen-elemen Qt
+    lightPalette.setColor(QPalette::Window, latarBelakangUtama);
+    lightPalette.setColor(QPalette::WindowText, warnaTeksHitam);
+    lightPalette.setColor(QPalette::Base, latarBelakangKetik);     // Tempat ngetik text edit
+    lightPalette.setColor(QPalette::AlternateBase, latarBelakangUtama);
+    lightPalette.setColor(QPalette::ToolTipBase, latarBelakangKetik);
+    lightPalette.setColor(QPalette::ToolTipText, warnaTeksHitam);
+    lightPalette.setColor(QPalette::Text, warnaTeksHitam);         // Teks hasil ketikan
+    lightPalette.setColor(QPalette::Button, latarBelakangTombol);
+    lightPalette.setColor(QPalette::ButtonText, warnaTeksHitam);   // Teks di dalam tombol
+    lightPalette.setColor(QPalette::PlaceholderText, abuAbuMuda);  // Teks petunjuk (hint)
+
+    // Terapkan secara global ke aplikasi
+    qApp->setPalette(lightPalette);
+}
+
+void Notepad::on_actionDark_triggered()
+{
+    QPalette darkPalette;
+
+    // Tentukan warna tema gelap racikan sendiri (Dark Charcoal & Obsidian)
+    QColor latarBelakangUtama(40, 40, 40);       // Abu-abu tua/gelap
+    QColor latarBelakangKetik(25, 25, 25);       // Lebih gelap untuk area mengetik
+    QColor warnaTeksPutih(240, 240, 240);        // Putih cerah
+    QColor latarBelakangTombol(55, 55, 55);      // Abu-abu sedang untuk button
+    QColor abuAbuTua(100, 100, 100);
+
+    // Tuangkan warna ke elemen-elemen Qt
+    darkPalette.setColor(QPalette::Window, latarBelakangUtama);
+    darkPalette.setColor(QPalette::WindowText, warnaTeksPutih);
+    darkPalette.setColor(QPalette::Base, latarBelakangKetik);      // Tempat ngetik text edit
+    darkPalette.setColor(QPalette::AlternateBase, latarBelakangUtama);
+    darkPalette.setColor(QPalette::ToolTipBase, latarBelakangKetik);
+    darkPalette.setColor(QPalette::ToolTipText, warnaTeksPutih);
+    darkPalette.setColor(QPalette::Text, warnaTeksPutih);          // Teks hasil ketikan
+    darkPalette.setColor(QPalette::Button, latarBelakangTombol);
+    darkPalette.setColor(QPalette::ButtonText, warnaTeksPutih);    // Teks di dalam tombol
+    darkPalette.setColor(QPalette::PlaceholderText, abuAbuTua);    // Teks petunjuk (hint)
+
+    // Terapkan secara global ke aplikasi
+    qApp->setPalette(darkPalette);
 }
 

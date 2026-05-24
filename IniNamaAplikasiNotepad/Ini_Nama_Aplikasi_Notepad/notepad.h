@@ -89,6 +89,10 @@ private slots:
 
     void on_actionCalendar_triggered();
 
+    void on_actionLight_triggered();
+
+    void on_actionDark_triggered();
+
 private:
     Ui::Notepad *ui;
 

@@ -1,7 +1,18 @@
+// git push origin branch_name
+// git status
+// git fetch
+// git pull
+// git commit -m "update001"
+// git push origin branch_name
+// git branch
+// git switch branch_name
+
+
+
 // Buat yg ikut tutorial youtube tpi sadar kt g ada file .pro itu karna kt pake Cmake bukan qmkae, google utk detail lebih
 // Link youtube to learn how to use CMakeLists.txt (havent watched it myself)
 // https://www.youtube.com/watch?v=OigQPU2ukss
-
+#include <QStyleFactory>
 #include "notepad.h"
 #include <QApplication>
 //widgets, event handling, mouse movement
@@ -28,6 +39,8 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
     // ini g perlu diperhatiin, kerjanya cmn kek jalanin aplikasi sesuai apa yang kita ketik
+
+    QApplication::setStyle(QStyleFactory::create("Fusion"));
 
     Notepad w;
     // Masukin data berkaitan dengan notepad kt di ram
