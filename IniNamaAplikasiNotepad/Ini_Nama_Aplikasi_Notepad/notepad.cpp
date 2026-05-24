@@ -6,6 +6,11 @@
 #include <QPalette>
 #include <QStyle>
 
+
+#include <QIcon>
+#include <QString>
+#include <QPushButton>
+
 // if you see smtg like label->show(), do not be scared of it cos it just means tht the object label is a pointer, most of the time here we use pointer ask gpt why
 
 // a bit of theory, ram itu ada stack (tumpukan, pake last in first out sgt cepat, tpi kecil dan terbatas dipake buat sesuatu ke int x=5; begitu ketemu } ia bakal langsung dihapus memori) dan heap(tumpuka besar/acak, memori yg lbh luas dan bebas, ia berantakan dan g berurut, lbh lambat dri stack diapke untuk sesuatu yg ada new-nya kek, new QLabel(), ia g bakal hilang kecuali kt panggil delete)
@@ -188,6 +193,7 @@ void Notepad::on_actionLight_triggered()
 
     // Terapkan secara global ke aplikasi
     qApp->setPalette(lightPalette);
+    updateAllIcons(false);
 }
 
 void Notepad::on_actionDark_triggered()
@@ -215,5 +221,102 @@ void Notepad::on_actionDark_triggered()
 
     // Terapkan secara global ke aplikasi
     qApp->setPalette(darkPalette);
+    updateAllIcons(true);
 }
 
+// Helper function to swap between _W and _B based on the target theme
+QIcon getThemedIcon(QString originalPath, bool isDarkTheme)
+{
+    // Clean up path just in case
+    originalPath = originalPath.trimmed();
+
+    if (isDarkTheme) {
+        // If it contains _W, replace it with _B
+        if (originalPath.contains("_W")) {
+            originalPath.replace("_W", "_B");
+        }
+    } else {
+        // If it contains _B, replace it with _W
+        if (originalPath.contains("_B")) {
+            originalPath.replace("_B", "_W");
+        }
+    }
+
+    return QIcon(originalPath);
+}
+
+void Notepad::updateAllIcons(bool isDark)
+{
+    // Fix Window Frame / Taskbar Icon
+    // Jika gelap pakai logo _B, jika terang pakai logo _W
+    QString windowIconPath = ":/IMAGE/Icons/main_logo";
+    windowIconPath += (isDark ? "_B.png" : "_W.png");
+    this->setWindowIcon(QIcon(windowIconPath));
+
+    // Ambil list tombol dengan tanda 'const' agar aman dari detach
+    const QList<QAction*> semuaTombol = this->findChildren<QAction*>();
+
+    // Tambahkan const pada pointer di dalam loop
+    for (QAction* const tombol : semuaTombol) {
+        QString namaObjek = tombol->objectName();
+
+        // Skip default system buttons that don't have custom icons
+        if (namaObjek.isEmpty() || namaObjek.startsWith("qt_")) {
+            continue;
+        }
+
+        // Match image name dynamically to button name (e.g., ":/logos/btn_save_B.png")
+        QIcon ikonSaatIni = tombol->icon();
+        if (ikonSaatIni.isNull()) {
+            continue;
+        }
+
+        QString pathAsli = tombol->property("originalIconPath").toString();
+
+        // Jika pertama kali dijalankan, kunci path dasar khusus untuk tombol ini saja
+        if (pathAsli.isEmpty()) {
+            QString namaBersih = namaObjek;
+            if (namaObjek.startsWith("action", Qt::CaseInsensitive) && namaObjek.length() > 6) {
+                namaBersih = namaObjek.mid(6);
+            }
+
+            QString baseKapital = ":/IMAGE/Icons/" + namaBersih;
+            QString baseKecil = ":/IMAGE/Icons/" + namaBersih.toLower();
+
+            // Kunci path berdasarkan file yang BENAR-BENAR ada untuk tombol ini
+            if (QFile::exists(baseKapital + "_B.png") || QFile::exists(baseKapital + "_W.png") ||
+                QFile::exists(baseKapital + "_b.png") || QFile::exists(baseKapital + "_w.png")) {
+                pathAsli = baseKapital;
+            }
+            else if (QFile::exists(baseKecil + "_B.png") || QFile::exists(baseKecil + "_W.png") ||
+                     QFile::exists(baseKecil + "_b.png") || QFile::exists(baseKecil + "_w.png")) {
+                pathAsli = baseKecil;
+            }
+
+            if (!pathAsli.isEmpty()) {
+                tombol->setProperty("originalIconPath", pathAsli);
+            }
+        }
+
+        // Eksekusi penukaran ikon secara ketat (Dinding pemisah Black dan White)
+        if (!pathAsli.isEmpty()) {
+            QString pathFinal = "";
+
+            if (isDark) {
+                // Tema Gelap (Black) -> Hanya cari yang berakhiran _B atau _b
+                if (QFile::exists(pathAsli + "_B.png"))       pathFinal = pathAsli + "_B.png";
+                else if (QFile::exists(pathAsli + "_b.png"))  pathFinal = pathAsli + "_b.png";
+            }
+            else {
+                // Tema Terang (White) -> Hanya cari yang berakhiran _W atau _w
+                if (QFile::exists(pathAsli + "_W.png"))       pathFinal = pathAsli + "_W.png";
+                else if (QFile::exists(pathAsli + "_w.png"))  pathFinal = pathAsli + "_w.png";
+            }
+
+            // Jika file tema yang dituju ada, pasang langsung!
+            if (!pathFinal.isEmpty()) {
+                tombol->setIcon(QIcon(pathFinal));
+            }
+        }
+    }
+}

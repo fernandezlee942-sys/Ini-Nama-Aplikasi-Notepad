@@ -15,6 +15,10 @@
 #include <QStyleFactory>
 #include "notepad.h"
 #include <QApplication>
+#include <QColor>
+#include <QPalette>
+#include <QStyle>
+
 //widgets, event handling, mouse movement
 
 int main(int argc, char *argv[])
@@ -46,8 +50,42 @@ int main(int argc, char *argv[])
     // Masukin data berkaitan dengan notepad kt di ram
     // Notepad itu class (cek notepad.h), class Notepad itu perlu variabel ini kebetulan ditls w g hrs w si
 
+    // Detect if the user's system background is dark or light
+    QColor bgOS = a.style()->standardPalette().color(QPalette::Window);
+    bool systemIsDark = (bgOS.value() < 128);
+
+
+    if (systemIsDark) {
+        // If system is dark, boot application in Dark Colors right away
+        QPalette darkPalette;
+        darkPalette.setColor(QPalette::Window, QColor(40, 40, 40));
+        darkPalette.setColor(QPalette::WindowText, QColor(240, 240, 240));
+        darkPalette.setColor(QPalette::Base, QColor(25, 25, 25));
+        darkPalette.setColor(QPalette::Text, QColor(240, 240, 240));
+        darkPalette.setColor(QPalette::Button, QColor(55, 55, 55));
+        darkPalette.setColor(QPalette::ButtonText, QColor(240, 240, 240));
+        a.setPalette(darkPalette);
+    }
+    else {
+        // ☀️ If system is light, boot application in Light Colors right away
+        QPalette lightPalette;
+        lightPalette.setColor(QPalette::Window, QColor(245, 245, 245));
+        lightPalette.setColor(QPalette::WindowText, QColor(30, 30, 30));
+        lightPalette.setColor(QPalette::Base, QColor(255, 255, 255));     // Area ketik notepad
+        lightPalette.setColor(QPalette::Text, QColor(30, 30, 30));         // Warna font teks
+        lightPalette.setColor(QPalette::Button, QColor(230, 230, 230));
+        lightPalette.setColor(QPalette::ButtonText, QColor(30, 30, 30));
+        a.setPalette(lightPalette);
+    }
+
+    // RUN THE MASTER AUTOMATION RIGHT HERE
+    // Ini akan otomatis mengirimkan nilai true (ke _B.png) atau false (ke _W.png)
+    w.updateAllIcons(systemIsDark);
+
+
     w.show();
     // Tampilin apa yg dh ad diram
+
 
 
 
@@ -88,4 +126,4 @@ int main(int argc, char *argv[])
 // You dont normally temper with main.cpp all of this comments is just in case ur curious abt wht's happening here
 
 
-// Jika mau coba di cpp kek test print label komentari Notepad w; ampe w.show(); trus buat kodenya di main.cpp baru di run
+// Jika mau coba di cpp kek test print label komentari Notepad w; ampe w.show(); trus buat kodenya di main.cpp baru di runa

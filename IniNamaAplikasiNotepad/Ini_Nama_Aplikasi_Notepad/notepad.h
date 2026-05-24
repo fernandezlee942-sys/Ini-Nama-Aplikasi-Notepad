@@ -54,6 +54,7 @@ public:
     //nullptr sama aja kek NULL bedanay cuman ini biar ksai tau kalo ia pointer bukan integer
     //fungsi konstruktor -> fungsi dalam class yang aktif saat kita buat objek dengan class yang punya fungsi konstruktor tsb
     ~Notepad() override;
+    void updateAllIcons(bool isDark);
     //fungsi dekonstruktor, dijalankan saat fungsi dihapus dari memori
     //ini fungsinya nanti bakal list segala fungsi delete yg ada tru dijalanin biar memori g bocor (variabel dari stack emg otomatis dihps cmn yg ad di heap harus tetap dimatikan manual)
     //beberapa objek kek ui teks dkk harus dipake terus ampe apk ditutup jadi g efektif buat hapus objek uinya cmn karna ga dipake sementara jadinya kita biarkan mereka di heap ampe apk dimatikan (karna itu kt butuh list apa aja yg mau dihapus di saat apk dimatikan ini guna fungsi ini)

@@ -145,13 +145,17 @@
   <action name="actionSave_as">
    <property name="icon">
     <iconset resource="ResourcesNotepad.qrc">
-     <normaloff>:/IMAGE/Icons/Save.bmp</normaloff>:/IMAGE/Icons/Save.bmp</iconset>
+     <normaloff>:/IMAGE/Icons/save_B.png</normaloff>:/IMAGE/Icons/save_B.png</iconset>
    </property>
    <property name="text">
     <string>Save As</string>
    </property>
   </action>
   <action name="actionSave">
+   <property name="icon">
+    <iconset>
+     <normaloff>:/IMAGE/Icons/Save_B.png</normaloff>:/IMAGE/Icons/Save_B.png</iconset>
+   </property>
    <property name="text">
     <string>Save</string>
    </property>
