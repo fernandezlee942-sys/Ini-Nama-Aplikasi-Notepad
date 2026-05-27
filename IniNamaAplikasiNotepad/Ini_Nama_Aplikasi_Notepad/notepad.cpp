@@ -347,7 +347,6 @@ void Notepad::on_actionCopy_triggered()
         activeEditor->copy(); // Hanya meng-copy teks dari tab yang aktif
     }
 }
-#include <QTimer> // Pastikan ini sudah ada di bagian paling atas notepad.cpp
 
 void Notepad::on_actionPaste_triggered()
 {
@@ -519,73 +518,72 @@ QIcon getThemedIcon(QString originalPath, bool isDarkTheme)
 
 void Notepad::updateAllIcons(bool isDark)
 {
-    // Fix Window Frame / Taskbar Icon
-    // Jika gelap pakai logo _B, jika terang pakai logo _W
+    // 1. Perbarui Ikon Utama Jendela / Window Frame
     QString windowIconPath = ":/IMAGE/Icons/main_logo";
     windowIconPath += (isDark ? "_B.png" : "_W.png");
     this->setWindowIcon(QIcon(windowIconPath));
 
-    // Ambil list tombol dengan tanda 'const' agar aman dari detach
+    // 2. Ambil semua komponen QAction (Tombol Menu/Toolbar)
     const QList<QAction*> semuaTombol = this->findChildren<QAction*>();
 
-    // Tambahkan const pada pointer di dalam loop
     for (QAction* const tombol : semuaTombol) {
         QString namaObjek = tombol->objectName();
 
-        // Skip default system buttons that don't have custom icons
+        // Lewati tombol bawaan internal sistem Qt
         if (namaObjek.isEmpty() || namaObjek.startsWith("qt_")) {
-            continue;
-        }
-
-        // Match image name dynamically to button name (e.g., ":/logos/btn_save_B.png")
-        QIcon ikonSaatIni = tombol->icon();
-        if (ikonSaatIni.isNull()) {
             continue;
         }
 
         QString pathAsli = tombol->property("originalIconPath").toString();
 
-        // Jika pertama kali dijalankan, kunci path dasar khusus untuk tombol ini saja
+        // Jika pertama kali dijalankan, cari dan kunci path dasar filenya
         if (pathAsli.isEmpty()) {
             QString namaBersih = namaObjek;
-            if (namaObjek.startsWith("action", Qt::CaseInsensitive) && namaObjek.length() > 6) {
-                namaBersih = namaObjek.mid(6);
+
+            // Bersihkan prefix "action" dan "_" agar sinkron dengan nama file
+            if (namaBersih.startsWith("action", Qt::CaseInsensitive)) {
+                namaBersih.remove(0, 6);
+            }
+            if (namaBersih.startsWith("_")) {
+                namaBersih.remove(0, 1);
             }
 
-            QString baseKapital = ":/IMAGE/Icons/" + namaBersih;
-            QString baseKecil = ":/IMAGE/Icons/" + namaBersih.toLower();
+            // Kumpulkan variasi kemungkinan nama file dan folder resource
+            QStringList kemungkinanPath;
+            kemungkinanPath << (":/IMAGE/Icons/" + namaBersih);
+            kemungkinanPath << (":/IMAGE/Icons/" + namaBersih.toLower());
+            kemungkinanPath << (":/image/icons/" + namaBersih);
+            kemungkinanPath << (":/image/icons/" + namaBersih.toLower());
 
-            // Kunci path berdasarkan file yang BENAR-BENAR ada untuk tombol ini
-            if (QFile::exists(baseKapital + "_B.png") || QFile::exists(baseKapital + "_W.png") ||
-                QFile::exists(baseKapital + "_b.png") || QFile::exists(baseKapital + "_w.png")) {
-                pathAsli = baseKapital;
+            // Cari file mana yang benar-benar eksis di resource sistem (.qrc)
+            // Tambahkan qAsConst membungkus nama variabel QStringList-mu
+            for (const QString& pathCek : qAsConst(kemungkinanPath)) {
+                if (QFile::exists(pathCek + "_B.png") || QFile::exists(pathCek + "_W.png") ||
+                    QFile::exists(pathCek + "_b.png") || QFile::exists(pathCek + "_w.png")) {
+                    pathAsli = pathCek;
+                    break;
+                }
             }
-            else if (QFile::exists(baseKecil + "_B.png") || QFile::exists(baseKecil + "_W.png") ||
-                     QFile::exists(baseKecil + "_b.png") || QFile::exists(baseKecil + "_w.png")) {
-                pathAsli = baseKecil;
-            }
-
+            // Jika ketemu, simpan path dasar tersebut ke dalam property objek tombol
             if (!pathAsli.isEmpty()) {
                 tombol->setProperty("originalIconPath", pathAsli);
             }
         }
 
-        // Eksekusi penukaran ikon secara ketat (Dinding pemisah Black dan White)
+        // 3. Eksekusi penukaran ikon berdasarkan status tema aktif
         if (!pathAsli.isEmpty()) {
             QString pathFinal = "";
 
             if (isDark) {
-                // Tema Gelap (Black) -> Hanya cari yang berakhiran _B atau _b
                 if (QFile::exists(pathAsli + "_B.png"))       pathFinal = pathAsli + "_B.png";
                 else if (QFile::exists(pathAsli + "_b.png"))  pathFinal = pathAsli + "_b.png";
             }
             else {
-                // Tema Terang (White) -> Hanya cari yang berakhiran _W atau _w
                 if (QFile::exists(pathAsli + "_W.png"))       pathFinal = pathAsli + "_W.png";
                 else if (QFile::exists(pathAsli + "_w.png"))  pathFinal = pathAsli + "_w.png";
             }
 
-            // Jika file tema yang dituju ada, pasang langsung!
+            // Terapkan ikon baru secara paksa ke layar aplikasi
             if (!pathFinal.isEmpty()) {
                 tombol->setIcon(QIcon(pathFinal));
             }
@@ -601,4 +599,11 @@ void Notepad::updateAllIcons(bool isDark)
 
 
 
+
+
+
+void Notepad::on_actionNew_Playlist_triggered()
+{
+
+}
 

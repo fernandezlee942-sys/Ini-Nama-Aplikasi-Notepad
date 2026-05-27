@@ -1,43 +1,32 @@
 <RCC>
     <qresource prefix="/IMAGE">
-        <file>Icons/Copy.bmp</file>
-        <file>Icons/Cut.bmp</file>
-        <file>Icons/DeleteSticky.bmp</file>
-        <file>Icons/New.bmp</file>
-        <file>Icons/Open.bmp</file>
-        <file>Icons/Paste.bmp</file>
-        <file>Icons/Save.bmp</file>
-        <file>Icons/calcu_B.png</file>
-        <file>Icons/calendar_B.png</file>
-        <file>Icons/favicon.ico</file>
-        <file>Icons/File_B.png</file>
+        <file>Icons/Calendar_B.png</file>
+        <file>Icons/Print_B.png</file>
         <file>Icons/find_B.png</file>
-        <file>Icons/Highlight.bmp</file>
         <file>Icons/Music_B.png</file>
         <file>Icons/NewPlaylist_B.png</file>
-        <file>Icons/NewTab_B.png</file>
+        <file>Icons/New_B.png</file>
         <file>Icons/Open_B.png</file>
         <file>Icons/OpenPlaylist_B.png</file>
-        <file>Icons/redo_B.png</file>
-        <file>Icons/save_B.png</file>
-        <file>Icons/Sticky.bmp</file>
-        <file>Icons/timer_B.png</file>
+        <file>Icons/Redo_B.png</file>
+        <file>Icons/Timer_B.png</file>
         <file>Icons/trash_B.png</file>
-        <file>Icons/Turtle.png</file>
         <file>Icons/undo_B.png</file>
-        <file>Icons/calcu_W.png</file>
-        <file>Icons/calender_W.png</file>
-        <file>Icons/File_W.png</file>
+        <file>Icons/Print_W.png</file>
         <file>Icons/find_W.png</file>
         <file>Icons/Music_W.png</file>
         <file>Icons/NewPlaylist_W.png</file>
-        <file>Icons/NewTab_W.png</file>
+        <file>Icons/New_W.png</file>
         <file>Icons/Open_W.png</file>
         <file>Icons/OpenPlaylist_W.png</file>
-        <file>Icons/redo_W.png</file>
-        <file>Icons/save_W.png</file>
-        <file>Icons/timer_W.png</file>
-        <file>Icons/trashW.png</file>
+        <file>Icons/Redo_W.png</file>
+        <file>Icons/Timer_W.png</file>
         <file>Icons/undo_W.png</file>
+        <file>Icons/Calculator_B.png</file>
+        <file>Icons/Calculator_W.png</file>
+        <file>Icons/Calendar_W.png</file>
+        <file>Icons/Save_as_B.png</file>
+        <file>Icons/Save_as_W.png</file>
+        <file>Icons/Trash_W.png</file>
     </qresource>
 </RCC>
