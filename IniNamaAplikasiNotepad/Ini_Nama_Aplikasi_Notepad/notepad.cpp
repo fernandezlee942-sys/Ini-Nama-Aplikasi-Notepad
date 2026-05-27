@@ -556,14 +556,14 @@ void Notepad::updateAllIcons(bool isDark)
             kemungkinanPath << (":/image/icons/" + namaBersih.toLower());
 
             // Cari file mana yang benar-benar eksis di resource sistem (.qrc)
-            // Tambahkan qAsConst membungkus nama variabel QStringList-mu
-            for (const QString& pathCek : qAsConst(kemungkinanPath)) {
+            for (const QString& pathCek : kemungkinanPath) {
                 if (QFile::exists(pathCek + "_B.png") || QFile::exists(pathCek + "_W.png") ||
                     QFile::exists(pathCek + "_b.png") || QFile::exists(pathCek + "_w.png")) {
                     pathAsli = pathCek;
                     break;
                 }
             }
+
             // Jika ketemu, simpan path dasar tersebut ke dalam property objek tombol
             if (!pathAsli.isEmpty()) {
                 tombol->setProperty("originalIconPath", pathAsli);
@@ -599,11 +599,4 @@ void Notepad::updateAllIcons(bool isDark)
 
 
 
-
-
-
-void Notepad::on_actionNew_Playlist_triggered()
-{
-
-}
 
