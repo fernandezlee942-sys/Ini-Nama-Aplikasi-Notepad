@@ -6,6 +6,8 @@
 // git push origin branch_name
 // git branch
 // git switch branch_name
+// git log, q buat stop ctrl c g bs nth knp
+// git log --oneline (biar g perlu tekan enter trus)
 
 
 
@@ -18,7 +20,7 @@
 #include <QColor>
 #include <QPalette>
 #include <QStyle>
-
+#include <QImageReader>
 //widgets, event handling, mouse movement
 
 int main(int argc, char *argv[])
@@ -49,6 +51,11 @@ int main(int argc, char *argv[])
     Notepad w;
     // Masukin data berkaitan dengan notepad kt di ram
     // Notepad itu class (cek notepad.h), class Notepad itu perlu variabel ini kebetulan ditls w g hrs w si
+
+
+
+
+
 
     // Detect if the user's system background is dark or light
     QColor bgOS = a.style()->standardPalette().color(QPalette::Window);
@@ -82,6 +89,9 @@ int main(int argc, char *argv[])
     // Ini akan otomatis mengirimkan nilai true (ke _B.png) atau false (ke _W.png)
     w.updateAllIcons(systemIsDark);
 
+
+
+    qDebug() << QImageReader::supportedImageFormats();
 
     w.show();
     // Tampilin apa yg dh ad diram

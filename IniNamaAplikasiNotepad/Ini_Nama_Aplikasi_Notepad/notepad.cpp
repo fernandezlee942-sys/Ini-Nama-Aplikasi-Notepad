@@ -11,6 +11,15 @@
 #include <QString>
 #include <QPushButton>
 
+
+#include <QClipboard>
+#include <QMimeData>
+
+#include <QDateTime>
+#include <QUrl>
+
+#include <QFileInfo>
+#include <QBuffer>
 // if you see smtg like label->show(), do not be scared of it cos it just means tht the object label is a pointer, most of the time here we use pointer ask gpt why
 
 // a bit of theory, ram itu ada stack (tumpukan, pake last in first out sgt cepat, tpi kecil dan terbatas dipake buat sesuatu ke int x=5; begitu ketemu } ia bakal langsung dihapus memori) dan heap(tumpuka besar/acak, memori yg lbh luas dan bebas, ia berantakan dan g berurut, lbh lambat dri stack diapke untuk sesuatu yg ada new-nya kek, new QLabel(), ia g bakal hilang kecuali kt panggil delete)
@@ -23,10 +32,121 @@ Notepad::Notepad(QWidget *parent):
 {
 
     ui->setupUi(this);
-    this -> setCentralWidget(ui->textEdit);
+
+    on_actionNew_triggered();
     //make the text edit in design mode fill the whole screen
     //not sure myself of how it works
 }
+
+
+
+
+// Tambahkan ini di bagian paling bawah file notepad.cpp
+
+QTextEdit* Notepad::getActiveEditor()
+{
+    // 1. Ambil halaman tab yang sedang aktif di layar
+    QWidget *currentWidget = ui->tabWidget->currentWidget();
+    if (!currentWidget) return nullptr;
+
+    // 2. Trik Jitu: Cek apakah halaman aktif itu SENDIRI adalah sebuah QTextEdit
+    // (Ini akan lolos karena kamu memasukkan newEditor langsung ke addTab)
+    QTextEdit *editor = qobject_cast<QTextEdit*>(currentWidget);
+
+    // 3. Jika ternyata gagal, baru cari ke dalam anak-anaknya menggunakan findChild
+    if (!editor) {
+        editor = currentWidget->findChild<QTextEdit*>();
+    }
+
+    // 4. Kembalikan objek yang berhasil ditemukan ke fungsi Save As
+    return editor;
+}
+
+// cegah leak memory
+void Notepad::on_tabWidget_tabCloseRequested(int index)
+{
+    // Cek dulu apakah tab yang mau ditutup ini adalah tab terakhir yang tersisa
+    if (ui->tabWidget->count() == 1) {
+        // Jika ini tab terakhir, alihkan langsung ke fungsi Exit utama kita
+        // agar dilakukan pengecekan status simpan (isModified) secara otomatis!
+        on_actionExit_triggered();
+        return;
+    }
+
+    // Jika tab yang ditutup bukan yang terakhir (misal masih ada 3 tab lain),
+    // hapus tab yang diklik seperti biasa
+    QWidget *tabPage = ui->tabWidget->widget(index);
+    ui->tabWidget->removeTab(index);
+    if (tabPage) {
+        tabPage->deleteLater();
+    }
+}
+
+void Notepad::on_actionExit_triggered()
+{
+    // Cek seluruh tab secara bergantian sebelum benar-benar menutup aplikasi
+    for (int i = 0; i < ui->tabWidget->count(); ++i) {
+        QWidget *tabPage = ui->tabWidget->widget(i);
+        if (!tabPage) continue;
+
+        QTextEdit *editor = tabPage->findChild<QTextEdit*>();
+
+        // Jika tidak ketemu lewat findChild, cek apakah widget tab itu sendiri adalah QTextEdit
+        if (!editor) {
+            editor = qobject_cast<QTextEdit*>(tabPage);
+        }
+
+        // Jika ada tab yang isinya sempat diubah user dan belum di-save (isModified == true)
+        if (editor && editor->document()->isModified()) {
+            ui->tabWidget->setCurrentIndex(i); // Pindahkan fokus layar ke tab yang belum disimpan tersebut
+
+            // Ambil nama tab bersih (buang karakter bintang jika ada)
+            QString tabName = ui->tabWidget->tabText(i).remove("*");
+
+            QMessageBox::StandardButton balasan;
+            balasan = QMessageBox::warning(this, "Simpan Perubahan?",
+                                           QString("Dokumen '%1' telah diubah.\nIngin menyimpan sebelum keluar?").arg(tabName),
+                                           QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+
+            if (balasan == QMessageBox::Save) {
+                on_actionSave_as_triggered(); // Paksa buka dialog simpan dulu
+                return; // Tunda exit agar user bisa menyelesaikan dialog simpan
+            }
+            else if (balasan == QMessageBox::Cancel) {
+                return; // Batalkan total proses keluar, kembali ke aplikasi
+            }
+            // Jika memilih Discard, loop akan lanjut ke tab berikutnya tanpa menyimpan
+        }
+    }
+
+    // Jika semua tab lolos pengecekan (semua sudah disimpan/bersih), matikan aplikasi secara aman
+    QApplication::quit();
+}
+
+void Notepad::updateTabTitle()
+{
+    // Cari tahu editor mana yang memicu perubahan teks ini
+    QTextEdit *activeEditor = qobject_cast<QTextEdit*>(sender());
+    if (!activeEditor) return;
+
+    // Cari indeks tab dari editor tersebut
+    int index = ui->tabWidget->indexOf(activeEditor);
+    if (index == -1) return;
+
+    // Ambil judul tab saat ini
+    QString currentTitle = ui->tabWidget->tabText(index);
+
+    // Jika teks diubah dan belum ada tanda bintang (*), tambahkan bintang!
+    if (activeEditor->document()->isModified()) {
+        if (!currentTitle.endsWith("*")) {
+            ui->tabWidget->setTabText(index, currentTitle + "*");
+        }
+    }
+}
+
+
+
+
 
 
 //Buka projek dri ide jgn lewat github nnti g jalan
@@ -57,93 +177,240 @@ Notepad::~Notepad()
 
 void Notepad::on_actionNew_triggered()
 {
-    currentFile.clear();
-    ui->textEdit ->setText(QString());
-    //make new file
+    QTextEdit *newEditor = new QTextEdit(this);
+    newEditor->setText(QString());
+
+    int tabIndex = ui->tabWidget->addTab(newEditor, "Untitled");
+
+    // Pindahkan mata user ke tab yang baru dibuat tersebut
+    ui->tabWidget->setCurrentIndex(tabIndex);
+    // Ikat properti file lokal kosong ke dalam objek editor ini sendiri
+    newEditor->setProperty("filePath", QString(""));
+
+    connect(newEditor, &QTextEdit::textChanged, this, &Notepad::updateTabTitle);
 }
+// Pastikan #include <QDir> sudah ada di bagian paling atas notepad.cpp bersama include lainnya
+
+void Notepad::on_actionSave_as_triggered()
+{
+    // Ambil objek teks editor yang saat ini sedang aktif di depan layar
+    QTextEdit *activeEditor = getActiveEditor();
+    if (!activeEditor) return; // Antisipasi jika tidak ada tab yang terbuka
+
+    // TENTUKAN PATH LOKAL & BUAT FOLDER JIKA BELUM ADA
+    QString defaultPath = "C:/iniaplikasi notepad";
+    QDir dir(defaultPath);
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+
+    // DETEKSI GAMBAR: Periksa apakah di dalam dokumen QTextEdit terdapat objek gambar
+    bool adaGambar = activeEditor->document()->toHtml().contains("<img");
+
+    QString fileFilter;
+    if (adaGambar) {
+        // Jika ada gambar, batasi pilihan save hanya ke HTML dan PDF
+        fileFilter = "HTML Files (*.html);;PDF Files (*.pdf)";
+
+        // Beri tahu user/dosen lewat pop-up kecil agar UX aplikasi terlihat profesional
+        QMessageBox::information(this, "Deteksi Gambar",
+                                 "Dokumen mengandung gambar. Format simpanan dibatasi hanya ke HTML atau PDF agar gambar tidak hilang.");
+    } else {
+        // Jika teks biasa, buka semua format seperti biasa
+        fileFilter = "Text Files (*.txt);;C++ Files (*.cpp);;Python Files (*.py);;HTML Files (*.html);;PDF Files (*.pdf)";
+    }
+
+    // Buka dialog penamaan file dengan filter yang sudah disesuaikan
+    QString filename = QFileDialog::getSaveFileName(this,
+                                                    "Save as",
+                                                    defaultPath,
+                                                    fileFilter);
+
+    if (filename.isEmpty()) return; // Jika user menekan tombol 'Cancel'
+
+    // EKSEKUSI KHUSUS UNTUK FORMAT PDF
+    if (filename.endsWith(".pdf", Qt::CaseInsensitive)) {
+        QPrinter printer(QPrinter::HighResolution);
+        printer.setOutputFormat(QPrinter::PdfFormat);
+        printer.setOutputFileName(filename);
+        activeEditor->print(&printer); // Qt otomatis merender teks + gambar ke dalam berkas PDF
+    }
+    // EKSEKUSI UNTUK FORMAT TEKS / HTML
+    else {
+        QFile file(filename);
+        if(!file.open(QFile::WriteOnly | QFile::Text)){
+            QMessageBox::warning(this, "Warning", "Cannot save file : " + file.errorString());
+            return;
+        }
+
+        QTextStream out(&file);
+        QString dataKonten;
+
+        // Ambil data dalam bentuk HTML jika user memilih ekstensi .html
+        if (filename.endsWith(".html", Qt::CaseInsensitive)) {
+            dataKonten = activeEditor->toHtml(); // Gambar dikonversi ke kode biner Base64 di dalam HTML
+        } else {
+            dataKonten = activeEditor->toPlainText(); // Teks mentah biasa untuk .txt, .cpp, .py
+        }
+
+        out << dataKonten;
+        file.close();
+    }
+
+    // Finalisasi status dokumen dan judul tab
+    activeEditor->document()->setModified(false);
+
+    QFileInfo fileInfo(filename);
+    int currentIndex = ui->tabWidget->currentIndex();
+    ui->tabWidget->setTabText(currentIndex, fileInfo.fileName());
+
+    activeEditor->setProperty("filePath", filename);
+}
+
+
+
+
 
 
 void Notepad::on_actionOpen_triggered()
 {
+    // Ambil lokasi file dari storage lewat dialog box
     QString filename = QFileDialog::getOpenFileName(this, "Open the file");
+    if (filename.isEmpty()) return; // Jika user menekan tombol 'Cancel' / batal buka file
+
+    // Siapkan objek file untuk dibaca teksnya
     QFile file(filename);
-    currentFile = filename;
     if(!file.open(QIODevice::ReadOnly | QFile::Text)){
-        QMessageBox::warning(this,"Warning","Cannot open file : "+file.errorString());
+        QMessageBox::warning(this, "Warning", "Cannot open file: " + file.errorString());
         return;
     }
 
-    setWindowTitle(filename);
+    // Ekstrak data teks dari file menggunakan stream reader
     QTextStream in(&file);
     QString text = in.readAll();
-    ui->textEdit->setText(text);
-    file.close();
+    file.close(); // Jangan lupa ditutup kembali filenya setelah dibaca
 
-}
+    // Lahirkan objek QTextEdit baru di memori Heap khusus untuk menampung file ini
+    QTextEdit *newEditor = new QTextEdit(this);
 
-void Notepad::on_actionSave_as_triggered()
-{
-    QString filename = QFileDialog::getSaveFileName(this, "Save as");
-    QFile file(filename);
-    if(!file.open(QFile::WriteOnly | QFile::Text)){
-        QMessageBox::warning(this,"Warning","Cannot save file : "+file.errorString());
-        return;
+    // PERBAIKAN DI SINI: Deteksi cara memuat dokumen berdasarkan ekstensi file
+    if (filename.endsWith(".html", Qt::CaseInsensitive)) {
+        newEditor->setHtml(text); // 🖼️ Render kode biner Base64 menjadi gambar asli di layar
+    } else {
+        newEditor->setPlainText(text); // 📄 Muat teks biasa tanpa render tag kode untuk .txt, .cpp, .py
     }
-    currentFile = filename;
-    setWindowTitle(filename);
-    QTextStream out (&file);
-    QString text = ui->textEdit->toPlainText();
-    out<<text;
-    file.close();
 
+    // Potong alamat path panjang menjadi nama filenya saja untuk judul tab (Contoh: "tugas.txt")
+    QFileInfo fileInfo(filename);
+    QString shortName = fileInfo.fileName();
+
+    // Masukkan editor baru tersebut ke dalam QTabWidget sebagai tab baru
+    int tabIndex = ui->tabWidget->addTab(newEditor, shortName);
+
+    // Langsung pindahkan fokus layar user ke tab file yang baru dibuka tersebut
+    ui->tabWidget->setCurrentIndex(tabIndex);
+
+    // KUNCI AMAN: Simpan alamat full path asli ke properti privat editor ini (pengganti currentFile)
+    newEditor->setProperty("filePath", filename);
+
+    // Hubungkan ke pendeteksi ketikan agar jika setelah dibuka teksnya diedit, bintang (*) bisa muncul
+    connect(newEditor, &QTextEdit::textChanged, this, &Notepad::updateTabTitle);
 }
 
-//for me tommorow (bgn pagi dikit, ini yg dibwh ini jgn lupa trk header perlu kalo mau pake library buat print), tutorial kemarin ampe
-// 32:20
+
+
+
 
 
 void Notepad::on_actionPrint_triggered()
 {
+    // 1. Ambil editor yang sedang aktif di depan layar
+    QTextEdit *activeEditor = getActiveEditor();
+    if (!activeEditor) return; // Antisipasi jika tidak ada tab yang terbuka
+
     QPrinter printer;
     printer.setPrinterName("Printer Name ");
     QPrintDialog pDialog(&printer, this);
-    if(pDialog.exec()==QDialog::Rejected){
+    if(pDialog.exec() == QDialog::Rejected){
         QMessageBox::warning(this, "Warning", "Cannot Access Printer");
         return;
     }
-    ui->textEdit->print(&printer);
-}
 
-
-void Notepad::on_actionExit_triggered()
-{
-    QApplication::quit();
+    // 2. Cetak isi teks dari tab yang aktif
+    activeEditor->print(&printer);
 }
 
 void Notepad::on_actionCopy_triggered()
 {
-    ui->textEdit->copy();
+    QTextEdit *activeEditor = getActiveEditor();
+    if (activeEditor) {
+        activeEditor->copy(); // Hanya meng-copy teks dari tab yang aktif
+    }
 }
+#include <QTimer> // Pastikan ini sudah ada di bagian paling atas notepad.cpp
 
 void Notepad::on_actionPaste_triggered()
 {
-    ui->textEdit->paste();
+    // 🔥 TRIK MAUT: Jalankan fungsi paste yang sesungguhnya setelah jeda 100 milidetik
+    // Ini memberi waktu bagi Windows + V untuk selesai menyalin data ke RAM Clipboard!
+    QTimer::singleShot(100, this, &Notepad::eksekusiPasteGambarSakti);
+}
+
+// BUAT FUNGSI BARU INI DI BAWAHNYA (Jangan lupa daftarkan "void eksekusiPasteGambarSakti();" di notepad.h bagian private slots)
+void Notepad::eksekusiPasteGambarSakti()
+{
+    QTextEdit *activeEditor = getActiveEditor();
+    if (!activeEditor) return;
+
+    // Sekarang RAM Clipboard dijamin sudah terisi penuh oleh Windows + V
+    QImage gambarClipboard = QApplication::clipboard()->image();
+
+    if (!gambarClipboard.isNull()) {
+        QImage gambarStandar = gambarClipboard.convertToFormat(QImage::Format_RGB32);
+        QByteArray ba;
+        QBuffer buffer(&ba);
+        buffer.open(QIODevice::WriteOnly);
+
+        if (gambarStandar.save(&buffer, "JPG")) {
+            QString base64Data = ba.toBase64();
+            QString tagHtmlGambar = QString("<img src='data:image/jpeg;base64,%1' />").arg(base64Data);
+
+            activeEditor->textCursor().insertHtml(tagHtmlGambar);
+            activeEditor->document()->setModified(true);
+            updateTabTitle();
+            return;
+        }
+    }
+
+    // Jika setelah ditunggu ternyata isinya bukan gambar melainkan teks biasa
+    const QMimeData *mimeData = QApplication::clipboard()->mimeData();
+    if (mimeData->hasText()) {
+        activeEditor->paste();
+    }
 }
 
 void Notepad::on_actionCut_triggered()
 {
-    ui->textEdit->cut();
+    QTextEdit *activeEditor = getActiveEditor();
+    if (activeEditor) {
+        activeEditor->cut(); // Hanya memotong teks pada tab yang aktif
+    }
 }
 
 void Notepad::on_actionUndo_triggered()
 {
-    ui->textEdit->undo();
+    QTextEdit *activeEditor = getActiveEditor();
+    if (activeEditor) {
+        activeEditor->undo(); // Hanya membatalkan ketikan (undo) di tab yang aktif
+    }
 }
-
 
 void Notepad::on_actionRedo_triggered()
 {
-    ui->textEdit->redo();
+    QTextEdit *activeEditor = getActiveEditor();
+    if (activeEditor) {
+        activeEditor->redo(); // Hanya mengulang ketikan (redo) di tab yang aktif
+    }
 }
 
 void Notepad::on_actionTimer_triggered()
@@ -166,6 +433,11 @@ void Notepad::on_actionCalendar_triggered()
     cld->setAttribute(Qt::WA_DeleteOnClose);
     cld->show();
 }
+
+
+
+
+
 
 
 void Notepad::on_actionLight_triggered()
@@ -320,3 +592,13 @@ void Notepad::updateAllIcons(bool isDark)
         }
     }
 }
+
+
+
+
+
+
+
+
+
+

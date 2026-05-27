@@ -15,6 +15,7 @@
 
 #include <QLabel>
 
+#include <QTextEdit>
 
 QT_BEGIN_NAMESPACE
 
@@ -94,10 +95,14 @@ private slots:
 
     void on_actionDark_triggered();
 
+    void on_tabWidget_tabCloseRequested(int index);
+
+    void updateTabTitle();
+
+    void eksekusiPasteGambarSakti();
+
 private:
     Ui::Notepad *ui;
-
-
-    QString currentFile = "";
+    QTextEdit* getActiveEditor();
 };
 #endif // NOTEPAD_H
