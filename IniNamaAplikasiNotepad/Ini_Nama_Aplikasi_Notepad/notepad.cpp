@@ -37,15 +37,19 @@
 // a bit of theory, ram itu ada stack (tumpukan, pake last in first out sgt cepat, tpi kecil dan terbatas dipake buat sesuatu ke int x=5; begitu ketemu } ia bakal langsung dihapus memori) dan heap(tumpuka besar/acak, memori yg lbh luas dan bebas, ia berantakan dan g berurut, lbh lambat dri stack diapke untuk sesuatu yg ada new-nya kek, new QLabel(), ia g bakal hilang kecuali kt panggil delete)
 
 
-
 Notepad::Notepad(QWidget *parent):
     QMainWindow(parent),
     ui(new Ui::Notepad)
 {
     ui->setupUi(this);
 
-    // 1. Pengikatan Pintasan Keyboard (Shortcuts)
-    ui->actionPaste->setShortcut(QKeySequence::Paste);
+    // 1. PENGGANTIAN SHORTCUT PASTE (SOLUSI UTAMA)
+    // Jangan gunakan ui->actionPaste->setShortcut jika ingin membajak Ctrl+V dari QTextEdit
+    QShortcut *pasteShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_V), this);
+    pasteShortcut->setContext(Qt::WindowShortcut); // Deteksi di seluruh area jendela aplikasi
+    connect(pasteShortcut, &QShortcut::activated, this, &Notepad::on_actionPaste_triggered);
+
+    // Pintasan lainnya tetap aman menggunakan QAction atau QShortcut manual
     ui->actionSave_as->setShortcut(QKeySequence::Save);
     ui->actionNew->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_T));
 
@@ -55,34 +59,32 @@ Notepad::Notepad(QWidget *parent):
 
     // 3. Inisialisasi Tab Pertama Saat Aplikasi Dibuka
     on_actionNew_triggered();
+}
 
-    // 4. Perbaikan Fokus Kursor: Langsung Arahkan ke Area Ketik, Bukan ke Bingkai Tab
+void Notepad::on_tabWidget_currentChanged(int index)
+{
+    Q_UNUSED(index);
+    // Setiap kali tab berubah (Ctrl+Tab / Ctrl+T / Klik), paksa kursor masuk ke teks editor
     QTextEdit *activeEditor = getActiveEditor();
     if (activeEditor) {
-        activeEditor->setFocus();
+        activeEditor->setFocus(Qt::OtherFocusReason);
     }
 }
 
-
-
-// Tambahkan ini di bagian paling bawah file notepad.cpp
-
 QTextEdit* Notepad::getActiveEditor()
 {
-    // 1. Ambil halaman tab yang sedang aktif di layar
+    // 1. Ambil halaman tab yang sedang aktif di layar saat ini
     QWidget *currentWidget = ui->tabWidget->currentWidget();
     if (!currentWidget) return nullptr;
 
-    // 2. Trik Jitu: Cek apakah halaman aktif itu SENDIRI adalah sebuah QTextEdit
-    // (Ini akan lolos karena kamu memasukkan newEditor langsung ke addTab)
+    // 2. Cek apakah halaman aktif itu SENDIRI adalah sebuah QTextEdit
     QTextEdit *editor = qobject_cast<QTextEdit*>(currentWidget);
 
-    // 3. Jika ternyata gagal, baru cari ke dalam anak-anaknya menggunakan findChild
+    // 3. Jika gagal, cari ke dalam anak-anaknya menggunakan findChild (Metode Sapu Jagat)
     if (!editor) {
         editor = currentWidget->findChild<QTextEdit*>();
     }
 
-    // 4. Kembalikan objek yang berhasil ditemukan ke fungsi Save As
     return editor;
 }
 
@@ -211,7 +213,6 @@ Notepad::~Notepad()
 // Tutor Youtube: ( add it urself if you find the video useful )
 // https://www.youtube.com/watch?v=I96uPDifZ1w&t=283s
 
-
 void Notepad::on_actionNew_triggered()
 {
     QTextEdit *newEditor = new QTextEdit(this);
@@ -219,17 +220,38 @@ void Notepad::on_actionNew_triggered()
 
     int tabIndex = ui->tabWidget->addTab(newEditor, "Untitled");
 
-    // Pindahkan mata user ke tab yang baru dibuat tersebut
     ui->tabWidget->setCurrentIndex(tabIndex);
-
     newEditor->setFocus();
-
-    // Ikat properti file lokal kosong ke dalam objek editor ini sendiri
     newEditor->setProperty("filePath", QString(""));
 
     connect(newEditor, &QTextEdit::textChanged, this, &Notepad::updateTabTitle);
+
+    // =========================================================================
+    // CARA GAMPANG: Paksa editor baru ini untuk patuh pada sistem shortcut kita
+    // =========================================================================
+    newEditor->installEventFilter(this);
 }
 // Pastikan #include <QDir> sudah ada di bagian paling atas notepad.cpp bersama include lainnya
+
+
+bool Notepad::eventFilter(QObject *obj, QEvent *event)
+{
+    // Jika event yang terjadi adalah tombol keyboard ditekan di dalam QTextEdit
+    if (event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+
+        // Cek apakah yang ditekan adalah Ctrl + V
+        if (keyEvent->modifiers() == Qt::ControlModifier && keyEvent->key() == Qt::Key_V) {
+            // Jalankan fungsi paste gambar sakti milikmu secara paksa!
+            on_actionPaste_triggered();
+            return true; // "true" artinya kita bajak event-nya, QTextEdit bawaan gak bakal dapet
+        }
+    }
+
+    // Kembalikan ke fungsi normal untuk tombol-tombol lainnya (A, B, C, Enter, dll)
+    return QMainWindow::eventFilter(obj, event);
+}
+
 
 void Notepad::on_actionSave_as_triggered()
 {
