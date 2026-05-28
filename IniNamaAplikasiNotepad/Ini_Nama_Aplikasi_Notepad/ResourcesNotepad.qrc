@@ -39,5 +39,19 @@
         <file>Icons/timer_W.png</file>
         <file>Icons/trashW.png</file>
         <file>Icons/undo_W.png</file>
+        <file>Icons/Calculator_B.png</file>
+        <file>Icons/Calculator_W.png</file>
+        <file>Icons/Calendar_W.png</file>
+        <file>Icons/Copy_B.png</file>
+        <file>Icons/Copy_W.png</file>
+        <file>Icons/Cut_B.png</file>
+        <file>Icons/Cut_W.png</file>
+        <file>Icons/New_B.png</file>
+        <file>Icons/New_W.png</file>
+        <file>Icons/Paste_B.png</file>
+        <file>Icons/Paste_W.png</file>
+        <file>Icons/Save_as_B.png</file>
+        <file>Icons/Save_as_W.png</file>
+        <file>Icons/Trash_W.png</file>
     </qresource>
 </RCC>
