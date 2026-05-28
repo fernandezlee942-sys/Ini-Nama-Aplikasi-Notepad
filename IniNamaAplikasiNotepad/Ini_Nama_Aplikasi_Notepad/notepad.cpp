@@ -20,6 +20,18 @@
 
 #include <QFileInfo>
 #include <QBuffer>
+
+#include <QShortcut>
+#include <QKeySequence>
+
+
+// Tambahan include baru di paling atas file:
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+
+#include <QDesktopServices>
+
+
 // if you see smtg like label->show(), do not be scared of it cos it just means tht the object label is a pointer, most of the time here we use pointer ask gpt why
 
 // a bit of theory, ram itu ada stack (tumpukan, pake last in first out sgt cepat, tpi kecil dan terbatas dipake buat sesuatu ke int x=5; begitu ketemu } ia bakal langsung dihapus memori) dan heap(tumpuka besar/acak, memori yg lbh luas dan bebas, ia berantakan dan g berurut, lbh lambat dri stack diapke untuk sesuatu yg ada new-nya kek, new QLabel(), ia g bakal hilang kecuali kt panggil delete)
@@ -30,14 +42,26 @@ Notepad::Notepad(QWidget *parent):
     QMainWindow(parent),
     ui(new Ui::Notepad)
 {
-
     ui->setupUi(this);
 
-    on_actionNew_triggered();
-    //make the text edit in design mode fill the whole screen
-    //not sure myself of how it works
-}
+    // 1. Pengikatan Pintasan Keyboard (Shortcuts)
+    ui->actionPaste->setShortcut(QKeySequence::Paste);
+    ui->actionSave_as->setShortcut(QKeySequence::Save);
+    ui->actionNew->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_T));
 
+    // 2. Pintasan Manual Ctrl + W untuk Menutup Tab Aktif
+    QShortcut *closeTabShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_W), this);
+    connect(closeTabShortcut, &QShortcut::activated, this, &Notepad::on_shortcutCloseTab_triggered);
+
+    // 3. Inisialisasi Tab Pertama Saat Aplikasi Dibuka
+    on_actionNew_triggered();
+
+    // 4. Perbaikan Fokus Kursor: Langsung Arahkan ke Area Ketik, Bukan ke Bingkai Tab
+    QTextEdit *activeEditor = getActiveEditor();
+    if (activeEditor) {
+        activeEditor->setFocus();
+    }
+}
 
 
 
@@ -61,6 +85,19 @@ QTextEdit* Notepad::getActiveEditor()
     // 4. Kembalikan objek yang berhasil ditemukan ke fungsi Save As
     return editor;
 }
+
+// Fungsi penjembatan khusus pintasan keyboard Ctrl + W
+void Notepad::on_shortcutCloseTab_triggered()
+{
+    // 1. Cari tahu indeks tab mana yang saat ini sedang ditonton oleh user
+    int currentIndex = ui->tabWidget->currentIndex();
+
+    // 2. Jika ada tab yang terbuka (indeks valid/bukan -1), oper indeksnya ke fungsi penghapus milikmu
+    if (currentIndex != -1) {
+        on_tabWidget_tabCloseRequested(currentIndex);
+    }
+}
+
 
 // cegah leak memory
 void Notepad::on_tabWidget_tabCloseRequested(int index)
@@ -184,6 +221,9 @@ void Notepad::on_actionNew_triggered()
 
     // Pindahkan mata user ke tab yang baru dibuat tersebut
     ui->tabWidget->setCurrentIndex(tabIndex);
+
+    newEditor->setFocus();
+
     // Ikat properti file lokal kosong ke dalam objek editor ini sendiri
     newEditor->setProperty("filePath", QString(""));
 
@@ -234,6 +274,8 @@ void Notepad::on_actionSave_as_triggered()
         printer.setOutputFormat(QPrinter::PdfFormat);
         printer.setOutputFileName(filename);
         activeEditor->print(&printer); // Qt otomatis merender teks + gambar ke dalam berkas PDF
+
+        QDesktopServices::openUrl(QUrl::fromLocalFile(filename));
     }
     // EKSEKUSI UNTUK FORMAT TEKS / HTML
     else {
@@ -315,6 +357,8 @@ void Notepad::on_actionOpen_triggered()
 
     // Hubungkan ke pendeteksi ketikan agar jika setelah dibuka teksnya diedit, bintang (*) bisa muncul
     connect(newEditor, &QTextEdit::textChanged, this, &Notepad::updateTabTitle);
+
+    newEditor->setFocus(); // <─── Memaksa kursor langsung aktif di tab yang baru dibuka tanpa ritual Ctrl+T & Ctrl+W!
 }
 
 
@@ -361,30 +405,89 @@ void Notepad::eksekusiPasteGambarSakti()
     QTextEdit *activeEditor = getActiveEditor();
     if (!activeEditor) return;
 
-    // Sekarang RAM Clipboard dijamin sudah terisi penuh oleh Windows + V
-    QImage gambarClipboard = QApplication::clipboard()->image();
+    // Ambil data MIME dari Clipboard untuk memeriksa tipe data secara akurat
+    const QMimeData *mimeData = QApplication::clipboard()->mimeData();
+    if (!mimeData) return;
 
-    if (!gambarClipboard.isNull()) {
-        QImage gambarStandar = gambarClipboard.convertToFormat(QImage::Format_RGB32);
-        QByteArray ba;
-        QBuffer buffer(&ba);
-        buffer.open(QIODevice::WriteOnly);
+    // 1. JIKA CLIPBOARD BERISI GAMBAR
+    if (mimeData->hasImage()) {
+        QImage gambarClipboard = QApplication::clipboard()->image();
 
-        if (gambarStandar.save(&buffer, "JPG")) {
-            QString base64Data = ba.toBase64();
-            QString tagHtmlGambar = QString("<img src='data:image/jpeg;base64,%1' />").arg(base64Data);
+        if (!gambarClipboard.isNull()) {
+            QImage gambarStandar = gambarClipboard.convertToFormat(QImage::Format_RGB32);
+            QByteArray ba;
+            QBuffer buffer(&ba);
+            buffer.open(QIODevice::WriteOnly);
 
-            activeEditor->textCursor().insertHtml(tagHtmlGambar);
-            activeEditor->document()->setModified(true);
-            updateTabTitle();
-            return;
+            if (gambarStandar.save(&buffer, "JPG")) {
+                QString base64Data = ba.toBase64();
+                QString tagHtmlGambar = QString("<img src='data:image/jpeg;base64,%1' />").arg(base64Data);
+
+                // Ambil kursor asli editor aktif
+                QTextCursor kursorAktif = activeEditor->textCursor();
+
+                // Bungkus transaksi manipulasi teks agar dokumen tidak terkunci internal
+                kursorAktif.beginEditBlock();
+                kursorAktif.insertHtml(tagHtmlGambar);
+                kursorAktif.endEditBlock();
+
+                // Paksa kursor asli editor di layar untuk memperbarui posisinya maju melewati gambar
+                activeEditor->setTextCursor(kursorAktif);
+
+                activeEditor->document()->setModified(true);
+                updateTabTitle();
+
+                // ─── SOLUSI REBUT FOKUS (PENGHANCUR RITUAL) ───
+                activeEditor->activateWindow();            // Pastikan window aplikasi menangkap fokus utama
+                activeEditor->setFocus(Qt::OtherFocusReason); // Kembalikan kursor ketikan aktif ke dalam teks editor
+
+                // Paksa Qt memproses semua antrean render grafis layout segera
+                QCoreApplication::processEvents();
+                return;
+            }
         }
     }
 
-    // Jika setelah ditunggu ternyata isinya bukan gambar melainkan teks biasa
-    const QMimeData *mimeData = QApplication::clipboard()->mimeData();
+    // 2. JIKA CLIPBOARD BERISI TEKS BIASA / HTML
     if (mimeData->hasText()) {
-        activeEditor->paste();
+        activeEditor->insertPlainText(mimeData->text());
+        activeEditor->document()->setModified(true);
+        updateTabTitle();
+
+        // Pastikan teks biasa juga mengembalikan kursor secara otomatis
+        activeEditor->setFocus(Qt::OtherFocusReason);
+    }
+}
+
+void Notepad::on_actionInsert_Image_triggered()
+{
+    // 1. Ambil objek teks editor yang saat ini sedang aktif di depan layar
+    QTextEdit *activeEditor = getActiveEditor();
+    if (!activeEditor) return; // Antisipasi jika tidak ada tab yang terbuka
+
+    // 2. Buka dialog Windows/Linux Explorer untuk memilih file gambar
+    QString filePath = QFileDialog::getOpenFileName(this,
+                                                    tr("Pilih Gambar untuk Dimasukkan"), "",
+                                                    tr("Images (*.png *.jpg *.jpeg *.bmp *.gif)"));
+
+    // 3. Jika user tidak menekan cancel (file path tidak kosong)
+    if (!filePath.isEmpty()) {
+        // Ambil posisi kursor ketikan user saat ini di tab aktif
+        QTextCursor cursor = activeEditor->textCursor();
+
+        // Buat format objek gambar dan masukkan path lokal gambar tersebut
+        QTextImageFormat imageFormat;
+        imageFormat.setName(filePath);
+
+        // Opsional: Kamu bisa batasi ukuran lebar gambar agar tidak merusak layout (misal: lebar 400px)
+        // imageFormat.setWidth(400);
+
+        // 4. Masukkan gambar tepat di posisi kursor berada
+        cursor.insertImage(imageFormat);
+
+        // Pemicu agar tab memunculkan tanda bintang (*) karena dokumen telah dimodifikasi
+        activeEditor->document()->setModified(true);
+        updateTabTitle();
     }
 }
 

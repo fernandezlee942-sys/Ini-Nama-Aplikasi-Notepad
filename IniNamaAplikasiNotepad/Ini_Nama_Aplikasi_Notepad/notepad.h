@@ -101,6 +101,11 @@ private slots:
 
     void eksekusiPasteGambarSakti();
 
+    void on_actionInsert_Image_triggered();
+
+    void on_shortcutCloseTab_triggered();
+
+
 private:
     Ui::Notepad *ui;
     QTextEdit* getActiveEditor();

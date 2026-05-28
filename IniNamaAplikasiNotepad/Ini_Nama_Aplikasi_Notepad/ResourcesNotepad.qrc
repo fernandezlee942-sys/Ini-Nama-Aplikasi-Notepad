@@ -25,8 +25,6 @@
         <file>Icons/Calculator_B.png</file>
         <file>Icons/Calculator_W.png</file>
         <file>Icons/Calendar_W.png</file>
-<<<<<<< HEAD
-=======
         <file>Icons/Copy_B.png</file>
         <file>Icons/Copy_W.png</file>
         <file>Icons/Cut_B.png</file>
@@ -35,7 +33,6 @@
         <file>Icons/New_W.png</file>
         <file>Icons/Paste_B.png</file>
         <file>Icons/Paste_W.png</file>
->>>>>>> 1e526a1780521016ddf235062c6c101df3df40b6
         <file>Icons/Save_as_B.png</file>
         <file>Icons/Save_as_W.png</file>
         <file>Icons/Trash_W.png</file>
