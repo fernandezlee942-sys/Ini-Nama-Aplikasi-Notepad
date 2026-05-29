@@ -20,47 +20,86 @@
 
 #include <QFileInfo>
 #include <QBuffer>
+
+#include <QShortcut>
+#include <QKeySequence>
+
+
+// Tambahan include baru di paling atas file:
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+
+#include <QDesktopServices>
+
+
 // if you see smtg like label->show(), do not be scared of it cos it just means tht the object label is a pointer, most of the time here we use pointer ask gpt why
 
 // a bit of theory, ram itu ada stack (tumpukan, pake last in first out sgt cepat, tpi kecil dan terbatas dipake buat sesuatu ke int x=5; begitu ketemu } ia bakal langsung dihapus memori) dan heap(tumpuka besar/acak, memori yg lbh luas dan bebas, ia berantakan dan g berurut, lbh lambat dri stack diapke untuk sesuatu yg ada new-nya kek, new QLabel(), ia g bakal hilang kecuali kt panggil delete)
-
 
 
 Notepad::Notepad(QWidget *parent):
     QMainWindow(parent),
     ui(new Ui::Notepad)
 {
-
     ui->setupUi(this);
 
+    // 1. PENGGANTIAN SHORTCUT PASTE (SOLUSI UTAMA)
+    // Jangan gunakan ui->actionPaste->setShortcut jika ingin membajak Ctrl+V dari QTextEdit
+    QShortcut *pasteShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_V), this);
+    pasteShortcut->setContext(Qt::WindowShortcut); // Deteksi di seluruh area jendela aplikasi
+    connect(pasteShortcut, &QShortcut::activated, this, &Notepad::on_actionPaste_triggered);
+
+    // Pintasan lainnya tetap aman menggunakan QAction atau QShortcut manual
+    ui->actionSave_as->setShortcut(QKeySequence::Save);
+    ui->actionNew->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_T));
+
+    // 2. Pintasan Manual Ctrl + W untuk Menutup Tab Aktif
+    QShortcut *closeTabShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_W), this);
+    connect(closeTabShortcut, &QShortcut::activated, this, &Notepad::on_shortcutCloseTab_triggered);
+
+    // 3. Inisialisasi Tab Pertama Saat Aplikasi Dibuka
     on_actionNew_triggered();
-    //make the text edit in design mode fill the whole screen
-    //not sure myself of how it works
 }
 
-
-
-
-// Tambahkan ini di bagian paling bawah file notepad.cpp
+void Notepad::on_tabWidget_currentChanged(int index)
+{
+    Q_UNUSED(index);
+    // Setiap kali tab berubah (Ctrl+Tab / Ctrl+T / Klik), paksa kursor masuk ke teks editor
+    QTextEdit *activeEditor = getActiveEditor();
+    if (activeEditor) {
+        activeEditor->setFocus(Qt::OtherFocusReason);
+    }
+}
 
 QTextEdit* Notepad::getActiveEditor()
 {
-    // 1. Ambil halaman tab yang sedang aktif di layar
+    // 1. Ambil halaman tab yang sedang aktif di layar saat ini
     QWidget *currentWidget = ui->tabWidget->currentWidget();
     if (!currentWidget) return nullptr;
 
-    // 2. Trik Jitu: Cek apakah halaman aktif itu SENDIRI adalah sebuah QTextEdit
-    // (Ini akan lolos karena kamu memasukkan newEditor langsung ke addTab)
+    // 2. Cek apakah halaman aktif itu SENDIRI adalah sebuah QTextEdit
     QTextEdit *editor = qobject_cast<QTextEdit*>(currentWidget);
 
-    // 3. Jika ternyata gagal, baru cari ke dalam anak-anaknya menggunakan findChild
+    // 3. Jika gagal, cari ke dalam anak-anaknya menggunakan findChild (Metode Sapu Jagat)
     if (!editor) {
         editor = currentWidget->findChild<QTextEdit*>();
     }
 
-    // 4. Kembalikan objek yang berhasil ditemukan ke fungsi Save As
     return editor;
 }
+
+// Fungsi penjembatan khusus pintasan keyboard Ctrl + W
+void Notepad::on_shortcutCloseTab_triggered()
+{
+    // 1. Cari tahu indeks tab mana yang saat ini sedang ditonton oleh user
+    int currentIndex = ui->tabWidget->currentIndex();
+
+    // 2. Jika ada tab yang terbuka (indeks valid/bukan -1), oper indeksnya ke fungsi penghapus milikmu
+    if (currentIndex != -1) {
+        on_tabWidget_tabCloseRequested(currentIndex);
+    }
+}
+
 
 // cegah leak memory
 void Notepad::on_tabWidget_tabCloseRequested(int index)
@@ -174,7 +213,6 @@ Notepad::~Notepad()
 // Tutor Youtube: ( add it urself if you find the video useful )
 // https://www.youtube.com/watch?v=I96uPDifZ1w&t=283s
 
-
 void Notepad::on_actionNew_triggered()
 {
     QTextEdit *newEditor = new QTextEdit(this);
@@ -182,14 +220,38 @@ void Notepad::on_actionNew_triggered()
 
     int tabIndex = ui->tabWidget->addTab(newEditor, "Untitled");
 
-    // Pindahkan mata user ke tab yang baru dibuat tersebut
     ui->tabWidget->setCurrentIndex(tabIndex);
-    // Ikat properti file lokal kosong ke dalam objek editor ini sendiri
+    newEditor->setFocus();
     newEditor->setProperty("filePath", QString(""));
 
     connect(newEditor, &QTextEdit::textChanged, this, &Notepad::updateTabTitle);
+
+    // =========================================================================
+    // CARA GAMPANG: Paksa editor baru ini untuk patuh pada sistem shortcut kita
+    // =========================================================================
+    newEditor->installEventFilter(this);
 }
 // Pastikan #include <QDir> sudah ada di bagian paling atas notepad.cpp bersama include lainnya
+
+
+bool Notepad::eventFilter(QObject *obj, QEvent *event)
+{
+    // Jika event yang terjadi adalah tombol keyboard ditekan di dalam QTextEdit
+    if (event->type() == QEvent::KeyPress) {
+        QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
+
+        // Cek apakah yang ditekan adalah Ctrl + V
+        if (keyEvent->modifiers() == Qt::ControlModifier && keyEvent->key() == Qt::Key_V) {
+            // Jalankan fungsi paste gambar sakti milikmu secara paksa!
+            on_actionPaste_triggered();
+            return true; // "true" artinya kita bajak event-nya, QTextEdit bawaan gak bakal dapet
+        }
+    }
+
+    // Kembalikan ke fungsi normal untuk tombol-tombol lainnya (A, B, C, Enter, dll)
+    return QMainWindow::eventFilter(obj, event);
+}
+
 
 void Notepad::on_actionSave_as_triggered()
 {
@@ -234,6 +296,8 @@ void Notepad::on_actionSave_as_triggered()
         printer.setOutputFormat(QPrinter::PdfFormat);
         printer.setOutputFileName(filename);
         activeEditor->print(&printer); // Qt otomatis merender teks + gambar ke dalam berkas PDF
+
+        QDesktopServices::openUrl(QUrl::fromLocalFile(filename));
     }
     // EKSEKUSI UNTUK FORMAT TEKS / HTML
     else {
@@ -315,6 +379,8 @@ void Notepad::on_actionOpen_triggered()
 
     // Hubungkan ke pendeteksi ketikan agar jika setelah dibuka teksnya diedit, bintang (*) bisa muncul
     connect(newEditor, &QTextEdit::textChanged, this, &Notepad::updateTabTitle);
+
+    newEditor->setFocus(); // <─── Memaksa kursor langsung aktif di tab yang baru dibuka tanpa ritual Ctrl+T & Ctrl+W!
 }
 
 
@@ -347,7 +413,6 @@ void Notepad::on_actionCopy_triggered()
         activeEditor->copy(); // Hanya meng-copy teks dari tab yang aktif
     }
 }
-#include <QTimer> // Pastikan ini sudah ada di bagian paling atas notepad.cpp
 
 void Notepad::on_actionPaste_triggered()
 {
@@ -362,30 +427,89 @@ void Notepad::eksekusiPasteGambarSakti()
     QTextEdit *activeEditor = getActiveEditor();
     if (!activeEditor) return;
 
-    // Sekarang RAM Clipboard dijamin sudah terisi penuh oleh Windows + V
-    QImage gambarClipboard = QApplication::clipboard()->image();
+    // Ambil data MIME dari Clipboard untuk memeriksa tipe data secara akurat
+    const QMimeData *mimeData = QApplication::clipboard()->mimeData();
+    if (!mimeData) return;
 
-    if (!gambarClipboard.isNull()) {
-        QImage gambarStandar = gambarClipboard.convertToFormat(QImage::Format_RGB32);
-        QByteArray ba;
-        QBuffer buffer(&ba);
-        buffer.open(QIODevice::WriteOnly);
+    // 1. JIKA CLIPBOARD BERISI GAMBAR
+    if (mimeData->hasImage()) {
+        QImage gambarClipboard = QApplication::clipboard()->image();
 
-        if (gambarStandar.save(&buffer, "JPG")) {
-            QString base64Data = ba.toBase64();
-            QString tagHtmlGambar = QString("<img src='data:image/jpeg;base64,%1' />").arg(base64Data);
+        if (!gambarClipboard.isNull()) {
+            QImage gambarStandar = gambarClipboard.convertToFormat(QImage::Format_RGB32);
+            QByteArray ba;
+            QBuffer buffer(&ba);
+            buffer.open(QIODevice::WriteOnly);
 
-            activeEditor->textCursor().insertHtml(tagHtmlGambar);
-            activeEditor->document()->setModified(true);
-            updateTabTitle();
-            return;
+            if (gambarStandar.save(&buffer, "JPG")) {
+                QString base64Data = ba.toBase64();
+                QString tagHtmlGambar = QString("<img src='data:image/jpeg;base64,%1' />").arg(base64Data);
+
+                // Ambil kursor asli editor aktif
+                QTextCursor kursorAktif = activeEditor->textCursor();
+
+                // Bungkus transaksi manipulasi teks agar dokumen tidak terkunci internal
+                kursorAktif.beginEditBlock();
+                kursorAktif.insertHtml(tagHtmlGambar);
+                kursorAktif.endEditBlock();
+
+                // Paksa kursor asli editor di layar untuk memperbarui posisinya maju melewati gambar
+                activeEditor->setTextCursor(kursorAktif);
+
+                activeEditor->document()->setModified(true);
+                updateTabTitle();
+
+                // ─── SOLUSI REBUT FOKUS (PENGHANCUR RITUAL) ───
+                activeEditor->activateWindow();            // Pastikan window aplikasi menangkap fokus utama
+                activeEditor->setFocus(Qt::OtherFocusReason); // Kembalikan kursor ketikan aktif ke dalam teks editor
+
+                // Paksa Qt memproses semua antrean render grafis layout segera
+                QCoreApplication::processEvents();
+                return;
+            }
         }
     }
 
-    // Jika setelah ditunggu ternyata isinya bukan gambar melainkan teks biasa
-    const QMimeData *mimeData = QApplication::clipboard()->mimeData();
+    // 2. JIKA CLIPBOARD BERISI TEKS BIASA / HTML
     if (mimeData->hasText()) {
-        activeEditor->paste();
+        activeEditor->insertPlainText(mimeData->text());
+        activeEditor->document()->setModified(true);
+        updateTabTitle();
+
+        // Pastikan teks biasa juga mengembalikan kursor secara otomatis
+        activeEditor->setFocus(Qt::OtherFocusReason);
+    }
+}
+
+void Notepad::on_actionInsert_Image_triggered()
+{
+    // 1. Ambil objek teks editor yang saat ini sedang aktif di depan layar
+    QTextEdit *activeEditor = getActiveEditor();
+    if (!activeEditor) return; // Antisipasi jika tidak ada tab yang terbuka
+
+    // 2. Buka dialog Windows/Linux Explorer untuk memilih file gambar
+    QString filePath = QFileDialog::getOpenFileName(this,
+                                                    tr("Pilih Gambar untuk Dimasukkan"), "",
+                                                    tr("Images (*.png *.jpg *.jpeg *.bmp *.gif)"));
+
+    // 3. Jika user tidak menekan cancel (file path tidak kosong)
+    if (!filePath.isEmpty()) {
+        // Ambil posisi kursor ketikan user saat ini di tab aktif
+        QTextCursor cursor = activeEditor->textCursor();
+
+        // Buat format objek gambar dan masukkan path lokal gambar tersebut
+        QTextImageFormat imageFormat;
+        imageFormat.setName(filePath);
+
+        // Opsional: Kamu bisa batasi ukuran lebar gambar agar tidak merusak layout (misal: lebar 400px)
+        // imageFormat.setWidth(400);
+
+        // 4. Masukkan gambar tepat di posisi kursor berada
+        cursor.insertImage(imageFormat);
+
+        // Pemicu agar tab memunculkan tanda bintang (*) karena dokumen telah dimodifikasi
+        activeEditor->document()->setModified(true);
+        updateTabTitle();
     }
 }
 
@@ -519,73 +643,72 @@ QIcon getThemedIcon(QString originalPath, bool isDarkTheme)
 
 void Notepad::updateAllIcons(bool isDark)
 {
-    // Fix Window Frame / Taskbar Icon
-    // Jika gelap pakai logo _B, jika terang pakai logo _W
+    // 1. Perbarui Ikon Utama Jendela / Window Frame
     QString windowIconPath = ":/IMAGE/Icons/main_logo";
     windowIconPath += (isDark ? "_B.png" : "_W.png");
     this->setWindowIcon(QIcon(windowIconPath));
 
-    // Ambil list tombol dengan tanda 'const' agar aman dari detach
+    // 2. Ambil semua komponen QAction (Tombol Menu/Toolbar)
     const QList<QAction*> semuaTombol = this->findChildren<QAction*>();
 
-    // Tambahkan const pada pointer di dalam loop
     for (QAction* const tombol : semuaTombol) {
         QString namaObjek = tombol->objectName();
 
-        // Skip default system buttons that don't have custom icons
+        // Lewati tombol bawaan internal sistem Qt
         if (namaObjek.isEmpty() || namaObjek.startsWith("qt_")) {
-            continue;
-        }
-
-        // Match image name dynamically to button name (e.g., ":/logos/btn_save_B.png")
-        QIcon ikonSaatIni = tombol->icon();
-        if (ikonSaatIni.isNull()) {
             continue;
         }
 
         QString pathAsli = tombol->property("originalIconPath").toString();
 
-        // Jika pertama kali dijalankan, kunci path dasar khusus untuk tombol ini saja
+        // Jika pertama kali dijalankan, cari dan kunci path dasar filenya
         if (pathAsli.isEmpty()) {
             QString namaBersih = namaObjek;
-            if (namaObjek.startsWith("action", Qt::CaseInsensitive) && namaObjek.length() > 6) {
-                namaBersih = namaObjek.mid(6);
+
+            // Bersihkan prefix "action" dan "_" agar sinkron dengan nama file
+            if (namaBersih.startsWith("action", Qt::CaseInsensitive)) {
+                namaBersih.remove(0, 6);
+            }
+            if (namaBersih.startsWith("_")) {
+                namaBersih.remove(0, 1);
             }
 
-            QString baseKapital = ":/IMAGE/Icons/" + namaBersih;
-            QString baseKecil = ":/IMAGE/Icons/" + namaBersih.toLower();
+            // Kumpulkan variasi kemungkinan nama file dan folder resource
+            QStringList kemungkinanPath;
+            kemungkinanPath << (":/IMAGE/Icons/" + namaBersih);
+            kemungkinanPath << (":/IMAGE/Icons/" + namaBersih.toLower());
+            kemungkinanPath << (":/image/icons/" + namaBersih);
+            kemungkinanPath << (":/image/icons/" + namaBersih.toLower());
 
-            // Kunci path berdasarkan file yang BENAR-BENAR ada untuk tombol ini
-            if (QFile::exists(baseKapital + "_B.png") || QFile::exists(baseKapital + "_W.png") ||
-                QFile::exists(baseKapital + "_b.png") || QFile::exists(baseKapital + "_w.png")) {
-                pathAsli = baseKapital;
-            }
-            else if (QFile::exists(baseKecil + "_B.png") || QFile::exists(baseKecil + "_W.png") ||
-                     QFile::exists(baseKecil + "_b.png") || QFile::exists(baseKecil + "_w.png")) {
-                pathAsli = baseKecil;
+            // Cari file mana yang benar-benar eksis di resource sistem (.qrc)
+            for (const QString& pathCek : kemungkinanPath) {
+                if (QFile::exists(pathCek + "_B.png") || QFile::exists(pathCek + "_W.png") ||
+                    QFile::exists(pathCek + "_b.png") || QFile::exists(pathCek + "_w.png")) {
+                    pathAsli = pathCek;
+                    break;
+                }
             }
 
+            // Jika ketemu, simpan path dasar tersebut ke dalam property objek tombol
             if (!pathAsli.isEmpty()) {
                 tombol->setProperty("originalIconPath", pathAsli);
             }
         }
 
-        // Eksekusi penukaran ikon secara ketat (Dinding pemisah Black dan White)
+        // 3. Eksekusi penukaran ikon berdasarkan status tema aktif
         if (!pathAsli.isEmpty()) {
             QString pathFinal = "";
 
             if (isDark) {
-                // Tema Gelap (Black) -> Hanya cari yang berakhiran _B atau _b
                 if (QFile::exists(pathAsli + "_B.png"))       pathFinal = pathAsli + "_B.png";
                 else if (QFile::exists(pathAsli + "_b.png"))  pathFinal = pathAsli + "_b.png";
             }
             else {
-                // Tema Terang (White) -> Hanya cari yang berakhiran _W atau _w
                 if (QFile::exists(pathAsli + "_W.png"))       pathFinal = pathAsli + "_W.png";
                 else if (QFile::exists(pathAsli + "_w.png"))  pathFinal = pathAsli + "_w.png";
             }
 
-            // Jika file tema yang dituju ada, pasang langsung!
+            // Terapkan ikon baru secara paksa ke layar aplikasi
             if (!pathFinal.isEmpty()) {
                 tombol->setIcon(QIcon(pathFinal));
             }

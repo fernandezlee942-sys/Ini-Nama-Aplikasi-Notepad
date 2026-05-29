@@ -8,6 +8,7 @@
 // git switch branch_name
 // git log, q buat stop ctrl c g bs nth knp
 // git log --oneline (biar g perlu tekan enter trus)
+// git push -f
 
 
 

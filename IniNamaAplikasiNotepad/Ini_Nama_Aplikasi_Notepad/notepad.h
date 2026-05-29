@@ -4,6 +4,12 @@
 // Bawaan
 #include <QMainWindow>
 
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+#include <QDesktopServices>
+
+// TAMBAHKAN BARIS BARU INI DI SINI:
+#include <QKeyEvent>
 
 #include <QFile>
 #include <QFileDialog>
@@ -96,13 +102,23 @@ private slots:
     void on_actionDark_triggered();
 
     void on_tabWidget_tabCloseRequested(int index);
+    void on_tabWidget_currentChanged(int index);
 
     void updateTabTitle();
 
     void eksekusiPasteGambarSakti();
 
+    void on_actionInsert_Image_triggered();
+
+    void on_shortcutCloseTab_triggered();
+
+
 private:
     Ui::Notepad *ui;
     QTextEdit* getActiveEditor();
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override;
 };
+
+
 #endif // NOTEPAD_H
