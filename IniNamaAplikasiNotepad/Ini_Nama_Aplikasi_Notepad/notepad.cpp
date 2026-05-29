@@ -43,6 +43,13 @@ Notepad::Notepad(QWidget *parent):
 {
     ui->setupUi(this);
 
+    // Masukkan ini di dalam Notepad::Notepad(QWidget *parent)
+    mediaPlayer = new QMediaPlayer(this);
+    audioOutput = new QAudioOutput(this);
+    mediaPlayer->setAudioOutput(audioOutput);
+
+
+
     // 1. PENGGANTIAN SHORTCUT PASTE (SOLUSI UTAMA)
     // Jangan gunakan ui->actionPaste->setShortcut jika ingin membajak Ctrl+V dari QTextEdit
     QShortcut *pasteShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_V), this);
@@ -260,7 +267,7 @@ void Notepad::on_actionSave_as_triggered()
     if (!activeEditor) return; // Antisipasi jika tidak ada tab yang terbuka
 
     // TENTUKAN PATH LOKAL & BUAT FOLDER JIKA BELUM ADA
-    QString defaultPath = "C:/iniaplikasi notepad";
+    QString defaultPath = "C:/Ini_Nama_Aplikasi_Notepad/Files";
     QDir dir(defaultPath);
     if (!dir.exists()) {
         dir.mkpath(".");
@@ -681,7 +688,7 @@ void Notepad::updateAllIcons(bool isDark)
             kemungkinanPath << (":/image/icons/" + namaBersih.toLower());
 
             // Cari file mana yang benar-benar eksis di resource sistem (.qrc)
-            for (const QString& pathCek : kemungkinanPath) {
+            for (const QString& pathCek : std::as_const(kemungkinanPath)) {
                 if (QFile::exists(pathCek + "_B.png") || QFile::exists(pathCek + "_W.png") ||
                     QFile::exists(pathCek + "_b.png") || QFile::exists(pathCek + "_w.png")) {
                     pathAsli = pathCek;
@@ -725,3 +732,59 @@ void Notepad::updateAllIcons(bool isDark)
 
 
 
+void Notepad::on_actionPlaylist_1_triggered()
+{
+#ifdef HAS_MULTIMEDIA
+    // 1. Tentukan path default untuk folder musik & buat direktori jika belum ada
+    QString defaultPath = "C:/Ini_Nama_Aplikasi_Notepad/Musics";
+    QDir dir(defaultPath);
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+
+    // 2. Buka File Dialog dengan mengunci pandangan awal ke defaultPath
+    QString fileAudio = QFileDialog::getOpenFileName(this,
+                                                     tr("Pilih File Musik/Audio"),
+                                                     defaultPath, // <── Direkam agar langsung membuka folder Musics
+                                                     tr("Audio Files (*.mp3 *.wav *.ogg *.m4a)"));
+
+    // 3. Jika user memilih file (tidak menekan tombol cancel)
+    if (!fileAudio.isEmpty()) {
+
+        // Atur sumber lagu ke media player menggunakan QUrl lokal
+        mediaPlayer->setSource(QUrl::fromLocalFile(fileAudio));
+
+        // 🔥 TAMBAHAN BARU: Set player agar mengulang musik tanpa batas (Looping)
+        mediaPlayer->setLoops(QMediaPlayer::Infinite);
+
+        // Atur volume suara default (rentang nilai dari 0.0 sampai 1.0)
+        audioOutput->setVolume(0.5); // Volume 50%
+
+        // 4. Putar Musik Sakti!
+        mediaPlayer->play();
+
+        // Beri informasi di status bar agar user tahu musik sedang berputar
+        if (this->statusBar()) {
+            this->statusBar()->showMessage("Currently playing: " + QFileInfo(fileAudio).fileName());
+        }
+    }
+#else
+    QMessageBox::information(this, "Fitur Nonaktif", "Modul Multimedia tidak diaktifkan di build ini.");
+#endif
+}
+
+void Notepad::on_actionStop_Music_triggered()
+{
+#ifdef HAS_MULTIMEDIA
+    if (mediaPlayer) {
+        mediaPlayer->stop();
+
+        // Opsional: Bersihkan tulisan di status bar saat musik dihentikan
+        if (this->statusBar()) {
+            this->statusBar()->showMessage("Musik dihentikan", 3000); // Teks hilang setelah 3 detik
+        }
+    }
+#else
+    QMessageBox::information(this, "Fitur Nonaktif", "Modul Multimedia tidak diaktifkan di build ini.");
+#endif
+}

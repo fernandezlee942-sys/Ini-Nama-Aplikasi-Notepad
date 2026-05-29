@@ -11,6 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets PrintSupport)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets PrintSupport)
+find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS Multimedia)
+
 
 set(PROJECT_SOURCES
     main.cpp
@@ -52,6 +54,11 @@ target_link_libraries(Ini_Nama_Aplikasi_Notepad PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::PrintSupport
 )
+
+if(Qt${QT_VERSION_MAJOR}Multimedia_FOUND)
+    target_compile_definitions(Ini_Nama_Aplikasi_Notepad PRIVATE HAS_MULTIMEDIA)
+    target_link_libraries(Ini_Nama_Aplikasi_Notepad PRIVATE Qt${QT_VERSION_MAJOR}::Multimedia)
+endif()
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

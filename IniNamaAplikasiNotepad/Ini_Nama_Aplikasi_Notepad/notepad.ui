@@ -89,8 +89,7 @@
      <string>Music</string>
     </property>
     <addaction name="actionPlaylist_1"/>
-    <addaction name="actionNew_Playlist"/>
-    <addaction name="actionShow_In_Folder"/>
+    <addaction name="actionStop_Music"/>
    </widget>
    <widget class="QMenu" name="menuTheme">
     <property name="title">
@@ -157,15 +156,6 @@
     <string>Save As</string>
    </property>
   </action>
-  <action name="actionSave">
-   <property name="icon">
-    <iconset>
-     <normaloff>:/IMAGE/Icons/Save_B.png</normaloff>:/IMAGE/Icons/Save_B.png</iconset>
-   </property>
-   <property name="text">
-    <string>Save</string>
-   </property>
-  </action>
   <action name="actionClose_Tab">
    <property name="text">
     <string>Close Tab</string>
@@ -221,11 +211,6 @@
     <string>Open Playlist</string>
    </property>
   </action>
-  <action name="actionNew_Playlist">
-   <property name="text">
-    <string>New Playlist</string>
-   </property>
-  </action>
   <action name="actionPrint">
    <property name="text">
     <string>Print</string>
@@ -261,11 +246,6 @@
     <string>Dark</string>
    </property>
   </action>
-  <action name="actionShow_In_Folder">
-   <property name="text">
-    <string>Show In Folder</string>
-   </property>
-  </action>
   <action name="actionTimer">
    <property name="text">
     <string>Timer</string>
@@ -274,6 +254,11 @@
   <action name="actionCalendar">
    <property name="text">
     <string>Calendar</string>
+   </property>
+  </action>
+  <action name="actionStop_Music">
+   <property name="text">
+    <string>Stop Music</string>
    </property>
   </action>
  </widget>
