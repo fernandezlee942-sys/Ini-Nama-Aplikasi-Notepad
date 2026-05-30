@@ -1,6 +1,7 @@
 #include "calculator.h"
 #include "ui_calculator.h"
 #include <QRegularExpression>
+#include <stack>
 #include <cmath>
 
 double calcVal = 0.0;
@@ -54,6 +55,15 @@ Calculator::Calculator(QWidget *parent)
     connect(ui->tan, SIGNAL(released()), this,
             SLOT(TanPressed()));
 
+    connect(ui->e,SIGNAL(released()),
+            this,SLOT(EPressed()));
+
+    connect(ui->kurungawal,SIGNAL(released()),
+            this,SLOT(kurungawalPressed()));
+
+    connect(ui->kurungakhir,SIGNAL(released()),
+            this,SLOT(kurungakhirPressed()));
+
 }
 
 Calculator::~Calculator()
@@ -79,111 +89,26 @@ void Calculator::NumPressed()
     }
 }
 
-void Calculator::MathButtonPressed(){
-    bagiTrigger = false;
-    kaliTrigger = false;
-    tambahTrigger = false;
-    kurangTrigger = false;
+void Calculator::MathButtonPressed()
+{
+    QPushButton *button=(QPushButton*)sender();
 
-    QString displayVal = ui->display->text();
-    calcVal = displayVal.toDouble();
-    QPushButton *button =(QPushButton *)sender();
-    QString butval = button -> text();
+    QString op=button->text();
 
-    if (QString :: compare (butval, "/", Qt :: CaseInsensitive) == 0){
-        bagiTrigger = true;
-    }
+    QString displayVal=ui->display->text();
 
-    else if (QString :: compare (butval, "*", Qt :: CaseInsensitive) == 0){
-        kaliTrigger = true;
-    }
-
-    else if (QString :: compare (butval, "+", Qt :: CaseInsensitive) == 0){
-        tambahTrigger = true;
-    }
-
-    else {
-        kurangTrigger = true;
-    }
-
-    ui->display->setText("");
+    ui->display->setText(displayVal+op);
 }
 
 void Calculator::EqualButton()
 {
-    double solution = 0.0;
+    QString expr=ui->display->text();
 
-    QString displayVal = ui->display->text();
+    expr.replace("x","*");
 
-    // ===== TRIGONOMETRI =====
+    double result=evaluate(expr);
 
-    if (sinTrigger)
-    {
-        QString numStr = displayVal;
-        numStr.remove("sin(");
-
-        double value = numStr.toDouble();
-
-        solution = sin(value);
-
-        sinTrigger = false;
-    }
-
-    else if (cosTrigger)
-    {
-        QString numStr = displayVal;
-        numStr.remove("cos(");
-
-        double value = numStr.toDouble();
-
-        solution = cos(value);
-
-        cosTrigger = false;
-    }
-
-    else if (tanTrigger)
-    {
-        QString numStr = displayVal;
-        numStr.remove("tan(");
-
-        double value = numStr.toDouble();
-
-        solution = tan(value);
-
-        tanTrigger = false;
-    }
-
-    // ===== OPERATOR BIASA =====
-
-    else
-    {
-        double dbldisplayval = displayVal.toDouble();
-
-        if (tambahTrigger || kurangTrigger || kaliTrigger || bagiTrigger)
-        {
-            if (tambahTrigger)
-            {
-                solution = calcVal + dbldisplayval;
-            }
-
-            else if (kurangTrigger)
-            {
-                solution = calcVal - dbldisplayval;
-            }
-
-            else if (kaliTrigger)
-            {
-                solution = calcVal * dbldisplayval;
-            }
-
-            else
-            {
-                solution = calcVal / dbldisplayval;
-            }
-        }
-    }
-
-    ui->display->setText(QString::number(solution));
+    ui->display->setText(QString::number(result));
 }
 
 void Calculator::ChangeNumber(){
@@ -219,27 +144,284 @@ void Calculator::on_c_clicked()
 
 void Calculator::SinPressed()
 {
-    sinTrigger = true;
-    cosTrigger = false;
-    tanTrigger = false;
+    QString displayVal=ui->display->text();
 
-    ui->display->setText("sin(");
+    if(displayVal=="0")
+        ui->display->setText("sin(");
+    else
+        ui->display->setText(displayVal+"sin(");
 }
 
 void Calculator::CosPressed()
 {
-    cosTrigger = true;
-    sinTrigger = false;
-    tanTrigger = false;
+    QString displayVal=ui->display->text();
 
-    ui->display->setText("cos(");
+    if(displayVal=="0")
+        ui->display->setText("cos(");
+    else
+        ui->display->setText(displayVal+"cos(");
 }
 
 void Calculator::TanPressed()
 {
-    tanTrigger = true;
-    sinTrigger = false;
-    cosTrigger = false;
+    QString displayVal=ui->display->text();
 
-    ui->display->setText("tan(");
+    if(displayVal=="0")
+        ui->display->setText("tan(");
+    else
+        ui->display->setText(displayVal+"tan(");
+}
+
+void Calculator::EPressed()
+{
+    QString displayVal = ui->display->text();
+
+    // kalau display kosong/akhirnya angka
+    if(displayVal.isEmpty() ||
+        displayVal.back().isDigit())
+    {
+        ui->display->setText(displayVal + "e");
+    }
+
+    else
+    {
+        ui->display->setText(displayVal + QString::number(M_E));
+    }
+}
+
+double Calculator::evaluate(QString expr)
+{
+    std::stack<double> values;
+    std::stack<QChar> ops;
+
+    auto applyOp = [&](double a,double b,QChar op)
+    {
+        if(op=='+') return a+b;
+        if(op=='-') return a-b;
+        if(op=='*') return a*b;
+        return a/b;
+    };
+
+    auto precedence=[&](QChar op)
+    {
+        if(op=='+'||op=='-') return 1;
+        if(op=='*'||op=='/') return 2;
+        return 0;
+    };
+
+    int i=0;
+
+    while(i<expr.length())
+    {
+        if(expr[i]==' ')
+        {
+            i++;
+            continue;
+        }
+
+        if(expr[i]=='(')
+        {
+            ops.push('(');
+            i++;
+        }
+
+        else if(
+            expr[i].isDigit() ||
+            expr[i]=='.' ||
+            (expr[i]=='-' &&
+             (i==0 || expr[i-1]=='(' ||
+              expr[i-1]=='+' ||
+              expr[i-1]=='-' ||
+              expr[i-1]=='*' ||
+              expr[i-1]=='/'))
+            )
+        {
+            QString num;
+
+            while(i<expr.length() &&
+                   (expr[i].isDigit() ||
+                    expr[i]=='.' ||
+                    expr[i]=='e' ||
+                    expr[i]=='E' ||
+                    expr[i]=='-'))
+            {
+                num+=expr[i];
+                i++;
+            }
+
+            values.push(num.toDouble());
+        }
+
+        else if(expr.mid(i,3)=="sin")
+        {
+            i+=4;
+
+            QString inside;
+
+            int depth=1;
+
+            while(i<expr.length() && depth>0)
+            {
+                if(expr[i]=='(') depth++;
+
+                else if(expr[i]==')')
+                {
+                    depth--;
+
+                    if(depth==0)
+                        break;
+                }
+
+                inside+=expr[i];
+
+                i++;
+            }
+
+            values.push(
+                sin(evaluate(inside))
+                );
+
+            i++;
+        }
+
+        else if(expr.mid(i,3)=="cos")
+        {
+            i+=4;
+
+            QString inside;
+
+            int depth=1;
+
+            while(i<expr.length() && depth>0)
+            {
+                if(expr[i]=='(') depth++;
+
+                else if(expr[i]==')')
+                {
+                    depth--;
+
+                    if(depth==0)
+                        break;
+                }
+
+                inside+=expr[i];
+
+                i++;
+            }
+
+            values.push(
+                sin(evaluate(inside))
+                );
+
+            i++;
+        }
+
+        else if(expr.mid(i,3)=="tan")
+        {
+            i+=4;
+
+            QString inside;
+
+            int depth=1;
+
+            while(i<expr.length() && depth>0)
+            {
+                if(expr[i]=='(') depth++;
+
+                else if(expr[i]==')')
+                {
+                    depth--;
+
+                    if(depth==0)
+                        break;
+                }
+
+                inside+=expr[i];
+
+                i++;
+            }
+
+            values.push(
+                sin(evaluate(inside))
+                );
+
+            i++;
+        }
+
+        else if(expr[i]==')')
+        {
+            while(!ops.empty() && ops.top()!='(')
+            {
+                double b=values.top();
+                values.pop();
+
+                double a=values.top();
+                values.pop();
+
+                QChar op=ops.top();
+                ops.pop();
+
+                values.push(applyOp(a,b,op));
+            }
+
+            ops.pop();
+
+            i++;
+        }
+
+        else
+        {
+            while(!ops.empty() &&
+                   precedence(ops.top())>=precedence(expr[i]))
+            {
+                double b=values.top();
+                values.pop();
+
+                double a=values.top();
+                values.pop();
+
+                QChar op=ops.top();
+                ops.pop();
+
+                values.push(applyOp(a,b,op));
+            }
+
+            ops.push(expr[i]);
+
+            i++;
+        }
+    }
+
+    while(!ops.empty())
+    {
+        double b=values.top();
+        values.pop();
+
+        double a=values.top();
+        values.pop();
+
+        QChar op=ops.top();
+        ops.pop();
+
+        values.push(applyOp(a,b,op));
+    }
+
+    return values.top();
+}
+
+void Calculator::kurungawalPressed()
+{
+    QString displayVal=ui->display->text();
+
+    if(displayVal=="0")
+        ui->display->setText("(");
+    else
+        ui->display->setText(displayVal+"(");
+}
+
+void Calculator::kurungakhirPressed()
+{
+    ui->display->setText(
+        ui->display->text()+")"
+        );
 }

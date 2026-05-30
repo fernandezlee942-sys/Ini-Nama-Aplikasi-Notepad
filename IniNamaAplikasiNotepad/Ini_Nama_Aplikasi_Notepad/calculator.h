@@ -17,6 +17,7 @@ public:
 
 private:
     Ui::Calculator *ui;
+    double evaluate(QString expr);
 
 private slots:
     void NumPressed();
@@ -28,6 +29,9 @@ private slots:
     void SinPressed();
     void CosPressed();
     void TanPressed();
+    void EPressed();
+    void kurungawalPressed();
+    void kurungakhirPressed();
 };
 
 #endif // CALCULATOR_H
