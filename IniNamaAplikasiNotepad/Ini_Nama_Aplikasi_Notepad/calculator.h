@@ -32,6 +32,7 @@ private slots:
     void EPressed();
     void kurungawalPressed();
     void kurungakhirPressed();
+    void DecimalPressed();
 };
 
 #endif // CALCULATOR_H

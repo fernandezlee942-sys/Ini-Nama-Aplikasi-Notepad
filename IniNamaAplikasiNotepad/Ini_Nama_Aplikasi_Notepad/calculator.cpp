@@ -64,6 +64,8 @@ Calculator::Calculator(QWidget *parent)
     connect(ui->kurungakhir,SIGNAL(released()),
             this,SLOT(kurungakhirPressed()));
 
+    connect(ui->koma,SIGNAL(released()),
+            this,SLOT(DecimalPressed()));
 }
 
 Calculator::~Calculator()
@@ -105,6 +107,15 @@ void Calculator::EqualButton()
     QString expr=ui->display->text();
 
     expr.replace("x","*");
+
+    if(expr=="e")
+        expr="2.718281828";
+
+    expr.replace("+e","+2.718281828");
+    expr.replace("-e","-2.718281828");
+    expr.replace("*e","*2.718281828");
+    expr.replace("/e","/2.718281828");
+    expr.replace("(e","(2.718281828");
 
     double result=evaluate(expr);
 
@@ -176,16 +187,13 @@ void Calculator::EPressed()
 {
     QString displayVal = ui->display->text();
 
-    // kalau display kosong/akhirnya angka
-    if(displayVal.isEmpty() ||
-        displayVal.back().isDigit())
+    if(displayVal=="0")
     {
-        ui->display->setText(displayVal + "e");
+        ui->display->setText("e");
     }
-
     else
     {
-        ui->display->setText(displayVal + QString::number(M_E));
+        ui->display->setText(displayVal+"e");
     }
 }
 
@@ -310,7 +318,7 @@ double Calculator::evaluate(QString expr)
             }
 
             values.push(
-                sin(evaluate(inside))
+                cos(evaluate(inside))
                 );
 
             i++;
@@ -342,7 +350,7 @@ double Calculator::evaluate(QString expr)
             }
 
             values.push(
-                sin(evaluate(inside))
+                tan(evaluate(inside))
                 );
 
             i++;
@@ -425,3 +433,29 @@ void Calculator::kurungakhirPressed()
         ui->display->text()+")"
         );
 }
+
+void Calculator::DecimalPressed()
+{
+    QString displayVal=ui->display->text();
+
+    int lastOperator=
+        std::max(
+            displayVal.lastIndexOf('+'),
+            std::max(
+                displayVal.lastIndexOf('-'),
+                std::max(
+                    displayVal.lastIndexOf('*'),
+                    displayVal.lastIndexOf('/')
+                    )
+                )
+            );
+
+    QString currentNumber=
+        displayVal.mid(lastOperator+1);
+
+    if(!currentNumber.contains('.'))
+    {
+        ui->display->setText(displayVal+".");
+    }
+}
+
