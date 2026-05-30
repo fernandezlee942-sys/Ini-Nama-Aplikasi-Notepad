@@ -237,7 +237,8 @@ double Calculator::evaluate(QString expr)
             expr[i].isDigit() ||
             expr[i]=='.' ||
             (expr[i]=='-' &&
-             (i==0 || expr[i-1]=='(' ||
+             (i==0 ||
+              expr[i-1]=='(' ||
               expr[i-1]=='+' ||
               expr[i-1]=='-' ||
               expr[i-1]=='*' ||
@@ -246,15 +247,43 @@ double Calculator::evaluate(QString expr)
         {
             QString num;
 
-            while(i<expr.length() &&
-                   (expr[i].isDigit() ||
-                    expr[i]=='.' ||
-                    expr[i]=='e' ||
-                    expr[i]=='E' ||
-                    expr[i]=='-'))
+            if(expr[i]=='-')
             {
-                num+=expr[i];
+                num+='-';
                 i++;
+            }
+
+            while(i<expr.length())
+            {
+                if(expr[i].isDigit() ||
+                    expr[i]=='.')
+                {
+                    num+=expr[i];
+                    i++;
+                }
+
+                else if(
+                    (expr[i]=='e' || expr[i]=='E')
+                    &&
+                    i+1<expr.length()
+                    )
+                {
+                    num+=expr[i];
+                    i++;
+
+                    if(i<expr.length() &&
+                        (expr[i]=='+' ||
+                         expr[i]=='-'))
+                    {
+                        num+=expr[i];
+                        i++;
+                    }
+                }
+
+                else
+                {
+                    break;
+                }
             }
 
             values.push(num.toDouble());
