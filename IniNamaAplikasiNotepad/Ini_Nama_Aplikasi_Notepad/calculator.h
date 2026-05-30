@@ -25,6 +25,9 @@ private slots:
     void ChangeNumber();
     void on_del_clicked();
     void on_c_clicked();
+    void SinPressed();
+    void CosPressed();
+    void TanPressed();
 };
 
 #endif // CALCULATOR_H

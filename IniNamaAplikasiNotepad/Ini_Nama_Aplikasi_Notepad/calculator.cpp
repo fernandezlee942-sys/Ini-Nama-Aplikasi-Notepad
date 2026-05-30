@@ -1,12 +1,16 @@
 #include "calculator.h"
 #include "ui_calculator.h"
 #include <QRegularExpression>
+#include <cmath>
 
 double calcVal = 0.0;
 bool bagiTrigger = false;
 bool kaliTrigger = false;
 bool tambahTrigger = false;
 bool kurangTrigger = false;
+bool sinTrigger = false;
+bool cosTrigger = false;
+bool tanTrigger = false;
 
 Calculator::Calculator(QWidget *parent)
     : QWidget(parent)
@@ -38,12 +42,17 @@ Calculator::Calculator(QWidget *parent)
     connect(ui->change, SIGNAL(released()), this,
             SLOT(ChangeNumber()));
 
-    connect(ui->del, SIGNAL(released()), this,
-            SLOT(on_del_clicked()));
-
     connect(ui->c, SIGNAL(released()), this,
             SLOT(on_c_clicked()));
 
+    connect(ui->sin, SIGNAL(released()), this,
+            SLOT(SinPressed()));
+
+    connect(ui->cos, SIGNAL(released()), this,
+            SLOT(CosPressed()));
+
+    connect(ui->tan, SIGNAL(released()), this,
+            SLOT(TanPressed()));
 
 }
 
@@ -52,18 +61,21 @@ Calculator::~Calculator()
     delete ui;
 }
 
-void Calculator::NumPressed(){
-    QPushButton *button = (QPushButton *)sender();
+void Calculator::NumPressed()
+{
+    QPushButton *button=(QPushButton*)sender();
+
     QString butval = button->text();
+
     QString displayVal = ui->display->text();
 
-    if((displayVal.toDouble() == 0) || displayVal.toDouble() == 0.0){
+    if(displayVal=="0")
+    {
         ui->display->setText(butval);
     }
-    else{
-        QString newVal = displayVal + butval;
-        double dblNewVal = newVal.toDouble();
-        ui->display->setText(QString::number(dblNewVal, 'g', 16));
+    else
+    {
+        ui->display->setText(displayVal + butval);
     }
 }
 
@@ -97,30 +109,81 @@ void Calculator::MathButtonPressed(){
     ui->display->setText("");
 }
 
-void Calculator::EqualButton(){
+void Calculator::EqualButton()
+{
     double solution = 0.0;
+
     QString displayVal = ui->display->text();
-    double dbldisplayval = displayVal.toDouble();
 
-    if (tambahTrigger || kurangTrigger || kaliTrigger || bagiTrigger){
-        if (tambahTrigger){
-            solution = calcVal + dbldisplayval;
-        }
+    // ===== TRIGONOMETRI =====
 
-        else if (kurangTrigger){
-            solution = calcVal - dbldisplayval;
-        }
+    if (sinTrigger)
+    {
+        QString numStr = displayVal;
+        numStr.remove("sin(");
 
-        else if (kaliTrigger){
-            solution = calcVal * dbldisplayval;
-        }
+        double value = numStr.toDouble();
 
-        else{
-            solution = calcVal / dbldisplayval;
+        solution = sin(value);
+
+        sinTrigger = false;
+    }
+
+    else if (cosTrigger)
+    {
+        QString numStr = displayVal;
+        numStr.remove("cos(");
+
+        double value = numStr.toDouble();
+
+        solution = cos(value);
+
+        cosTrigger = false;
+    }
+
+    else if (tanTrigger)
+    {
+        QString numStr = displayVal;
+        numStr.remove("tan(");
+
+        double value = numStr.toDouble();
+
+        solution = tan(value);
+
+        tanTrigger = false;
+    }
+
+    // ===== OPERATOR BIASA =====
+
+    else
+    {
+        double dbldisplayval = displayVal.toDouble();
+
+        if (tambahTrigger || kurangTrigger || kaliTrigger || bagiTrigger)
+        {
+            if (tambahTrigger)
+            {
+                solution = calcVal + dbldisplayval;
+            }
+
+            else if (kurangTrigger)
+            {
+                solution = calcVal - dbldisplayval;
+            }
+
+            else if (kaliTrigger)
+            {
+                solution = calcVal * dbldisplayval;
+            }
+
+            else
+            {
+                solution = calcVal / dbldisplayval;
+            }
         }
     }
 
-    ui ->display->setText(QString::number(solution));
+    ui->display->setText(QString::number(solution));
 }
 
 void Calculator::ChangeNumber(){
@@ -152,4 +215,31 @@ void Calculator::on_del_clicked()
 void Calculator::on_c_clicked()
 {
     ui->display->setText("0");
+}
+
+void Calculator::SinPressed()
+{
+    sinTrigger = true;
+    cosTrigger = false;
+    tanTrigger = false;
+
+    ui->display->setText("sin(");
+}
+
+void Calculator::CosPressed()
+{
+    cosTrigger = true;
+    sinTrigger = false;
+    tanTrigger = false;
+
+    ui->display->setText("cos(");
+}
+
+void Calculator::TanPressed()
+{
+    tanTrigger = true;
+    sinTrigger = false;
+    cosTrigger = false;
+
+    ui->display->setText("tan(");
 }
