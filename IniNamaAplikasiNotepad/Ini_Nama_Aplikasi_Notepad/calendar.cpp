@@ -233,8 +233,8 @@ void Calendar::updateCalendarTextEdit()
 {
     ui->textEdit->clear();
     QDate today = QDate::currentDate();
-
-    QString content = "DAFTAR TUGAS AKTIF\n";
+    QString content = "Tanggal Hari Ini: " + today.toString("dd-MM-yyyy") + "\n\n";
+    content += "DAFTAR TUGAS AKTIF\n";
     bool hasActive = false;
 
     for (const Task &task : std::as_const(m_taskList)) {

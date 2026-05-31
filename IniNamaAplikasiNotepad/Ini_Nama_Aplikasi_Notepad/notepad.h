@@ -76,6 +76,8 @@ private slots:
 
     void on_actionStatus_Bar_triggered();
 
+    void updateStatusBarData();
+
 private:
     Ui::Notepad *ui; // Pointer menuju UI (Pimpl Idiom / Bridge Pattern)
     QTextEdit* getActiveEditor();
@@ -84,6 +86,9 @@ private:
     bool isStatusBarActive = false; // Status awal = false (mati)
     bool isFindActive = false;      // Status fitur Find aktif/tidak
     QLabel *findStatusLabel = nullptr; // Widget label khusus untuk menampung info Find di kanan
+
+    // Variabel untuk melacak status pencarian teks terakhir
+    QString lastSearchText = "";
 
 // 2. Kondisional Deklarasi Variabel Musik (Wajib berada di dalam Class)
 #ifdef HAS_MULTIMEDIA

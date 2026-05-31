@@ -58,7 +58,13 @@ Notepad::Notepad(QWidget *parent):
     ekstrakMusicResource(":/Mp3/Mp3/lagu2.mp3", "10C_2.mp3");
     ekstrakMusicResource(":/Mp3/Mp3/lagu3.mp3", "SUMMER_TRIANGLE_2.mp3");
 
+    // Buat label penampung status Find secara permanen di pojok kanan status bar
+    if (this->statusBar()) {
+        findStatusLabel = new QLabel(this);
+        this->statusBar()->addPermanentWidget(findStatusLabel);
+    }
 
+    
     // 1. PENGGANTIAN SHORTCUT PASTE (SOLUSI UTAMA)
     // Jangan gunakan ui->actionPaste->setShortcut jika ingin membajak Ctrl+V dari QTextEdit
     QShortcut *pasteShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_V), this);
@@ -73,8 +79,28 @@ Notepad::Notepad(QWidget *parent):
     QShortcut *closeTabShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_W), this);
     connect(closeTabShortcut, &QShortcut::activated, this, &Notepad::on_shortcutCloseTab_triggered);
 
+    // 1. Ctrl + F untuk memicu dialog cari teks pertama kali
+    QShortcut *findShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_F), this);
+    findShortcut->setContext(Qt::WindowShortcut);
+    connect(findShortcut, &QShortcut::activated, this, &Notepad::on_actionFind_triggered);
+
+    // 2. F3 untuk Find Next (Cari kata berikutnya ke bawah)
+    QShortcut *findNextShortcut = new QShortcut(QKeySequence(Qt::Key_F3), this);
+    findNextShortcut->setContext(Qt::WindowShortcut);
+    connect(findNextShortcut, &QShortcut::activated, this, &Notepad::on_actionFind_Next_triggered);
+
+    // 3. Shift + F3 untuk Find Previous (Cari kata sebelumnya ke atas)
+    QShortcut *findPrevShortcut = new QShortcut(QKeySequence(Qt::SHIFT | Qt::Key_F3), this);
+    findPrevShortcut->setContext(Qt::WindowShortcut);
+    connect(findPrevShortcut, &QShortcut::activated, this, &Notepad::on_actionFind_Previous_triggered);
+
     // 3. Inisialisasi Tab Pertama Saat Aplikasi Dibuka
     on_actionNew_triggered();
+
+    // TAMBAHKAN DUA BARIS INI DI PALING BAWAH CONSTRUCTOR:
+    connect(ui->tabWidget, &QTabWidget::currentChanged, this, &Notepad::updateStatusBarData);
+    this->statusBar()->setSizeGripEnabled(true);
+
 }
 
 void Notepad::on_tabWidget_currentChanged(int index)
@@ -236,9 +262,9 @@ void Notepad::on_actionNew_triggered()
     QTextEdit *newEditor = new QTextEdit(this);
     newEditor->setText(QString());
 
-    // Tambahkan ini di dalam Notepad::on_actionNew_triggered() sebelum/sesudah installEventFilter
-    connect(newEditor, &QTextEdit::cursorPositionChanged, this, &Notepad::on_actionStatus_Bar_triggered);
-    connect(newEditor, &QTextEdit::textChanged, this, &Notepad::on_actionStatus_Bar_triggered);
+    // Ubah menjadi updateStatusBarData agar tidak ter-trigger toggle On/Off saat mengetik/Enter
+    connect(newEditor, &QTextEdit::cursorPositionChanged, this, &Notepad::updateStatusBarData);
+    connect(newEditor, &QTextEdit::textChanged, this, &Notepad::updateStatusBarData);
 
     int tabIndex = ui->tabWidget->addTab(newEditor, "Untitled");
 
@@ -258,19 +284,27 @@ void Notepad::on_actionNew_triggered()
 
 bool Notepad::eventFilter(QObject *obj, QEvent *event)
 {
-    // Jika event yang terjadi adalah tombol keyboard ditekan di dalam QTextEdit
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
 
-        // Cek apakah yang ditekan adalah Ctrl + V
+        // 1. Bajak Event Tombol ESC (Escape) untuk mematikan status Find
+        if (keyEvent->key() == Qt::Key_Escape) {
+            if (isFindActive) {
+                isFindActive = false; // Matikan status pencarian
+                if (findStatusLabel) {
+                    findStatusLabel->clear(); // Bersihkan teks label find di pojok kanan status bar
+                }
+                return true; // Cegah event ESC agar tidak merusak fokus elemen lain
+            }
+        }
+
+        // 2. Cek apakah yang ditekan adalah Ctrl + V (Shorcut Paste Gambar Sakti kelompokmu)
         if (keyEvent->modifiers() == Qt::ControlModifier && keyEvent->key() == Qt::Key_V) {
-            // Jalankan fungsi paste gambar sakti milikmu secara paksa!
             on_actionPaste_triggered();
-            return true; // "true" artinya kita bajak event-nya, QTextEdit bawaan gak bakal dapet
+            return true;
         }
     }
 
-    // Kembalikan ke fungsi normal untuk tombol-tombol lainnya (A, B, C, Enter, dll)
     return QMainWindow::eventFilter(obj, event);
 }
 
@@ -777,9 +811,18 @@ void Notepad::on_actionPlaylist_1_triggered()
         // 4. Putar Musik Sakti!
         mediaPlayer->play();
 
-        // Beri informasi di status bar agar user tahu musik sedang berputar
+        // =========================================================================
+        // PERBAIKAN DI SINI:
+        // Jaga status bar kiri tetap aktif, lempar info lagu ke kanan (findStatusLabel)
+        // =========================================================================
         if (this->statusBar()) {
-            this->statusBar()->showMessage("Currently playing: " + QFileInfo(fileAudio).fileName());
+            // Paksa status bar kiri untuk terus menampilkan Ln, Col | Words
+            updateStatusBarData();
+
+            // Tampilkan nama file lagu di pojok kanan secara aman tanpa memicu bug hilang sendiri
+            if (findStatusLabel) {
+                findStatusLabel->setText("[Playing: " + QFileInfo(fileAudio).fileName() + "]");
+            }
         }
     }
 #else
@@ -793,16 +836,21 @@ void Notepad::on_actionStop_Music_triggered()
     if (mediaPlayer) {
         mediaPlayer->stop();
 
-        // Opsional: Bersihkan tulisan di status bar saat musik dihentikan
+        // PERBAIKAN: Jaga status bar kiri tetap aktif, lempar info musik ke kanan
         if (this->statusBar()) {
-            this->statusBar()->showMessage("Musik dihentikan", 3000); // Teks hilang setelah 3 detik
+            // 1. Paksa status bar kiri untuk terus menampilkan Ln, Col | Words
+            updateStatusBarData();
+
+            // 2. Tampilkan info stop musik di pojok kanan secara aman tanpa timer penghancur
+            if (findStatusLabel) {
+                findStatusLabel->setText("[Musik dihentikan]");
+            }
         }
     }
 #else
     QMessageBox::information(this, "Fitur Nonaktif", "Modul Multimedia tidak diaktifkan di build ini.");
 #endif
 }
-
 
 
 
@@ -868,24 +916,23 @@ void Notepad::on_actionFind_triggered()
 
     lastSearchWord = word;
     totalSearchMatches = countMatches(activeEditor, word);
+    isFindActive = true; // Tandai fitur Find sedang aktif/menyala secara permanen
 
     // Mulai pencarian dari awal dokumen (posisi 0)
     QTextCursor cursor = activeEditor->textCursor();
     cursor.setPosition(0);
     activeEditor->setTextCursor(cursor);
 
-    // PERBAIKAN: Jika ingin Case Insensitive (tidak sensitif huruf besar/kecil), cukup kosongkan parameter kedua.
-    // Atau jika ingin eksplisit: activeEditor->find(word, QTextDocument::FindFlags())
     if (activeEditor->find(word)) {
         currentSearchIndex = 1;
-        if (this->statusBar()) {
-            this->statusBar()->showMessage(QString("Found: %1 out of %2 words").arg(currentSearchIndex).arg(totalSearchMatches));
+        if (findStatusLabel) {
+            findStatusLabel->setText(QString("[Find: %1/%2]").arg(currentSearchIndex).arg(totalSearchMatches));
         }
     } else {
         currentSearchIndex = 0;
         totalSearchMatches = 0;
-        if (this->statusBar()) {
-            this->statusBar()->showMessage("Word not found!", 3000);
+        if (findStatusLabel) {
+            findStatusLabel->setText("[Word not found!]");
         }
     }
 }
@@ -896,15 +943,14 @@ void Notepad::on_actionFind_Next_triggered()
     QTextEdit *activeEditor = getActiveEditor();
     if (!activeEditor || lastSearchWord.isEmpty()) return;
 
-    // Jika total pencarian ternyata berubah (teks diedit), hitung ulang secara dinamis
     totalSearchMatches = countMatches(activeEditor, lastSearchWord);
+    isFindActive = true; // Jaga agar status Find tetap menyala
 
-    // Cari kata berikutnya
     if (activeEditor->find(lastSearchWord)) {
         currentSearchIndex++;
         if (currentSearchIndex > totalSearchMatches) currentSearchIndex = totalSearchMatches;
     } else {
-        // Jika sudah mentok bawah, putar kembali ke kata paling pertama di atas dokumen
+        // Jika mentok bawah, putar kembali ke kata paling pertama di atas dokumen
         QTextCursor cursor = activeEditor->textCursor();
         cursor.setPosition(0);
         activeEditor->setTextCursor(cursor);
@@ -914,8 +960,8 @@ void Notepad::on_actionFind_Next_triggered()
         }
     }
 
-    if (this->statusBar() && totalSearchMatches > 0) {
-        this->statusBar()->showMessage(QString("Found: %1 out of %2 words").arg(currentSearchIndex).arg(totalSearchMatches));
+    if (findStatusLabel && totalSearchMatches > 0) {
+        findStatusLabel->setText(QString("[Find: %1/%2]").arg(currentSearchIndex).arg(totalSearchMatches));
     }
 }
 
@@ -926,13 +972,13 @@ void Notepad::on_actionFind_Previous_triggered()
     if (!activeEditor || lastSearchWord.isEmpty()) return;
 
     totalSearchMatches = countMatches(activeEditor, lastSearchWord);
+    isFindActive = true; // Jaga agar status Find tetap menyala
 
-    // Gunakan flag QTextDocument::FindBackward untuk mencari ke arah atas (mundur)
     if (activeEditor->find(lastSearchWord, QTextDocument::FindBackward)) {
         currentSearchIndex--;
         if (currentSearchIndex < 1) currentSearchIndex = 1;
     } else {
-        // Jika sudah mentok paling atas (index == 1 atau 0), lompat ke kata terakhir di paling bawah dokumen
+        // Jika mentok paling atas, lompat ke kata terakhir di paling bawah dokumen
         QTextCursor cursor = activeEditor->textCursor();
         cursor.movePosition(QTextCursor::End);
         activeEditor->setTextCursor(cursor);
@@ -942,39 +988,57 @@ void Notepad::on_actionFind_Previous_triggered()
         }
     }
 
-    if (this->statusBar() && totalSearchMatches > 0) {
-        this->statusBar()->showMessage(QString("Found: %1 out of %2 words").arg(currentSearchIndex).arg(totalSearchMatches));
+    if (findStatusLabel && totalSearchMatches > 0) {
+        findStatusLabel->setText(QString("[Find: %1/%2]").arg(currentSearchIndex).arg(totalSearchMatches));
     }
 }
 
 // 5. STATUS BAR: Menampilkan Line (ln), Column (col), dan Jumlah Kata (words)
 void Notepad::on_actionStatus_Bar_triggered()
 {
+    // 1. Tombol menu diklik -> Balikkan status saklar (Hanya terjadi saat tombol menu ditekan)
+    isStatusBarActive = !isStatusBarActive;
+
+    if (!isStatusBarActive) {
+        if (this->statusBar()) {
+            this->statusBar()->clearMessage(); // Hilang permanen
+        }
+        return;
+    }
+
+    // 2. Jika saklar ON, paksa update datanya sekali di awal
+    updateStatusBarData();
+}
+
+void Notepad::updateStatusBarData()
+{
+    // Jika saklar status bar MATI, bersihkan teks kiri dan keluar
+    if (!isStatusBarActive) {
+        if (this->statusBar()) this->statusBar()->clearMessage();
+        return;
+    }
+
     QTextEdit *activeEditor = getActiveEditor();
     if (!activeEditor) {
         if (this->statusBar()) this->statusBar()->clearMessage();
         return;
     }
 
-    // A. MENGHITUNG BARIS (LN) & KOLOM (COL) VIA KURSOR AKTIF
+    // A. MENGHITUNG BARIS (LN) & KOLOM (COL)
     QTextCursor cursor = activeEditor->textCursor();
-    int ln = cursor.blockNumber() + 1; // blockNumber dimulai dari 0, jadi ditambah 1
-    int col = cursor.columnNumber() + 1; // columnNumber dimulai dari 0, jadi ditambah 1
+    int ln = cursor.blockNumber() + 1;
+    int col = cursor.columnNumber() + 1;
 
-    // B. ALGORITMA MENGHITUNG JUMLAH KATA (Pengecekan spasi " " dan karakter valid)
+    // B. ALGORITMA MENGHITUNG JUMLAH KATA
     QString text = activeEditor->toPlainText();
     int wordCount = 0;
     bool inWord = false;
 
-    // Loop menyisir teks satu per satu karakter untuk menghitung kata secara presisi
     for (int i = 0; i < text.length(); ++i) {
         QChar ch = text.at(i);
-
-        // Dianggap spasi/pemisah kata jika berupa space, tab, atau enter baru
         if (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r') {
             inWord = false;
         } else {
-            // Jika menemukan karakter huruf/angka pertama kali setelah spasi
             if (!inWord) {
                 wordCount++;
                 inWord = true;
@@ -982,12 +1046,13 @@ void Notepad::on_actionStatus_Bar_triggered()
         }
     }
 
-    // C. CETAK HASIL STATISTIK KE STATUS BAR UTAMA APLIKASI
+    // C. CETAK DAN KUNCI PAKSA KE STATUS BAR KIRI
     if (this->statusBar()) {
-        QString infoStatus = QString("Ln %1, Col %2 | Words: %3")
-        .arg(ln)
-            .arg(col)
-            .arg(wordCount);
-        this->statusBar()->showMessage(infoStatus);
+        QString infoStatus = QString("Ln %1, Col %2 | Words: %3").arg(ln).arg(col).arg(wordCount);
+
+        // Tameng Utama: Jika teks kiri kosong atau terhapus oleh windows state, paksa tulis ulang!
+        if (this->statusBar()->currentMessage() != infoStatus) {
+            this->statusBar()->showMessage(infoStatus);
+        }
     }
 }
