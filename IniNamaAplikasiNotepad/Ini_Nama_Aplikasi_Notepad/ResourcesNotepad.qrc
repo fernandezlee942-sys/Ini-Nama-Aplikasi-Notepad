@@ -37,4 +37,10 @@
         <file>Icons/Save_as_W.png</file>
         <file>Icons/Trash_W.png</file>
     </qresource>
+    <qresource prefix="/Mp3">
+        <file>Mp3/2_23_AM_2.mp3</file>
+        <file>Mp3/10C_2.mp3</file>
+        <file>Mp3/Ringtone.mp3</file>
+        <file>Mp3/SUMMER_TRIANGLE_2.mp3</file>
+    </qresource>
 </RCC>

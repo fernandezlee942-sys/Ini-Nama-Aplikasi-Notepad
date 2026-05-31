@@ -1,6 +1,8 @@
 #include "timer.h"
 #include "ui_timer.h"
 #include <QMessageBox>
+#include <QFile>
+#include <QDir>
 
 Timer::Timer(QWidget *parent)
     : QWidget(parent)
@@ -14,6 +16,12 @@ Timer::Timer(QWidget *parent)
     , alarmSet(false)
 {
     ui->setupUi(this);
+
+#ifdef HAS_MULTIMEDIA
+    mediaPlayer = new QMediaPlayer(this);
+    audioOutput = new QAudioOutput(this);
+    mediaPlayer->setAudioOutput(audioOutput);
+#endif
 
     // Stopwatch
     timerStopwatch = new QTimer(this);
@@ -30,7 +38,7 @@ Timer::Timer(QWidget *parent)
 
     // Alarm
     timerAlarm = new QTimer(this);
-    timerAlarm->setInterval(1000);
+    timerAlarm->setInterval(500);
     connect(timerAlarm, &QTimer::timeout,
             this, &Timer::checkAlarm);
 }
@@ -101,7 +109,11 @@ void Timer::updateTimer()
     {
         timerCountdown->stop();
         timerRunning = false;
+        putarRingtoneSakti();
         QMessageBox::information(this, "Timer", "Waktu habis!");
+#ifdef HAS_MULTIMEDIA
+        mediaPlayer->stop();
+#endif
         return;
     }
 
@@ -169,6 +181,9 @@ void Timer::on_btnStopAlarm_clicked()
     timerAlarm->stop();
     alarmSet = false;
     ui->labelAlarmStatus->setText("Alarm belum diset");
+#ifdef HAS_MULTIMEDIA
+    mediaPlayer->stop();
+#endif
 }
 
 void Timer::checkAlarm()
@@ -178,11 +193,44 @@ void Timer::checkAlarm()
     QTime now = QTime::currentTime();
     if (now.hour() == alarmTime.hour() &&
         now.minute() == alarmTime.minute() &&
-        now.second() == alarmTime.second())
+        now.second() >= alarmTime.second())
     {
         timerAlarm->stop();
         alarmSet = false;
         ui->labelAlarmStatus->setText("Alarm belum diset");
-        QMessageBox::information(this, "Alarm", "Alarm berbunyi!");
+
+        // 1. Hidupkan musik alarm
+        putarRingtoneSakti();
+
+        // 2. Berikan jeda super singkat agar thread audio stabil sebelum dikunci QMessageBox
+        QTimer::singleShot(100, this, [this]() {
+            QMessageBox::information(this, "Alarm", "Alarm berbunyi!");
+#ifdef HAS_MULTIMEDIA
+            mediaPlayer->stop();
+#endif
+        });
     }
+}
+
+void Timer::putarRingtoneSakti()
+{
+#ifdef HAS_MULTIMEDIA
+    QString pathRingtone = ":/Mp3/Mp3/Ringtone.mp3";
+
+    if (QFile::exists(pathRingtone)) {
+        // SOLUSI TERBAIK QT 6: Buka file qrc langsung sebagai pencadangan data streaming biner
+        QFile *audioFile = new QFile(pathRingtone, this);
+        if (audioFile->open(QIODevice::ReadOnly)) {
+            // Berikan device biner langsung ke MediaPlayer tanpa perlu copy-copy file lokal lagi
+            mediaPlayer->setSourceDevice(audioFile, QUrl(pathRingtone));
+        } else {
+            // Fallback jika gagal open device
+            mediaPlayer->setSource(QUrl(pathRingtone));
+        }
+
+        mediaPlayer->setLoops(QMediaPlayer::Infinite);
+        audioOutput->setVolume(0.7);
+        mediaPlayer->play();
+    }
+#endif
 }

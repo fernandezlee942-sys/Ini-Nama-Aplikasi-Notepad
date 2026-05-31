@@ -1,8 +1,13 @@
 #include "calculator.h"
 #include "ui_calculator.h"
 #include <QRegularExpression>
+#include <QKeyEvent>
 #include <stack>
 #include <cmath>
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 double calcVal = 0.0;
 bool bagiTrigger = false;
@@ -27,7 +32,7 @@ Calculator::Calculator(QWidget *parent)
         numButtons[i] = Calculator::findChild<QPushButton *>(butName);
         connect(numButtons[i], SIGNAL(released()), this,
                 SLOT(NumPressed()));
-}
+    }
     connect(ui->tambah, SIGNAL(released()), this,
             SLOT(MathButtonPressed()));
     connect(ui->kurang, SIGNAL(released()), this,
@@ -71,6 +76,52 @@ Calculator::Calculator(QWidget *parent)
 Calculator::~Calculator()
 {
     delete ui;
+}
+
+void Calculator::keyPressEvent(QKeyEvent *event)
+{
+    QString currentText = ui->display->text();
+
+    if (event->key() >= Qt::Key_0 && event->key() <= Qt::Key_9) {
+        if (currentText == "0") {
+            ui->display->setText(event->text());
+        } else {
+            ui->display->setText(currentText + event->text());
+        }
+    }
+    else if (event->key() == Qt::Key_Plus) {
+        ui->display->setText(currentText + "+");
+    }
+    else if (event->key() == Qt::Key_Minus) {
+        ui->display->setText(currentText + "-");
+    }
+    else if (event->key() == Qt::Key_Asterisk) {
+        ui->display->setText(currentText + "x");
+    }
+    else if (event->key() == Qt::Key_Slash) {
+        ui->display->setText(currentText + "/");
+    }
+    else if (event->key() == Qt::Key_Period || event->key() == Qt::Key_Comma) {
+        DecimalPressed();
+    }
+    else if (event->text() == "(") {
+        kurungawalPressed();
+    }
+    else if (event->text() == ")") {
+        kurungakhirPressed();
+    }
+    else if (event->key() == Qt::Key_Enter || event->key() == Qt::Key_Return || event->key() == Qt::Key_Equal) {
+        EqualButton();
+    }
+    else if (event->key() == Qt::Key_Backspace) {
+        on_del_clicked();
+    }
+    else if (event->key() == Qt::Key_Escape) {
+        on_c_clicked();
+    }
+    else {
+        QWidget::keyPressEvent(event);
+    }
 }
 
 void Calculator::NumPressed()
@@ -139,7 +190,19 @@ void Calculator::on_del_clicked()
 
     if(displayVal.length() > 1)
     {
-        displayVal.chop(1);
+        if (displayVal.endsWith("sin(") || displayVal.endsWith("cos(") || displayVal.endsWith("tan("))
+        {
+            displayVal.chop(4);
+        }
+        else
+        {
+            displayVal.chop(1);
+        }
+
+        if (displayVal.isEmpty()) {
+            displayVal = "0";
+        }
+
         ui->display->setText(displayVal);
     }
     else
@@ -157,30 +220,48 @@ void Calculator::SinPressed()
 {
     QString displayVal=ui->display->text();
 
-    if(displayVal=="0")
+    if(displayVal=="0") {
         ui->display->setText("sin(");
-    else
-        ui->display->setText(displayVal+"sin(");
+    } else {
+        QChar lastChar = displayVal.at(displayVal.length() - 1);
+        if(lastChar.isDigit() || lastChar == ')' || lastChar == 'e') {
+            ui->display->setText(displayVal + "xsin(");
+        } else {
+            ui->display->setText(displayVal + "sin(");
+        }
+    }
 }
 
 void Calculator::CosPressed()
 {
     QString displayVal=ui->display->text();
 
-    if(displayVal=="0")
+    if(displayVal=="0") {
         ui->display->setText("cos(");
-    else
-        ui->display->setText(displayVal+"cos(");
+    } else {
+        QChar lastChar = displayVal.at(displayVal.length() - 1);
+        if(lastChar.isDigit() || lastChar == ')' || lastChar == 'e') {
+            ui->display->setText(displayVal + "xcos(");
+        } else {
+            ui->display->setText(displayVal + "cos(");
+        }
+    }
 }
 
 void Calculator::TanPressed()
 {
     QString displayVal=ui->display->text();
 
-    if(displayVal=="0")
+    if(displayVal=="0") {
         ui->display->setText("tan(");
-    else
-        ui->display->setText(displayVal+"tan(");
+    } else {
+        QChar lastChar = displayVal.at(displayVal.length() - 1);
+        if(lastChar.isDigit() || lastChar == ')' || lastChar == 'e') {
+            ui->display->setText(displayVal + "xtan(");
+        } else {
+            ui->display->setText(displayVal + "tan(");
+        }
+    }
 }
 
 void Calculator::EPressed()
@@ -314,9 +395,9 @@ double Calculator::evaluate(QString expr)
                 i++;
             }
 
-            values.push(
-                sin(evaluate(inside))
-                );
+            double derajat = evaluate(inside);
+            double radian = derajat * (M_PI / 180.0);
+            values.push(sin(radian));
 
             i++;
         }
@@ -346,9 +427,9 @@ double Calculator::evaluate(QString expr)
                 i++;
             }
 
-            values.push(
-                cos(evaluate(inside))
-                );
+            double derajat = evaluate(inside);
+            double radian = derajat * (M_PI / 180.0);
+            values.push(cos(radian));
 
             i++;
         }
@@ -378,9 +459,9 @@ double Calculator::evaluate(QString expr)
                 i++;
             }
 
-            values.push(
-                tan(evaluate(inside))
-                );
+            double derajat = evaluate(inside);
+            double radian = derajat * (M_PI / 180.0);
+            values.push(tan(radian));
 
             i++;
         }
@@ -487,4 +568,3 @@ void Calculator::DecimalPressed()
         ui->display->setText(displayVal+".");
     }
 }
-

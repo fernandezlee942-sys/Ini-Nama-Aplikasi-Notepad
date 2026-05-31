@@ -4,6 +4,11 @@
 #include <QTimer>
 #include <QTime>
 
+#ifdef HAS_MULTIMEDIA
+#include <QMediaPlayer>
+#include <QAudioOutput>
+#endif
+
 namespace Ui {
 class Timer;
 }
@@ -55,6 +60,13 @@ private:
     QTimer *timerAlarm;
     QTime alarmTime;
     bool alarmSet;
+
+#ifdef HAS_MULTIMEDIA
+    QMediaPlayer *mediaPlayer;
+    QAudioOutput *audioOutput;
+#endif
+
+    void putarRingtoneSakti();
 };
 
 #endif // TIMER_H

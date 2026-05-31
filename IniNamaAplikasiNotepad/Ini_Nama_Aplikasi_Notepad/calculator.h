@@ -33,6 +33,7 @@ private slots:
     void kurungawalPressed();
     void kurungakhirPressed();
     void DecimalPressed();
+    void keyPressEvent(QKeyEvent *event);
 };
 
 #endif // CALCULATOR_H
