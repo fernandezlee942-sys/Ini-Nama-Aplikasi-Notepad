@@ -30,7 +30,11 @@
 #include <QRegularExpressionMatch>
 
 #include <QDesktopServices>
+#include <QStatusBar>
+#include <QTextBlock>
 
+#include<QLineEdit>
+#include<QInputDialog>
 
 // if you see smtg like label->show(), do not be scared of it cos it just means tht the object label is a pointer, most of the time here we use pointer ask gpt why
 
@@ -43,13 +47,17 @@ Notepad::Notepad(QWidget *parent):
 {
     ui->setupUi(this);
 
-
     // DI DALAM CONSTRUCTOR Notepad::Notepad
     #ifdef HAS_MULTIMEDIA
         mediaPlayer = new QMediaPlayer(this);
         audioOutput = new QAudioOutput(this);
         mediaPlayer->setAudioOutput(audioOutput);
     #endif
+
+    ekstrakMusicResource(":/Mp3/Mp3/lagu1.mp3", "2_23_AM_2.mp3");
+    ekstrakMusicResource(":/Mp3/Mp3/lagu2.mp3", "10C_2.mp3");
+    ekstrakMusicResource(":/Mp3/Mp3/lagu3.mp3", "SUMMER_TRIANGLE_2.mp3");
+
 
     // 1. PENGGANTIAN SHORTCUT PASTE (SOLUSI UTAMA)
     // Jangan gunakan ui->actionPaste->setShortcut jika ingin membajak Ctrl+V dari QTextEdit
@@ -223,8 +231,14 @@ Notepad::~Notepad()
 
 void Notepad::on_actionNew_triggered()
 {
+
+
     QTextEdit *newEditor = new QTextEdit(this);
     newEditor->setText(QString());
+
+    // Tambahkan ini di dalam Notepad::on_actionNew_triggered() sebelum/sesudah installEventFilter
+    connect(newEditor, &QTextEdit::cursorPositionChanged, this, &Notepad::on_actionStatus_Bar_triggered);
+    connect(newEditor, &QTextEdit::textChanged, this, &Notepad::on_actionStatus_Bar_triggered);
 
     int tabIndex = ui->tabWidget->addTab(newEditor, "Untitled");
 
@@ -755,7 +769,6 @@ void Notepad::on_actionPlaylist_1_triggered()
         // Atur sumber lagu ke media player menggunakan QUrl lokal
         mediaPlayer->setSource(QUrl::fromLocalFile(fileAudio));
 
-        // 🔥 TAMBAHAN BARU: Set player agar mengulang musik tanpa batas (Looping)
         mediaPlayer->setLoops(QMediaPlayer::Infinite);
 
         // Atur volume suara default (rentang nilai dari 0.0 sampai 1.0)
@@ -788,4 +801,193 @@ void Notepad::on_actionStop_Music_triggered()
 #else
     QMessageBox::information(this, "Fitur Nonaktif", "Modul Multimedia tidak diaktifkan di build ini.");
 #endif
+}
+
+
+
+
+
+void Notepad::ekstrakMusicResource(const QString &resourcePath, const QString &targetFileName)
+{
+    QString targetFolder = "C:/Ini_Nama_Aplikasi_Notepad/Musics/";
+    QString fullTargetPath = targetFolder + targetFileName;
+
+    // 1. Pastikan folder tujuan sudah terbuat
+    QDir dir(targetFolder);
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+
+    // 2. Cek apakah file mp3 sudah ada di folder C: tersebut
+    // Jika belum ada, lakukan proses copy dari resource internal (.qrc)
+    if (!QFile::exists(fullTargetPath)) {
+        if (QFile::exists(resourcePath)) {
+            QFile::copy(resourcePath, fullTargetPath);
+
+            // Opsional: Hilangkan sifat Read-Only agar file bisa dimodifikasi oleh sistem jika diperlukan
+            QFile::setPermissions(fullTargetPath, QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ReadUser | QFileDevice::WriteUser);
+        }
+    }
+}
+
+// 1. CLOSE TAB: Berperan persis seperti shortcut Ctrl + W
+void Notepad::on_actionClose_Tab_triggered()
+{
+    on_shortcutCloseTab_triggered();
+}
+
+// Variabel global internal khusus diletakkan di luar fungsi (di atas on_actionFind_triggered)
+// untuk mencatat riwayat kata yang dicari dan indeksnya
+static QString lastSearchWord = "";
+static int currentSearchIndex = 0;
+static int totalSearchMatches = 0;
+
+// Helper function untuk menghitung total kata yang cocok di dalam dokumen
+int countMatches(QTextEdit* editor, QString word) {
+    if (word.isEmpty() || !editor) return 0;
+    int count = 0;
+    QString text = editor->toPlainText();
+    int pos = text.indexOf(word, 0, Qt::CaseInsensitive);
+    while (pos != -1) {
+        count++;
+        pos = text.indexOf(word, pos + word.length(), Qt::CaseInsensitive);
+    }
+    return count;
+}
+
+// 2. FIND: Selalu mencari kata pertama yang ditemukan dari atas dokumen
+void Notepad::on_actionFind_triggered()
+{
+    QTextEdit *activeEditor = getActiveEditor();
+    if (!activeEditor) return;
+
+    bool ok;
+    QString word = QInputDialog::getText(this, "Find Word", "Masukkan kata yang dicari:", QLineEdit::Normal, lastSearchWord, &ok);
+
+    if (!ok || word.isEmpty()) return;
+
+    lastSearchWord = word;
+    totalSearchMatches = countMatches(activeEditor, word);
+
+    // Mulai pencarian dari awal dokumen (posisi 0)
+    QTextCursor cursor = activeEditor->textCursor();
+    cursor.setPosition(0);
+    activeEditor->setTextCursor(cursor);
+
+    // PERBAIKAN: Jika ingin Case Insensitive (tidak sensitif huruf besar/kecil), cukup kosongkan parameter kedua.
+    // Atau jika ingin eksplisit: activeEditor->find(word, QTextDocument::FindFlags())
+    if (activeEditor->find(word)) {
+        currentSearchIndex = 1;
+        if (this->statusBar()) {
+            this->statusBar()->showMessage(QString("Found: %1 out of %2 words").arg(currentSearchIndex).arg(totalSearchMatches));
+        }
+    } else {
+        currentSearchIndex = 0;
+        totalSearchMatches = 0;
+        if (this->statusBar()) {
+            this->statusBar()->showMessage("Word not found!", 3000);
+        }
+    }
+}
+
+// 3. FIND NEXT: Mencari kata selanjutnya ke arah bawah dokumen
+void Notepad::on_actionFind_Next_triggered()
+{
+    QTextEdit *activeEditor = getActiveEditor();
+    if (!activeEditor || lastSearchWord.isEmpty()) return;
+
+    // Jika total pencarian ternyata berubah (teks diedit), hitung ulang secara dinamis
+    totalSearchMatches = countMatches(activeEditor, lastSearchWord);
+
+    // Cari kata berikutnya
+    if (activeEditor->find(lastSearchWord)) {
+        currentSearchIndex++;
+        if (currentSearchIndex > totalSearchMatches) currentSearchIndex = totalSearchMatches;
+    } else {
+        // Jika sudah mentok bawah, putar kembali ke kata paling pertama di atas dokumen
+        QTextCursor cursor = activeEditor->textCursor();
+        cursor.setPosition(0);
+        activeEditor->setTextCursor(cursor);
+
+        if (activeEditor->find(lastSearchWord)) {
+            currentSearchIndex = 1;
+        }
+    }
+
+    if (this->statusBar() && totalSearchMatches > 0) {
+        this->statusBar()->showMessage(QString("Found: %1 out of %2 words").arg(currentSearchIndex).arg(totalSearchMatches));
+    }
+}
+
+// 4. FIND PREVIOUS: Mencari kata ke arah atas dokumen (mundur)
+void Notepad::on_actionFind_Previous_triggered()
+{
+    QTextEdit *activeEditor = getActiveEditor();
+    if (!activeEditor || lastSearchWord.isEmpty()) return;
+
+    totalSearchMatches = countMatches(activeEditor, lastSearchWord);
+
+    // Gunakan flag QTextDocument::FindBackward untuk mencari ke arah atas (mundur)
+    if (activeEditor->find(lastSearchWord, QTextDocument::FindBackward)) {
+        currentSearchIndex--;
+        if (currentSearchIndex < 1) currentSearchIndex = 1;
+    } else {
+        // Jika sudah mentok paling atas (index == 1 atau 0), lompat ke kata terakhir di paling bawah dokumen
+        QTextCursor cursor = activeEditor->textCursor();
+        cursor.movePosition(QTextCursor::End);
+        activeEditor->setTextCursor(cursor);
+
+        if (activeEditor->find(lastSearchWord, QTextDocument::FindBackward)) {
+            currentSearchIndex = totalSearchMatches;
+        }
+    }
+
+    if (this->statusBar() && totalSearchMatches > 0) {
+        this->statusBar()->showMessage(QString("Found: %1 out of %2 words").arg(currentSearchIndex).arg(totalSearchMatches));
+    }
+}
+
+// 5. STATUS BAR: Menampilkan Line (ln), Column (col), dan Jumlah Kata (words)
+void Notepad::on_actionStatus_Bar_triggered()
+{
+    QTextEdit *activeEditor = getActiveEditor();
+    if (!activeEditor) {
+        if (this->statusBar()) this->statusBar()->clearMessage();
+        return;
+    }
+
+    // A. MENGHITUNG BARIS (LN) & KOLOM (COL) VIA KURSOR AKTIF
+    QTextCursor cursor = activeEditor->textCursor();
+    int ln = cursor.blockNumber() + 1; // blockNumber dimulai dari 0, jadi ditambah 1
+    int col = cursor.columnNumber() + 1; // columnNumber dimulai dari 0, jadi ditambah 1
+
+    // B. ALGORITMA MENGHITUNG JUMLAH KATA (Pengecekan spasi " " dan karakter valid)
+    QString text = activeEditor->toPlainText();
+    int wordCount = 0;
+    bool inWord = false;
+
+    // Loop menyisir teks satu per satu karakter untuk menghitung kata secara presisi
+    for (int i = 0; i < text.length(); ++i) {
+        QChar ch = text.at(i);
+
+        // Dianggap spasi/pemisah kata jika berupa space, tab, atau enter baru
+        if (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r') {
+            inWord = false;
+        } else {
+            // Jika menemukan karakter huruf/angka pertama kali setelah spasi
+            if (!inWord) {
+                wordCount++;
+                inWord = true;
+            }
+        }
+    }
+
+    // C. CETAK HASIL STATISTIK KE STATUS BAR UTAMA APLIKASI
+    if (this->statusBar()) {
+        QString infoStatus = QString("Ln %1, Col %2 | Words: %3")
+        .arg(ln)
+            .arg(col)
+            .arg(wordCount);
+        this->statusBar()->showMessage(infoStatus);
+    }
 }

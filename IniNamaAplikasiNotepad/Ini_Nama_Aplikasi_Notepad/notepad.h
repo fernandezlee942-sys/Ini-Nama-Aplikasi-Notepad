@@ -66,11 +66,26 @@ private slots:
 
     void on_actionStop_Music_triggered();
 
+    void on_actionClose_Tab_triggered();
+
+    void on_actionFind_triggered();
+
+    void on_actionFind_Next_triggered();
+
+    void on_actionFind_Previous_triggered();
+
+    void on_actionStatus_Bar_triggered();
+
 private:
     Ui::Notepad *ui; // Pointer menuju UI (Pimpl Idiom / Bridge Pattern)
     QTextEdit* getActiveEditor();
+    void ekstrakMusicResource(const QString &resourcePath, const QString &targetFileName);
 
-    // 2. Kondisional Deklarasi Variabel Musik (Wajib berada di dalam Class)
+    bool isStatusBarActive = false; // Status awal = false (mati)
+    bool isFindActive = false;      // Status fitur Find aktif/tidak
+    QLabel *findStatusLabel = nullptr; // Widget label khusus untuk menampung info Find di kanan
+
+// 2. Kondisional Deklarasi Variabel Musik (Wajib berada di dalam Class)
 #ifdef HAS_MULTIMEDIA
     QMediaPlayer *mediaPlayer = nullptr;
     QAudioOutput *audioOutput = nullptr;
