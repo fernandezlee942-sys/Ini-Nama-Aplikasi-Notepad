@@ -43,12 +43,13 @@ Notepad::Notepad(QWidget *parent):
 {
     ui->setupUi(this);
 
-    // Masukkan ini di dalam Notepad::Notepad(QWidget *parent)
-    mediaPlayer = new QMediaPlayer(this);
-    audioOutput = new QAudioOutput(this);
-    mediaPlayer->setAudioOutput(audioOutput);
 
-
+    // DI DALAM CONSTRUCTOR Notepad::Notepad
+    #ifdef HAS_MULTIMEDIA
+        mediaPlayer = new QMediaPlayer(this);
+        audioOutput = new QAudioOutput(this);
+        mediaPlayer->setAudioOutput(audioOutput);
+    #endif
 
     // 1. PENGGANTIAN SHORTCUT PASTE (SOLUSI UTAMA)
     // Jangan gunakan ui->actionPaste->setShortcut jika ingin membajak Ctrl+V dari QTextEdit
