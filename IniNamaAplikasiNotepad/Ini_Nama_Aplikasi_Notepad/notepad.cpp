@@ -3,6 +3,8 @@
 #include "timer.h"
 #include "calculator.h"
 #include "calendar.h"
+#include "canvas.h"
+
 #include <QPalette>
 #include <QStyle>
 
@@ -614,6 +616,17 @@ void Notepad::on_actionCalendar_triggered()
     cld->show();
 }
 
+void Notepad::on_actionCanvas_triggered()
+{
+    // Cek warna Base (latar tempat ngetik). Jika komponen Red-nya rendah (< 100), pasti sedang Dark Mode
+    bool isCurrentlyDark = (this->palette().color(QPalette::Base).red() < 100);
+
+    // Buka jendela Canvas secara mandiri (parent: nullptr) dengan melempar parameter tema aktif
+    Canvas *cvs = new Canvas(nullptr, isCurrentlyDark);
+    cvs->setAttribute(Qt::WA_DeleteOnClose); // Bersihkan sisa RAM otomatis saat diclose
+    cvs->show();
+}
+
 
 
 
@@ -643,7 +656,7 @@ void Notepad::on_actionLight_triggered()
     lightPalette.setColor(QPalette::ButtonText, warnaTeksHitam);   // Teks di dalam tombol
     lightPalette.setColor(QPalette::PlaceholderText, abuAbuMuda);  // Teks petunjuk (hint)
 
-    // Terapkan secara global ke aplikasi
+    // Terapkan sera global ke aplikasi
     qApp->setPalette(lightPalette);
     updateAllIcons(false);
 }
@@ -1056,3 +1069,4 @@ void Notepad::updateStatusBarData()
         }
     }
 }
+

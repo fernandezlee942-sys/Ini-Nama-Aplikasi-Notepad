@@ -78,6 +78,8 @@ private slots:
 
     void updateStatusBarData();
 
+    void on_actionCanvas_triggered();
+
 private:
     Ui::Notepad *ui; // Pointer menuju UI (Pimpl Idiom / Bridge Pattern)
     QTextEdit* getActiveEditor();

@@ -106,6 +106,7 @@
     <addaction name="actionCalculator"/>
     <addaction name="actionTimer"/>
     <addaction name="actionCalendar"/>
+    <addaction name="actionCanvas"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -259,6 +260,11 @@
   <action name="actionStop_Music">
    <property name="text">
     <string>Stop Music</string>
+   </property>
+  </action>
+  <action name="actionCanvas">
+   <property name="text">
+    <string>Canvas</string>
    </property>
   </action>
  </widget>
