@@ -309,88 +309,71 @@ bool Notepad::eventFilter(QObject *obj, QEvent *event)
 
     return QMainWindow::eventFilter(obj, event);
 }
-
-
 void Notepad::on_actionSave_as_triggered()
 {
-    // Ambil objek teks editor yang saat ini sedang aktif di depan layar
     QTextEdit *activeEditor = getActiveEditor();
-    if (!activeEditor) return; // Antisipasi jika tidak ada tab yang terbuka
+    if (!activeEditor) return;
 
-    // TENTUKAN PATH LOKAL & BUAT FOLDER JIKA BELUM ADA
     QString defaultPath = "C:/Ini_Nama_Aplikasi_Notepad/Files";
     QDir dir(defaultPath);
     if (!dir.exists()) {
         dir.mkpath(".");
     }
 
-    // DETEKSI GAMBAR: Periksa apakah di dalam dokumen QTextEdit terdapat objek gambar
     bool adaGambar = activeEditor->document()->toHtml().contains("<img");
-
     QString fileFilter;
     if (adaGambar) {
-        // Jika ada gambar, batasi pilihan save hanya ke HTML dan PDF
-        fileFilter = "HTML Files (*.html);;PDF Files (*.pdf)";
-
-        // Beri tahu user/dosen lewat pop-up kecil agar UX aplikasi terlihat profesional
+        fileFilter = "HTML Files (*.html)";
         QMessageBox::information(this, "Deteksi Gambar",
-                                 "Dokumen mengandung gambar. Format simpanan dibatasi hanya ke HTML atau PDF agar gambar tidak hilang.");
+                                 "Dokumen mengandung gambar. Format simpanan dibatasi hanya ke HTML agar struktur gambar tidak rusak.");
     } else {
-        // Jika teks biasa, buka semua format seperti biasa
-        fileFilter = "Text Files (*.txt);;C++ Files (*.cpp);;Python Files (*.py);;HTML Files (*.html);;PDF Files (*.pdf)";
+        fileFilter = "Text Files (*.txt);;C++ Files (*.cpp);;Python Files (*.py);;HTML Files (*.html);;Log Files (*.log)";
     }
 
-    // Buka dialog penamaan file dengan filter yang sudah disesuaikan
-    QString filename = QFileDialog::getSaveFileName(this,
-                                                    "Save as",
-                                                    defaultPath,
-                                                    fileFilter);
+    QString filename = QFileDialog::getSaveFileName(this, "Save as", defaultPath, fileFilter);
+    if (filename.isEmpty()) return;
 
-    if (filename.isEmpty()) return; // Jika user menekan tombol 'Cancel'
-
-    // EKSEKUSI KHUSUS UNTUK FORMAT PDF
-    if (filename.endsWith(".pdf", Qt::CaseInsensitive)) {
-        QPrinter printer(QPrinter::HighResolution);
-        printer.setOutputFormat(QPrinter::PdfFormat);
-        printer.setOutputFileName(filename);
-        activeEditor->print(&printer); // Qt otomatis merender teks + gambar ke dalam berkas PDF
-
-        QDesktopServices::openUrl(QUrl::fromLocalFile(filename));
-    }
-    // EKSEKUSI UNTUK FORMAT TEKS / HTML
-    else {
-        QFile file(filename);
-        if(!file.open(QFile::WriteOnly | QFile::Text)){
-            QMessageBox::warning(this, "Warning", "Cannot save file : " + file.errorString());
-            return;
-        }
-
-        QTextStream out(&file);
-        QString dataKonten;
-
-        // Ambil data dalam bentuk HTML jika user memilih ekstensi .html
-        if (filename.endsWith(".html", Qt::CaseInsensitive)) {
-            dataKonten = activeEditor->toHtml(); // Gambar dikonversi ke kode biner Base64 di dalam HTML
-        } else {
-            dataKonten = activeEditor->toPlainText(); // Teks mentah biasa untuk .txt, .cpp, .py
-        }
-
-        out << dataKonten;
-        file.close();
+    QFile file(filename);
+    if(!file.open(QFile::WriteOnly | QFile::Text)){
+        QMessageBox::warning(this, "Warning", "Cannot save file : " + file.errorString());
+        return;
     }
 
-    // Finalisasi status dokumen dan judul tab
+    QTextStream out(&file);
+    QString dataKonten;
+    if (filename.endsWith(".html", Qt::CaseInsensitive)) {
+        dataKonten = activeEditor->toHtml();
+    } else {
+        dataKonten = activeEditor->toPlainText();
+    }
+
+    out << dataKonten;
+    file.close();
+
     activeEditor->document()->setModified(false);
-
     QFileInfo fileInfo(filename);
     int currentIndex = ui->tabWidget->currentIndex();
     ui->tabWidget->setTabText(currentIndex, fileInfo.fileName());
-
     activeEditor->setProperty("filePath", filename);
+
+    // =========================================================================
+    // FITUR TAMBAHAN: CATAT LOG SETELAH BERHASIL SIMPAN FILE
+    // =========================================================================
+    QString logPath = "C:/Ini_Nama_Aplikasi_Notepad/Files/savelog.txt";
+    QFile logFile(logPath);
+
+    // Buka file dengan mode WriteOnly dan Append (supaya teks lama tidak terhapus)
+    if (logFile.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+        QTextStream logOut(&logFile);
+
+        // Ambil waktu realtime komputer saat ini
+        QString waktuSekarang = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+
+        // Tulis baris log baru ke file teks
+        logOut << "[" << waktuSekarang << "] Berhasil menyimpan file: " << fileInfo.fileName() << "\n";
+        logFile.close();
+    }
 }
-
-
-
 
 
 
@@ -1070,3 +1053,87 @@ void Notepad::updateStatusBarData()
     }
 }
 
+void Notepad::on_actionSave_Log_triggered()
+{
+    QString logPath = "C:/Ini_Nama_Aplikasi_Notepad/Files/savelog.txt";
+    QFile logFile(logPath);
+    QString isiLog;
+
+    // 1. Baca isi file log yang sudah dikumpulkan tadi
+    if (logFile.exists()) {
+        if (logFile.open(QFile::ReadOnly | QFile::Text)) {
+            QTextStream in(&logFile);
+            isiLog = in.readAll();
+            logFile.close();
+        }
+    } else {
+        // Jika file belum ada (misal user belum pernah menekan tombol Save As sama sekali)
+        isiLog = "Belum ada riwayat aktivitas penyimpanan file.";
+    }
+
+    // 2. Lahirkan objek QTextEdit baru di memori Heap (Adopsi logika on_actionNew_triggered)
+    QTextEdit *logEditor = new QTextEdit(this);
+    logEditor->setPlainText(isiLog);
+    logEditor->setReadOnly(true); // Buat menjadi read-only agar log tidak bisa sembarangan diedit user
+
+    // 3. Hubungkan ke data status bar agar sinkron dengan tab lain
+    connect(logEditor, &QTextEdit::cursorPositionChanged, this, &Notepad::updateStatusBarData);
+    connect(logEditor, &QTextEdit::textChanged, this, &Notepad::updateStatusBarData);
+
+    // 4. Masukkan ke QTabWidget dengan judul "Save Log"
+    int tabIndex = ui->tabWidget->addTab(logEditor, "Save Log");
+
+    // Pindahkan fokus layar user langsung ke tab Log tersebut
+    ui->tabWidget->setCurrentIndex(tabIndex);
+    logEditor->setFocus();
+    logEditor->setProperty("filePath", logPath);
+
+    // Pasang Event Filter agar mematuhi sistem shortcut global notepad kelompokmu
+    logEditor->installEventFilter(this);
+}
+
+void Notepad::on_actionClear_Log_triggered()
+{
+    QString logPath = "C:/Ini_Nama_Aplikasi_Notepad/Files/savelog.txt";
+    QFile logFile(logPath);
+
+    // 1. Validasi awal: Cek apakah file log-nya memang ada
+    if (!logFile.exists()) {
+        QMessageBox::information(this, "Clear Log", "Riwayat log memang sudah kosong.");
+        return;
+    }
+
+    // 2. Tampilkan konfirmasi (UX Aman): Tanya user dulu sebelum menghapus permanen
+    QMessageBox::StandardButton konfirmasi;
+    konfirmasi = QMessageBox::question(this, "Konfirmasi Hapus",
+                                       "Apakah Anda yakin ingin menghapus semua riwayat log?",
+                                       QMessageBox::Yes | QMessageBox::No);
+
+    if (konfirmasi == QMessageBox::No) return; // Batalkan jika user pilih 'No'
+
+    // 3. Eksekusi Hapus Isi File: Buka file dengan mode WriteOnly (Tanpa Append)
+    //    Ini otomatis mengosongkan ukuran file menjadi 0 bytes.
+    if (logFile.open(QFile::WriteOnly | QFile::Text)) {
+        logFile.close(); // Langsung close tanpa menulis apa-apa
+    } else {
+        QMessageBox::warning(this, "Error", "Gagal mengakses file log untuk dihapus.");
+        return;
+    }
+
+    // 4. REAL-TIME UX SYNC: Periksa apakah ada tab "Save Log" yang sedang terbuka di layar.
+    //    Jika ada, kita paksa teks di dalam tab tersebut ikut langsung kosong saat itu juga.
+    for (int i = 0; i < ui->tabWidget->count(); ++i) {
+        QTextEdit *editor = qobject_cast<QTextEdit*>(ui->tabWidget->widget(i));
+        if (editor) {
+            // Deteksi tab berdasarkan filePath properti yang mengarah ke savelog.txt
+            QString path = editor->property("filePath").toString();
+            if (path == logPath) {
+                editor->setPlainText("Belum ada riwayat aktivitas penyimpanan file.");
+                break; // Stop loop jika sudah ketemu dan di-update
+            }
+        }
+    }
+
+    // 5. Beri tahu user bahwa operasi sukses
+    QMessageBox::information(this, "Success", "Semua riwayat log berhasil dibersihkan!");
+}

@@ -36,6 +36,8 @@
         <file>Icons/Save_as_B.png</file>
         <file>Icons/Save_as_W.png</file>
         <file>Icons/Trash_W.png</file>
+        <file>Icons/main_logo_W.png</file>
+        <file>Icons/main_logo_B.png</file>
     </qresource>
     <qresource prefix="/Mp3">
         <file>Mp3/2_23_AM_2.mp3</file>

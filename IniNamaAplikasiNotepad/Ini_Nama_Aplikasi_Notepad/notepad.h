@@ -80,6 +80,10 @@ private slots:
 
     void on_actionCanvas_triggered();
 
+    void on_actionSave_Log_triggered();
+
+    void on_actionClear_Log_triggered();
+
 private:
     Ui::Notepad *ui; // Pointer menuju UI (Pimpl Idiom / Bridge Pattern)
     QTextEdit* getActiveEditor();

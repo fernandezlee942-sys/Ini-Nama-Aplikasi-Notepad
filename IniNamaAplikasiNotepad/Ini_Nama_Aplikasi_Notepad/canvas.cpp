@@ -199,6 +199,21 @@ void Canvas::openImage()
 
             ui->drawingArea->update();
             QMessageBox::information(this, "Success", "Gambar berhasil dimuat ke Kanvas!");
+
+            // =========================================================================
+            // INTEGRASI LOG: CATAT AKTIVITAS OPEN GAMBAR KANVAS
+            // =========================================================================
+            QString logPath = "C:/Ini_Nama_Aplikasi_Notepad/Files/savelog.txt";
+            QFile logFile(logPath);
+            if (logFile.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+                QTextStream logOut(&logFile);
+                QString waktuSekarang = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+                QFileInfo fileInfo(filePath);
+
+                logOut << "[" << waktuSekarang << "] [Canvas] Berhasil membuka gambar: " << fileInfo.fileName() << "\n";
+                logFile.close();
+            }
+
         } else {
             QMessageBox::warning(this, "Error", "Gagal membuka file gambar.");
         }
@@ -219,6 +234,21 @@ void Canvas::saveImage()
     if (!filePath.isEmpty()) {
         if (pixmap.save(filePath)) {
             QMessageBox::information(this, "Success", "Gambar coretan berhasil disimpan!");
+
+            // =========================================================================
+            // INTEGRASI LOG: CATAT AKTIVITAS SAVE GAMBAR KANVAS
+            // =========================================================================
+            QString logPath = "C:/Ini_Nama_Aplikasi_Notepad/Files/savelog.txt";
+            QFile logFile(logPath);
+            if (logFile.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+                QTextStream logOut(&logFile);
+                QString waktuSekarang = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+                QFileInfo fileInfo(filePath);
+
+                logOut << "[" << waktuSekarang << "] [Canvas] Berhasil menyimpan gambar: " << fileInfo.fileName() << "\n";
+                logFile.close();
+            }
+
         } else {
             QMessageBox::warning(this, "Error", "Gagal menyimpan gambar.");
         }
