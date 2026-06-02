@@ -38,6 +38,18 @@
         <file>Icons/Trash_W.png</file>
         <file>Icons/main_logo_W.png</file>
         <file>Icons/main_logo_B.png</file>
+        <file>Icons/Canvas_B.png</file>
+        <file>Icons/Canvas_W.png</file>
+        <file>Icons/Close_Tab_B.png</file>
+        <file>Icons/Close_Tab_W.png</file>
+        <file>Icons/Exit_B.png</file>
+        <file>Icons/Exit_W.png</file>
+        <file>Icons/Find_Next_B.png</file>
+        <file>Icons/Find_Next_W.png</file>
+        <file>Icons/Find_Previous_B.png</file>
+        <file>Icons/Find_previous_W.png</file>
+        <file>Icons/Stop_Music_B.png</file>
+        <file>Icons/Stop_Music_W.png</file>
     </qresource>
     <qresource prefix="/Mp3">
         <file>Mp3/2_23_AM_2.mp3</file>
