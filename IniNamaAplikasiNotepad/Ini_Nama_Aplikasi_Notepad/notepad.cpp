@@ -577,37 +577,94 @@ void Notepad::on_actionRedo_triggered()
         activeEditor->redo(); // Hanya mengulang ketikan (redo) di tab yang aktif
     }
 }
-
 void Notepad::on_actionTimer_triggered()
 {
-    Timer *tmr = new Timer(nullptr);
-    tmr->setAttribute(Qt::WA_DeleteOnClose);
-    tmr->show();
+    // 1. Jika sudah ada, angkat ke depan dan fokuskan
+    if (m_activeTimer != nullptr) {
+        m_activeTimer->raise();
+        m_activeTimer->activateWindow();
+        return;
+    }
+
+    // 2. Jika belum ada, buat baru
+    m_activeTimer = new Timer(nullptr);
+    m_activeTimer->setAttribute(Qt::WA_DeleteOnClose);
+
+    // 3. SET JUDUL DAN SAMAKAN IKON LOGO
+    m_activeTimer->setWindowTitle("Timer");
+    m_activeTimer->setWindowIcon(this->windowIcon()); // Mengambil ikon aktif milik Notepad
+
+    // 4. Reset pointer jadi nullptr saat jendela diclose oleh user
+    connect(m_activeTimer, &Timer::destroyed, this, [this]() {
+        m_activeTimer = nullptr;
+    });
+
+    m_activeTimer->show();
 }
 
 void Notepad::on_actionCalculator_triggered()
 {
-    Calculator *clc = new Calculator(nullptr);
-    clc->setAttribute(Qt::WA_DeleteOnClose);
-    clc->show();
+    if (m_activeCalculator != nullptr) {
+        m_activeCalculator->raise();
+        m_activeCalculator->activateWindow();
+        return;
+    }
+
+    m_activeCalculator = new Calculator(nullptr);
+    m_activeCalculator->setAttribute(Qt::WA_DeleteOnClose);
+
+    m_activeCalculator->setWindowTitle("Calculator");
+    m_activeCalculator->setWindowIcon(this->windowIcon());
+
+    connect(m_activeCalculator, &Calculator::destroyed, this, [this]() {
+        m_activeCalculator = nullptr;
+    });
+
+    m_activeCalculator->show();
 }
 
 void Notepad::on_actionCalendar_triggered()
 {
-    Calendar *cld = new Calendar(nullptr);
-    cld->setAttribute(Qt::WA_DeleteOnClose);
-    cld->show();
+    if (m_activeCalendar != nullptr) {
+        m_activeCalendar->raise();
+        m_activeCalendar->activateWindow();
+        return;
+    }
+
+    m_activeCalendar = new Calendar(nullptr);
+    m_activeCalendar->setAttribute(Qt::WA_DeleteOnClose);
+
+    m_activeCalendar->setWindowTitle("Calendar");
+    m_activeCalendar->setWindowIcon(this->windowIcon());
+
+    connect(m_activeCalendar, &Calendar::destroyed, this, [this]() {
+        m_activeCalendar = nullptr;
+    });
+
+    m_activeCalendar->show();
 }
 
 void Notepad::on_actionCanvas_triggered()
 {
-    // Cek warna Base (latar tempat ngetik). Jika komponen Red-nya rendah (< 100), pasti sedang Dark Mode
+    if (m_activeCanvas != nullptr) {
+        m_activeCanvas->raise();
+        m_activeCanvas->activateWindow();
+        return;
+    }
+
     bool isCurrentlyDark = (this->palette().color(QPalette::Base).red() < 100);
 
-    // Buka jendela Canvas secara mandiri (parent: nullptr) dengan melempar parameter tema aktif
-    Canvas *cvs = new Canvas(nullptr, isCurrentlyDark);
-    cvs->setAttribute(Qt::WA_DeleteOnClose); // Bersihkan sisa RAM otomatis saat diclose
-    cvs->show();
+    m_activeCanvas = new Canvas(nullptr, isCurrentlyDark);
+    m_activeCanvas->setAttribute(Qt::WA_DeleteOnClose);
+
+    m_activeCanvas->setWindowTitle("Canvas");
+    m_activeCanvas->setWindowIcon(this->windowIcon());
+
+    connect(m_activeCanvas, &Canvas::destroyed, this, [this]() {
+        m_activeCanvas = nullptr;
+    });
+
+    m_activeCanvas->show();
 }
 
 
@@ -1137,3 +1194,5 @@ void Notepad::on_actionClear_Log_triggered()
     // 5. Beri tahu user bahwa operasi sukses
     QMessageBox::information(this, "Success", "Semua riwayat log berhasil dibersihkan!");
 }
+
+

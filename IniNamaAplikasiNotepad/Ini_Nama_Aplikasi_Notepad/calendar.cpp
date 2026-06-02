@@ -19,6 +19,12 @@ Calendar::Calendar(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    ui->textEdit->setReadOnly(true);
+    ui->textEdit->setFocusPolicy(Qt::NoFocus);
+
+    ui->textEdit_2->setReadOnly(true);
+    ui->textEdit_2->setFocusPolicy(Qt::NoFocus);
+
     // Mengatur agar textEdit_2 bisa memunculkan menu klik kanan kustom
     ui->textEdit_2->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(ui->textEdit_2, &QTextEdit::customContextMenuRequested, this, &Calendar::setupContextMenu);
@@ -247,7 +253,7 @@ void Calendar::updateCalendarTextEdit()
     }
     if (!hasActive) content += "(Tidak ada tugas aktif)\n";
 
-    content += "\nEWAT DEADLINE\n";
+    content += "\nLEWAT DEADLINE\n";
     bool hasOverdue = false;
 
     for (const Task &task : std::as_const(m_taskList)) {

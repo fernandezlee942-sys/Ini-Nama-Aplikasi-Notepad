@@ -53,6 +53,7 @@ private:
     void handlePaint();
     void saveCurrentState();
     void setupShortcuts();
+    void updateBrushPreview();
 };
 
 #endif // CANVAS_H

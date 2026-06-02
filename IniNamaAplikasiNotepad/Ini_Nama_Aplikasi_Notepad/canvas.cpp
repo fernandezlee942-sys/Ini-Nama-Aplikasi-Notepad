@@ -35,8 +35,32 @@ Canvas::Canvas(QWidget *parent, bool isDark)
     setupShortcuts();
 
     // NOTED: saveCurrentState() di sini didelete karena sudah dipanggil di dalam setupTheme()
-}
+    // 4. Konfigurasi dan Hubungkan Horizontal Slider untuk Ukuran Brush
+    ui->horizontalSlider->setRange(1, 100);
+    ui->horizontalSlider->setValue(4);
 
+    ui->brushSizeLabel->setText(QString("Size: %1px").arg(ui->horizontalSlider->value()));
+
+    // Panggil sekali saat start agar preview langsung muncul
+    updateBrushPreview();
+
+    connect(ui->horizontalSlider, &QSlider::valueChanged, this, [this](int value) {
+        this->penWidth = value;
+        ui->brushSizeLabel->setText(QString("Size: %1px").arg(value));
+        this->updateBrushPreview(); // <--- UPDATE VISUAL LINGKARAN
+    });
+
+    // 5. Hubungkan CheckBox untuk Fitur Penghapus (Eraser)
+    connect(ui->checkBox, &QCheckBox::toggled, this, [this](bool checked) {
+        if (checked) {
+            ui->horizontalSlider->setValue(20);
+        } else {
+            ui->horizontalSlider->setValue(4);
+        }
+        this->updateBrushPreview(); // <--- UPDATE VISUAL LINGKARAN SAAT BERUBAH JADI ERASER
+        ui->drawingArea->update();
+    });
+}
 Canvas::~Canvas()
 {
     delete ui;
@@ -129,7 +153,17 @@ void Canvas::handleMouseMove(QMouseEvent *event)
 {
     if (event->buttons() & Qt::LeftButton) {
         QPainter painter(&pixmap);
-        QPen pen(penColor, penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+
+        // --- LOGIKA DETERMINASI BRUSH VS ERASER ---
+        QColor activeColor = penColor; // Default: Pakai warna pena asli tema (Kuning/Hitam)
+
+        if (ui->checkBox->isChecked()) {
+            activeColor = canvasBgColor; // Jika dicentang, ubah warna pena mirip warna background (Menghapus)
+        }
+        // ------------------------------------------
+
+        // Terapkan activeColor ke objek QPen
+        QPen pen(activeColor, penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
         painter.setPen(pen);
 
         painter.drawLine(lastPoint, event->pos());
@@ -253,4 +287,34 @@ void Canvas::saveImage()
             QMessageBox::warning(this, "Error", "Gagal menyimpan gambar.");
         }
     }
+}
+
+void Canvas::updateBrushPreview()
+{
+    // Buat gambar kosong seukuran komponen preview (misal kita pakai komponen QLabel bernama brushPreview)
+    QPixmap pix(ui->brushPreview->size());
+
+    // Warnai background preview agar sama dengan warna dasar aplikasi (transparan/mengikuti sistem)
+    pix.fill(Qt::transparent);
+
+    QPainter painter(&pix);
+    painter.setRenderHint(QPainter::Antialiasing); // Biar lingkarannya halus/ga patah-patah
+
+    // Tentukan warna lingkaran preview
+    QColor previewColor = ui->checkBox->isChecked() ? QColor(128, 128, 128, 100) : penColor;
+    painter.setBrush(QBrush(previewColor));
+    painter.setPen(Qt::NoPen);
+
+    // Gambar lingkaran tepat di tengah-tengah komponen preview
+    int centerX = pix.width() / 2;
+    int centerY = pix.height() / 2;
+    int radius = penWidth / 2;
+
+    // Batasi radius agar tidak luber keluar dari kotak preview jika ukuran 100
+    if (radius > centerX) radius = centerX - 2;
+
+    painter.drawEllipse(QPoint(centerX, centerY), radius, radius);
+
+    // Tempelkan hasil gambar lingkaran ke QLabel ui->brushPreview
+    ui->brushPreview->setPixmap(pix);
 }

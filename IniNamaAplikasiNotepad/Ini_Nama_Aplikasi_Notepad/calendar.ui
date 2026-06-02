@@ -32,7 +32,7 @@
       <string notr="true"/>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="calendar">
       <attribute name="title">
@@ -60,6 +60,11 @@
              <layout class="QVBoxLayout" name="verticalLayout_5">
               <item>
                <widget class="QLabel" name="label">
+                <property name="font">
+                 <font>
+                  <bold>true</bold>
+                 </font>
+                </property>
                 <property name="text">
                  <string>Task :</string>
                 </property>
@@ -67,6 +72,9 @@
               </item>
               <item>
                <widget class="QTextEdit" name="textEdit">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
                 <property name="html">
                  <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;meta charset=&quot;utf-8&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
@@ -116,6 +124,12 @@ li.checked::marker { content: &quot;\2612&quot;; }
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
+              <property name="font">
+               <font>
+                <pointsize>36</pointsize>
+                <bold>true</bold>
+               </font>
+              </property>
               <property name="text">
                <string>Task Adder</string>
               </property>
@@ -145,6 +159,11 @@ li.checked::marker { content: &quot;\2612&quot;; }
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
+                  <property name="font">
+                   <font>
+                    <bold>true</bold>
+                   </font>
+                  </property>
                   <property name="text">
                    <string>Nama Tugas : </string>
                   </property>
@@ -158,6 +177,11 @@ li.checked::marker { content: &quot;\2612&quot;; }
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
+                  <property name="font">
+                   <font>
+                    <bold>true</bold>
+                   </font>
+                  </property>
                   <property name="text">
                    <string>Deadline (dd,mm,yyyy) :</string>
                   </property>
@@ -170,6 +194,11 @@ li.checked::marker { content: &quot;\2612&quot;; }
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <bold>true</bold>
+                   </font>
                   </property>
                   <property name="text">
                    <string>Urgent</string>
@@ -207,6 +236,11 @@ li.checked::marker { content: &quot;\2612&quot;; }
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <bold>true</bold>
+                   </font>
                   </property>
                   <property name="text">
                    <string>Submit</string>
@@ -334,7 +368,10 @@ li.checked::marker { content: &quot;\2612&quot;; }
                  </font>
                 </property>
                 <property name="text">
-                 <string>Save Task List :</string>
+                 <string>Save :</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignmentFlag::AlignCenter</set>
                 </property>
                </widget>
               </item>

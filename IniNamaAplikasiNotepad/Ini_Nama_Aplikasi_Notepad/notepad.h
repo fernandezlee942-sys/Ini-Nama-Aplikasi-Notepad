@@ -19,6 +19,11 @@
 #include <QFileInfoList>
 #include <QUrl>
 
+#include "timer.h"
+#include "calculator.h"
+#include "canvas.h"
+#include "calendar.h"
+
 // 1. Kondisional Include untuk Player Musik
 #ifdef HAS_MULTIMEDIA
 #include <QMediaPlayer>
@@ -84,6 +89,7 @@ private slots:
 
     void on_actionClear_Log_triggered();
 
+
 private:
     Ui::Notepad *ui; // Pointer menuju UI (Pimpl Idiom / Bridge Pattern)
     QTextEdit* getActiveEditor();
@@ -95,6 +101,12 @@ private:
 
     // Variabel untuk melacak status pencarian teks terakhir
     QString lastSearchText = "";
+
+    // Pointer untuk melacak jendela agar tidak terbuka dua kali
+    Timer *m_activeTimer = nullptr;
+    Calculator *m_activeCalculator = nullptr;
+    Calendar *m_activeCalendar = nullptr;
+    Canvas *m_activeCanvas = nullptr;
 
 // 2. Kondisional Deklarasi Variabel Musik (Wajib berada di dalam Class)
 #ifdef HAS_MULTIMEDIA

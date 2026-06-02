@@ -108,7 +108,7 @@
     <addaction name="actionCalculator"/>
     <addaction name="actionTimer"/>
     <addaction name="actionCalendar"/>
-    <addaction name="actionCanvas_2"/>
+    <addaction name="actionCanvas"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -281,11 +281,6 @@
   <action name="actionClear_Log">
    <property name="text">
     <string>Clear Log</string>
-   </property>
-  </action>
-  <action name="actionCanvas_2">
-   <property name="text">
-    <string>Canvas</string>
    </property>
   </action>
  </widget>
