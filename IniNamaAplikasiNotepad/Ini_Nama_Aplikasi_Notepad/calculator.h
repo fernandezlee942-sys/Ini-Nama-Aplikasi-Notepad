@@ -17,6 +17,23 @@ public:
 
 private:
     Ui::Calculator *ui;
+    double evaluate(QString expr);
+
+private slots:
+    void NumPressed();
+    void MathButtonPressed();
+    void EqualButton();
+    void ChangeNumber();
+    void on_del_clicked();
+    void on_c_clicked();
+    void SinPressed();
+    void CosPressed();
+    void TanPressed();
+    void EPressed();
+    void kurungawalPressed();
+    void kurungakhirPressed();
+    void DecimalPressed();
+    void keyPressEvent(QKeyEvent *event);
 };
 
 #endif // CALCULATOR_H

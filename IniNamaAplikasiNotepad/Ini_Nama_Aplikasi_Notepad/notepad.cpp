@@ -3,6 +3,8 @@
 #include "timer.h"
 #include "calculator.h"
 #include "calendar.h"
+#include "canvas.h"
+
 #include <QPalette>
 #include <QStyle>
 
@@ -30,7 +32,11 @@
 #include <QRegularExpressionMatch>
 
 #include <QDesktopServices>
+#include <QStatusBar>
+#include <QTextBlock>
 
+#include<QLineEdit>
+#include<QInputDialog>
 
 // if you see smtg like label->show(), do not be scared of it cos it just means tht the object label is a pointer, most of the time here we use pointer ask gpt why
 
@@ -43,6 +49,24 @@ Notepad::Notepad(QWidget *parent):
 {
     ui->setupUi(this);
 
+    // DI DALAM CONSTRUCTOR Notepad::Notepad
+    #ifdef HAS_MULTIMEDIA
+        mediaPlayer = new QMediaPlayer(this);
+        audioOutput = new QAudioOutput(this);
+        mediaPlayer->setAudioOutput(audioOutput);
+    #endif
+
+    ekstrakMusicResource(":/Mp3/Mp3/lagu1.mp3", "2_23_AM_2.mp3");
+    ekstrakMusicResource(":/Mp3/Mp3/lagu2.mp3", "10C_2.mp3");
+    ekstrakMusicResource(":/Mp3/Mp3/lagu3.mp3", "SUMMER_TRIANGLE_2.mp3");
+
+    // Buat label penampung status Find secara permanen di pojok kanan status bar
+    if (this->statusBar()) {
+        findStatusLabel = new QLabel(this);
+        this->statusBar()->addPermanentWidget(findStatusLabel);
+    }
+
+    
     // 1. PENGGANTIAN SHORTCUT PASTE (SOLUSI UTAMA)
     // Jangan gunakan ui->actionPaste->setShortcut jika ingin membajak Ctrl+V dari QTextEdit
     QShortcut *pasteShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_V), this);
@@ -57,8 +81,28 @@ Notepad::Notepad(QWidget *parent):
     QShortcut *closeTabShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_W), this);
     connect(closeTabShortcut, &QShortcut::activated, this, &Notepad::on_shortcutCloseTab_triggered);
 
+    // 1. Ctrl + F untuk memicu dialog cari teks pertama kali
+    QShortcut *findShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_F), this);
+    findShortcut->setContext(Qt::WindowShortcut);
+    connect(findShortcut, &QShortcut::activated, this, &Notepad::on_actionFind_triggered);
+
+    // 2. F3 untuk Find Next (Cari kata berikutnya ke bawah)
+    QShortcut *findNextShortcut = new QShortcut(QKeySequence(Qt::Key_F3), this);
+    findNextShortcut->setContext(Qt::WindowShortcut);
+    connect(findNextShortcut, &QShortcut::activated, this, &Notepad::on_actionFind_Next_triggered);
+
+    // 3. Shift + F3 untuk Find Previous (Cari kata sebelumnya ke atas)
+    QShortcut *findPrevShortcut = new QShortcut(QKeySequence(Qt::SHIFT | Qt::Key_F3), this);
+    findPrevShortcut->setContext(Qt::WindowShortcut);
+    connect(findPrevShortcut, &QShortcut::activated, this, &Notepad::on_actionFind_Previous_triggered);
+
     // 3. Inisialisasi Tab Pertama Saat Aplikasi Dibuka
     on_actionNew_triggered();
+
+    // TAMBAHKAN DUA BARIS INI DI PALING BAWAH CONSTRUCTOR:
+    connect(ui->tabWidget, &QTabWidget::currentChanged, this, &Notepad::updateStatusBarData);
+    this->statusBar()->setSizeGripEnabled(true);
+
 }
 
 void Notepad::on_tabWidget_currentChanged(int index)
@@ -215,8 +259,14 @@ Notepad::~Notepad()
 
 void Notepad::on_actionNew_triggered()
 {
+
+
     QTextEdit *newEditor = new QTextEdit(this);
     newEditor->setText(QString());
+
+    // Ubah menjadi updateStatusBarData agar tidak ter-trigger toggle On/Off saat mengetik/Enter
+    connect(newEditor, &QTextEdit::cursorPositionChanged, this, &Notepad::updateStatusBarData);
+    connect(newEditor, &QTextEdit::textChanged, this, &Notepad::updateStatusBarData);
 
     int tabIndex = ui->tabWidget->addTab(newEditor, "Untitled");
 
@@ -236,103 +286,94 @@ void Notepad::on_actionNew_triggered()
 
 bool Notepad::eventFilter(QObject *obj, QEvent *event)
 {
-    // Jika event yang terjadi adalah tombol keyboard ditekan di dalam QTextEdit
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent *keyEvent = static_cast<QKeyEvent*>(event);
 
-        // Cek apakah yang ditekan adalah Ctrl + V
+        // 1. Bajak Event Tombol ESC (Escape) untuk mematikan status Find
+        if (keyEvent->key() == Qt::Key_Escape) {
+            if (isFindActive) {
+                isFindActive = false; // Matikan status pencarian
+                if (findStatusLabel) {
+                    findStatusLabel->clear(); // Bersihkan teks label find di pojok kanan status bar
+                }
+                return true; // Cegah event ESC agar tidak merusak fokus elemen lain
+            }
+        }
+
+        // 2. Cek apakah yang ditekan adalah Ctrl + V (Shorcut Paste Gambar Sakti kelompokmu)
         if (keyEvent->modifiers() == Qt::ControlModifier && keyEvent->key() == Qt::Key_V) {
-            // Jalankan fungsi paste gambar sakti milikmu secara paksa!
             on_actionPaste_triggered();
-            return true; // "true" artinya kita bajak event-nya, QTextEdit bawaan gak bakal dapet
+            return true;
         }
     }
 
-    // Kembalikan ke fungsi normal untuk tombol-tombol lainnya (A, B, C, Enter, dll)
     return QMainWindow::eventFilter(obj, event);
 }
-
-
 void Notepad::on_actionSave_as_triggered()
 {
-    // Ambil objek teks editor yang saat ini sedang aktif di depan layar
     QTextEdit *activeEditor = getActiveEditor();
-    if (!activeEditor) return; // Antisipasi jika tidak ada tab yang terbuka
+    if (!activeEditor) return;
 
-    // TENTUKAN PATH LOKAL & BUAT FOLDER JIKA BELUM ADA
-    QString defaultPath = "C:/iniaplikasi notepad";
+    QString defaultPath = "C:/Ini_Nama_Aplikasi_Notepad/Files";
     QDir dir(defaultPath);
     if (!dir.exists()) {
         dir.mkpath(".");
     }
 
-    // DETEKSI GAMBAR: Periksa apakah di dalam dokumen QTextEdit terdapat objek gambar
     bool adaGambar = activeEditor->document()->toHtml().contains("<img");
-
     QString fileFilter;
     if (adaGambar) {
-        // Jika ada gambar, batasi pilihan save hanya ke HTML dan PDF
-        fileFilter = "HTML Files (*.html);;PDF Files (*.pdf)";
-
-        // Beri tahu user/dosen lewat pop-up kecil agar UX aplikasi terlihat profesional
+        fileFilter = "HTML Files (*.html)";
         QMessageBox::information(this, "Deteksi Gambar",
-                                 "Dokumen mengandung gambar. Format simpanan dibatasi hanya ke HTML atau PDF agar gambar tidak hilang.");
+                                 "Dokumen mengandung gambar. Format simpanan dibatasi hanya ke HTML agar struktur gambar tidak rusak.");
     } else {
-        // Jika teks biasa, buka semua format seperti biasa
-        fileFilter = "Text Files (*.txt);;C++ Files (*.cpp);;Python Files (*.py);;HTML Files (*.html);;PDF Files (*.pdf)";
+        fileFilter = "Text Files (*.txt);;C++ Files (*.cpp);;Python Files (*.py);;HTML Files (*.html);;Log Files (*.log)";
     }
 
-    // Buka dialog penamaan file dengan filter yang sudah disesuaikan
-    QString filename = QFileDialog::getSaveFileName(this,
-                                                    "Save as",
-                                                    defaultPath,
-                                                    fileFilter);
+    QString filename = QFileDialog::getSaveFileName(this, "Save as", defaultPath, fileFilter);
+    if (filename.isEmpty()) return;
 
-    if (filename.isEmpty()) return; // Jika user menekan tombol 'Cancel'
-
-    // EKSEKUSI KHUSUS UNTUK FORMAT PDF
-    if (filename.endsWith(".pdf", Qt::CaseInsensitive)) {
-        QPrinter printer(QPrinter::HighResolution);
-        printer.setOutputFormat(QPrinter::PdfFormat);
-        printer.setOutputFileName(filename);
-        activeEditor->print(&printer); // Qt otomatis merender teks + gambar ke dalam berkas PDF
-
-        QDesktopServices::openUrl(QUrl::fromLocalFile(filename));
-    }
-    // EKSEKUSI UNTUK FORMAT TEKS / HTML
-    else {
-        QFile file(filename);
-        if(!file.open(QFile::WriteOnly | QFile::Text)){
-            QMessageBox::warning(this, "Warning", "Cannot save file : " + file.errorString());
-            return;
-        }
-
-        QTextStream out(&file);
-        QString dataKonten;
-
-        // Ambil data dalam bentuk HTML jika user memilih ekstensi .html
-        if (filename.endsWith(".html", Qt::CaseInsensitive)) {
-            dataKonten = activeEditor->toHtml(); // Gambar dikonversi ke kode biner Base64 di dalam HTML
-        } else {
-            dataKonten = activeEditor->toPlainText(); // Teks mentah biasa untuk .txt, .cpp, .py
-        }
-
-        out << dataKonten;
-        file.close();
+    QFile file(filename);
+    if(!file.open(QFile::WriteOnly | QFile::Text)){
+        QMessageBox::warning(this, "Warning", "Cannot save file : " + file.errorString());
+        return;
     }
 
-    // Finalisasi status dokumen dan judul tab
+    QTextStream out(&file);
+    QString dataKonten;
+    if (filename.endsWith(".html", Qt::CaseInsensitive)) {
+        dataKonten = activeEditor->toHtml();
+    } else {
+        dataKonten = activeEditor->toPlainText();
+    }
+
+    out << dataKonten;
+    file.close();
+
     activeEditor->document()->setModified(false);
-
     QFileInfo fileInfo(filename);
     int currentIndex = ui->tabWidget->currentIndex();
     ui->tabWidget->setTabText(currentIndex, fileInfo.fileName());
-
     activeEditor->setProperty("filePath", filename);
+
+    // =========================================================================
+    // FITUR TAMBAHAN: CATAT LOG SETELAH BERHASIL SIMPAN FILE
+    // =========================================================================
+    QString logPath = "C:/Ini_Nama_Aplikasi_Notepad/Files/savelog.txt";
+    QFile logFile(logPath);
+
+    // Buka file dengan mode WriteOnly dan Append (supaya teks lama tidak terhapus)
+    if (logFile.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+        QTextStream logOut(&logFile);
+
+        // Ambil waktu realtime komputer saat ini
+        QString waktuSekarang = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+
+        // Tulis baris log baru ke file teks
+        logOut << "[" << waktuSekarang << "] Berhasil menyimpan file: " << fileInfo.fileName() << "\n";
+        logFile.close();
+    }
 }
-
-
-
 
 
 
@@ -536,26 +577,94 @@ void Notepad::on_actionRedo_triggered()
         activeEditor->redo(); // Hanya mengulang ketikan (redo) di tab yang aktif
     }
 }
-
 void Notepad::on_actionTimer_triggered()
 {
-    Timer *tmr = new Timer(nullptr);
-    tmr->setAttribute(Qt::WA_DeleteOnClose);
-    tmr->show();
+    // 1. Jika sudah ada, angkat ke depan dan fokuskan
+    if (m_activeTimer != nullptr) {
+        m_activeTimer->raise();
+        m_activeTimer->activateWindow();
+        return;
+    }
+
+    // 2. Jika belum ada, buat baru
+    m_activeTimer = new Timer(nullptr);
+    m_activeTimer->setAttribute(Qt::WA_DeleteOnClose);
+
+    // 3. SET JUDUL DAN SAMAKAN IKON LOGO
+    m_activeTimer->setWindowTitle("Timer");
+    m_activeTimer->setWindowIcon(this->windowIcon()); // Mengambil ikon aktif milik Notepad
+
+    // 4. Reset pointer jadi nullptr saat jendela diclose oleh user
+    connect(m_activeTimer, &Timer::destroyed, this, [this]() {
+        m_activeTimer = nullptr;
+    });
+
+    m_activeTimer->show();
 }
 
 void Notepad::on_actionCalculator_triggered()
 {
-    Calculator *clc = new Calculator(nullptr);
-    clc->setAttribute(Qt::WA_DeleteOnClose);
-    clc->show();
+    if (m_activeCalculator != nullptr) {
+        m_activeCalculator->raise();
+        m_activeCalculator->activateWindow();
+        return;
+    }
+
+    m_activeCalculator = new Calculator(nullptr);
+    m_activeCalculator->setAttribute(Qt::WA_DeleteOnClose);
+
+    m_activeCalculator->setWindowTitle("Calculator");
+    m_activeCalculator->setWindowIcon(this->windowIcon());
+
+    connect(m_activeCalculator, &Calculator::destroyed, this, [this]() {
+        m_activeCalculator = nullptr;
+    });
+
+    m_activeCalculator->show();
 }
 
 void Notepad::on_actionCalendar_triggered()
 {
-    Calendar *cld = new Calendar(nullptr);
-    cld->setAttribute(Qt::WA_DeleteOnClose);
-    cld->show();
+    if (m_activeCalendar != nullptr) {
+        m_activeCalendar->raise();
+        m_activeCalendar->activateWindow();
+        return;
+    }
+
+    m_activeCalendar = new Calendar(nullptr);
+    m_activeCalendar->setAttribute(Qt::WA_DeleteOnClose);
+
+    m_activeCalendar->setWindowTitle("Calendar");
+    m_activeCalendar->setWindowIcon(this->windowIcon());
+
+    connect(m_activeCalendar, &Calendar::destroyed, this, [this]() {
+        m_activeCalendar = nullptr;
+    });
+
+    m_activeCalendar->show();
+}
+
+void Notepad::on_actionCanvas_triggered()
+{
+    if (m_activeCanvas != nullptr) {
+        m_activeCanvas->raise();
+        m_activeCanvas->activateWindow();
+        return;
+    }
+
+    bool isCurrentlyDark = (this->palette().color(QPalette::Base).red() < 100);
+
+    m_activeCanvas = new Canvas(nullptr, isCurrentlyDark);
+    m_activeCanvas->setAttribute(Qt::WA_DeleteOnClose);
+
+    m_activeCanvas->setWindowTitle("Canvas");
+    m_activeCanvas->setWindowIcon(this->windowIcon());
+
+    connect(m_activeCanvas, &Canvas::destroyed, this, [this]() {
+        m_activeCanvas = nullptr;
+    });
+
+    m_activeCanvas->show();
 }
 
 
@@ -587,7 +696,7 @@ void Notepad::on_actionLight_triggered()
     lightPalette.setColor(QPalette::ButtonText, warnaTeksHitam);   // Teks di dalam tombol
     lightPalette.setColor(QPalette::PlaceholderText, abuAbuMuda);  // Teks petunjuk (hint)
 
-    // Terapkan secara global ke aplikasi
+    // Terapkan sera global ke aplikasi
     qApp->setPalette(lightPalette);
     updateAllIcons(false);
 }
@@ -681,7 +790,7 @@ void Notepad::updateAllIcons(bool isDark)
             kemungkinanPath << (":/image/icons/" + namaBersih.toLower());
 
             // Cari file mana yang benar-benar eksis di resource sistem (.qrc)
-            for (const QString& pathCek : kemungkinanPath) {
+            for (const QString& pathCek : std::as_const(kemungkinanPath)) {
                 if (QFile::exists(pathCek + "_B.png") || QFile::exists(pathCek + "_W.png") ||
                     QFile::exists(pathCek + "_b.png") || QFile::exists(pathCek + "_w.png")) {
                     pathAsli = pathCek;
@@ -723,5 +832,367 @@ void Notepad::updateAllIcons(bool isDark)
 
 
 
+
+
+void Notepad::on_actionPlaylist_1_triggered()
+{
+#ifdef HAS_MULTIMEDIA
+    // 1. Tentukan path default untuk folder musik & buat direktori jika belum ada
+    QString defaultPath = "C:/Ini_Nama_Aplikasi_Notepad/Musics";
+    QDir dir(defaultPath);
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+
+    // 2. Buka File Dialog dengan mengunci pandangan awal ke defaultPath
+    QString fileAudio = QFileDialog::getOpenFileName(this,
+                                                     tr("Pilih File Musik/Audio"),
+                                                     defaultPath, // <── Direkam agar langsung membuka folder Musics
+                                                     tr("Audio Files (*.mp3 *.wav *.ogg *.m4a)"));
+
+    // 3. Jika user memilih file (tidak menekan tombol cancel)
+    if (!fileAudio.isEmpty()) {
+
+        // Atur sumber lagu ke media player menggunakan QUrl lokal
+        mediaPlayer->setSource(QUrl::fromLocalFile(fileAudio));
+
+        mediaPlayer->setLoops(QMediaPlayer::Infinite);
+
+        // Atur volume suara default (rentang nilai dari 0.0 sampai 1.0)
+        audioOutput->setVolume(0.5); // Volume 50%
+
+        // 4. Putar Musik Sakti!
+        mediaPlayer->play();
+
+        // =========================================================================
+        // PERBAIKAN DI SINI:
+        // Jaga status bar kiri tetap aktif, lempar info lagu ke kanan (findStatusLabel)
+        // =========================================================================
+        if (this->statusBar()) {
+            // Paksa status bar kiri untuk terus menampilkan Ln, Col | Words
+            updateStatusBarData();
+
+            // Tampilkan nama file lagu di pojok kanan secara aman tanpa memicu bug hilang sendiri
+            if (findStatusLabel) {
+                findStatusLabel->setText("[Playing: " + QFileInfo(fileAudio).fileName() + "]");
+            }
+        }
+    }
+#else
+    QMessageBox::information(this, "Fitur Nonaktif", "Modul Multimedia tidak diaktifkan di build ini.");
+#endif
+}
+
+void Notepad::on_actionStop_Music_triggered()
+{
+#ifdef HAS_MULTIMEDIA
+    if (mediaPlayer) {
+        mediaPlayer->stop();
+
+        // PERBAIKAN: Jaga status bar kiri tetap aktif, lempar info musik ke kanan
+        if (this->statusBar()) {
+            // 1. Paksa status bar kiri untuk terus menampilkan Ln, Col | Words
+            updateStatusBarData();
+
+            // 2. Tampilkan info stop musik di pojok kanan secara aman tanpa timer penghancur
+            if (findStatusLabel) {
+                findStatusLabel->setText("[Musik dihentikan]");
+            }
+        }
+    }
+#else
+    QMessageBox::information(this, "Fitur Nonaktif", "Modul Multimedia tidak diaktifkan di build ini.");
+#endif
+}
+
+
+
+
+void Notepad::ekstrakMusicResource(const QString &resourcePath, const QString &targetFileName)
+{
+    QString targetFolder = "C:/Ini_Nama_Aplikasi_Notepad/Musics/";
+    QString fullTargetPath = targetFolder + targetFileName;
+
+    // 1. Pastikan folder tujuan sudah terbuat
+    QDir dir(targetFolder);
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+
+    // 2. Cek apakah file mp3 sudah ada di folder C: tersebut
+    // Jika belum ada, lakukan proses copy dari resource internal (.qrc)
+    if (!QFile::exists(fullTargetPath)) {
+        if (QFile::exists(resourcePath)) {
+            QFile::copy(resourcePath, fullTargetPath);
+
+            // Opsional: Hilangkan sifat Read-Only agar file bisa dimodifikasi oleh sistem jika diperlukan
+            QFile::setPermissions(fullTargetPath, QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ReadUser | QFileDevice::WriteUser);
+        }
+    }
+}
+
+// 1. CLOSE TAB: Berperan persis seperti shortcut Ctrl + W
+void Notepad::on_actionClose_Tab_triggered()
+{
+    on_shortcutCloseTab_triggered();
+}
+
+// Variabel global internal khusus diletakkan di luar fungsi (di atas on_actionFind_triggered)
+// untuk mencatat riwayat kata yang dicari dan indeksnya
+static QString lastSearchWord = "";
+static int currentSearchIndex = 0;
+static int totalSearchMatches = 0;
+
+// Helper function untuk menghitung total kata yang cocok di dalam dokumen
+int countMatches(QTextEdit* editor, QString word) {
+    if (word.isEmpty() || !editor) return 0;
+    int count = 0;
+    QString text = editor->toPlainText();
+    int pos = text.indexOf(word, 0, Qt::CaseInsensitive);
+    while (pos != -1) {
+        count++;
+        pos = text.indexOf(word, pos + word.length(), Qt::CaseInsensitive);
+    }
+    return count;
+}
+
+// 2. FIND: Selalu mencari kata pertama yang ditemukan dari atas dokumen
+void Notepad::on_actionFind_triggered()
+{
+    QTextEdit *activeEditor = getActiveEditor();
+    if (!activeEditor) return;
+
+    bool ok;
+    QString word = QInputDialog::getText(this, "Find Word", "Masukkan kata yang dicari:", QLineEdit::Normal, lastSearchWord, &ok);
+
+    if (!ok || word.isEmpty()) return;
+
+    lastSearchWord = word;
+    totalSearchMatches = countMatches(activeEditor, word);
+    isFindActive = true; // Tandai fitur Find sedang aktif/menyala secara permanen
+
+    // Mulai pencarian dari awal dokumen (posisi 0)
+    QTextCursor cursor = activeEditor->textCursor();
+    cursor.setPosition(0);
+    activeEditor->setTextCursor(cursor);
+
+    if (activeEditor->find(word)) {
+        currentSearchIndex = 1;
+        if (findStatusLabel) {
+            findStatusLabel->setText(QString("[Find: %1/%2]").arg(currentSearchIndex).arg(totalSearchMatches));
+        }
+    } else {
+        currentSearchIndex = 0;
+        totalSearchMatches = 0;
+        if (findStatusLabel) {
+            findStatusLabel->setText("[Word not found!]");
+        }
+    }
+}
+
+// 3. FIND NEXT: Mencari kata selanjutnya ke arah bawah dokumen
+void Notepad::on_actionFind_Next_triggered()
+{
+    QTextEdit *activeEditor = getActiveEditor();
+    if (!activeEditor || lastSearchWord.isEmpty()) return;
+
+    totalSearchMatches = countMatches(activeEditor, lastSearchWord);
+    isFindActive = true; // Jaga agar status Find tetap menyala
+
+    if (activeEditor->find(lastSearchWord)) {
+        currentSearchIndex++;
+        if (currentSearchIndex > totalSearchMatches) currentSearchIndex = totalSearchMatches;
+    } else {
+        // Jika mentok bawah, putar kembali ke kata paling pertama di atas dokumen
+        QTextCursor cursor = activeEditor->textCursor();
+        cursor.setPosition(0);
+        activeEditor->setTextCursor(cursor);
+
+        if (activeEditor->find(lastSearchWord)) {
+            currentSearchIndex = 1;
+        }
+    }
+
+    if (findStatusLabel && totalSearchMatches > 0) {
+        findStatusLabel->setText(QString("[Find: %1/%2]").arg(currentSearchIndex).arg(totalSearchMatches));
+    }
+}
+
+// 4. FIND PREVIOUS: Mencari kata ke arah atas dokumen (mundur)
+void Notepad::on_actionFind_Previous_triggered()
+{
+    QTextEdit *activeEditor = getActiveEditor();
+    if (!activeEditor || lastSearchWord.isEmpty()) return;
+
+    totalSearchMatches = countMatches(activeEditor, lastSearchWord);
+    isFindActive = true; // Jaga agar status Find tetap menyala
+
+    if (activeEditor->find(lastSearchWord, QTextDocument::FindBackward)) {
+        currentSearchIndex--;
+        if (currentSearchIndex < 1) currentSearchIndex = 1;
+    } else {
+        // Jika mentok paling atas, lompat ke kata terakhir di paling bawah dokumen
+        QTextCursor cursor = activeEditor->textCursor();
+        cursor.movePosition(QTextCursor::End);
+        activeEditor->setTextCursor(cursor);
+
+        if (activeEditor->find(lastSearchWord, QTextDocument::FindBackward)) {
+            currentSearchIndex = totalSearchMatches;
+        }
+    }
+
+    if (findStatusLabel && totalSearchMatches > 0) {
+        findStatusLabel->setText(QString("[Find: %1/%2]").arg(currentSearchIndex).arg(totalSearchMatches));
+    }
+}
+
+// 5. STATUS BAR: Menampilkan Line (ln), Column (col), dan Jumlah Kata (words)
+void Notepad::on_actionStatus_Bar_triggered()
+{
+    // 1. Tombol menu diklik -> Balikkan status saklar (Hanya terjadi saat tombol menu ditekan)
+    isStatusBarActive = !isStatusBarActive;
+
+    if (!isStatusBarActive) {
+        if (this->statusBar()) {
+            this->statusBar()->clearMessage(); // Hilang permanen
+        }
+        return;
+    }
+
+    // 2. Jika saklar ON, paksa update datanya sekali di awal
+    updateStatusBarData();
+}
+
+void Notepad::updateStatusBarData()
+{
+    // Jika saklar status bar MATI, bersihkan teks kiri dan keluar
+    if (!isStatusBarActive) {
+        if (this->statusBar()) this->statusBar()->clearMessage();
+        return;
+    }
+
+    QTextEdit *activeEditor = getActiveEditor();
+    if (!activeEditor) {
+        if (this->statusBar()) this->statusBar()->clearMessage();
+        return;
+    }
+
+    // A. MENGHITUNG BARIS (LN) & KOLOM (COL)
+    QTextCursor cursor = activeEditor->textCursor();
+    int ln = cursor.blockNumber() + 1;
+    int col = cursor.columnNumber() + 1;
+
+    // B. ALGORITMA MENGHITUNG JUMLAH KATA
+    QString text = activeEditor->toPlainText();
+    int wordCount = 0;
+    bool inWord = false;
+
+    for (int i = 0; i < text.length(); ++i) {
+        QChar ch = text.at(i);
+        if (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r') {
+            inWord = false;
+        } else {
+            if (!inWord) {
+                wordCount++;
+                inWord = true;
+            }
+        }
+    }
+
+    // C. CETAK DAN KUNCI PAKSA KE STATUS BAR KIRI
+    if (this->statusBar()) {
+        QString infoStatus = QString("Ln %1, Col %2 | Words: %3").arg(ln).arg(col).arg(wordCount);
+
+        // Tameng Utama: Jika teks kiri kosong atau terhapus oleh windows state, paksa tulis ulang!
+        if (this->statusBar()->currentMessage() != infoStatus) {
+            this->statusBar()->showMessage(infoStatus);
+        }
+    }
+}
+
+void Notepad::on_actionSave_Log_triggered()
+{
+    QString logPath = "C:/Ini_Nama_Aplikasi_Notepad/Files/savelog.txt";
+    QFile logFile(logPath);
+    QString isiLog;
+
+    // 1. Baca isi file log yang sudah dikumpulkan tadi
+    if (logFile.exists()) {
+        if (logFile.open(QFile::ReadOnly | QFile::Text)) {
+            QTextStream in(&logFile);
+            isiLog = in.readAll();
+            logFile.close();
+        }
+    } else {
+        // Jika file belum ada (misal user belum pernah menekan tombol Save As sama sekali)
+        isiLog = "Belum ada riwayat aktivitas penyimpanan file.";
+    }
+
+    // 2. Lahirkan objek QTextEdit baru di memori Heap (Adopsi logika on_actionNew_triggered)
+    QTextEdit *logEditor = new QTextEdit(this);
+    logEditor->setPlainText(isiLog);
+    logEditor->setReadOnly(true); // Buat menjadi read-only agar log tidak bisa sembarangan diedit user
+
+    // 3. Hubungkan ke data status bar agar sinkron dengan tab lain
+    connect(logEditor, &QTextEdit::cursorPositionChanged, this, &Notepad::updateStatusBarData);
+    connect(logEditor, &QTextEdit::textChanged, this, &Notepad::updateStatusBarData);
+
+    // 4. Masukkan ke QTabWidget dengan judul "Save Log"
+    int tabIndex = ui->tabWidget->addTab(logEditor, "Save Log");
+
+    // Pindahkan fokus layar user langsung ke tab Log tersebut
+    ui->tabWidget->setCurrentIndex(tabIndex);
+    logEditor->setFocus();
+    logEditor->setProperty("filePath", logPath);
+
+    // Pasang Event Filter agar mematuhi sistem shortcut global notepad kelompokmu
+    logEditor->installEventFilter(this);
+}
+
+void Notepad::on_actionClear_Log_triggered()
+{
+    QString logPath = "C:/Ini_Nama_Aplikasi_Notepad/Files/savelog.txt";
+    QFile logFile(logPath);
+
+    // 1. Validasi awal: Cek apakah file log-nya memang ada
+    if (!logFile.exists()) {
+        QMessageBox::information(this, "Clear Log", "Riwayat log memang sudah kosong.");
+        return;
+    }
+
+    // 2. Tampilkan konfirmasi (UX Aman): Tanya user dulu sebelum menghapus permanen
+    QMessageBox::StandardButton konfirmasi;
+    konfirmasi = QMessageBox::question(this, "Konfirmasi Hapus",
+                                       "Apakah Anda yakin ingin menghapus semua riwayat log?",
+                                       QMessageBox::Yes | QMessageBox::No);
+
+    if (konfirmasi == QMessageBox::No) return; // Batalkan jika user pilih 'No'
+
+    // 3. Eksekusi Hapus Isi File: Buka file dengan mode WriteOnly (Tanpa Append)
+    //    Ini otomatis mengosongkan ukuran file menjadi 0 bytes.
+    if (logFile.open(QFile::WriteOnly | QFile::Text)) {
+        logFile.close(); // Langsung close tanpa menulis apa-apa
+    } else {
+        QMessageBox::warning(this, "Error", "Gagal mengakses file log untuk dihapus.");
+        return;
+    }
+
+    // 4. REAL-TIME UX SYNC: Periksa apakah ada tab "Save Log" yang sedang terbuka di layar.
+    //    Jika ada, kita paksa teks di dalam tab tersebut ikut langsung kosong saat itu juga.
+    for (int i = 0; i < ui->tabWidget->count(); ++i) {
+        QTextEdit *editor = qobject_cast<QTextEdit*>(ui->tabWidget->widget(i));
+        if (editor) {
+            // Deteksi tab berdasarkan filePath properti yang mengarah ke savelog.txt
+            QString path = editor->property("filePath").toString();
+            if (path == logPath) {
+                editor->setPlainText("Belum ada riwayat aktivitas penyimpanan file.");
+                break; // Stop loop jika sudah ketemu dan di-update
+            }
+        }
+    }
+
+    // 5. Beri tahu user bahwa operasi sukses
+    QMessageBox::information(this, "Success", "Semua riwayat log berhasil dibersihkan!");
+}
 
 

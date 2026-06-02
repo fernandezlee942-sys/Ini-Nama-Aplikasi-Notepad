@@ -31,6 +31,9 @@
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="QTabWidget" name="tabWidget">
+        <property name="contextMenuPolicy">
+         <enum>Qt::ContextMenuPolicy::NoContextMenu</enum>
+        </property>
         <property name="currentIndex">
          <number>-1</number>
         </property>
@@ -72,7 +75,6 @@
     <addaction name="actionFind"/>
     <addaction name="actionFind_Next"/>
     <addaction name="actionFind_Previous"/>
-    <addaction name="actionReplace"/>
     <addaction name="actionCopy"/>
     <addaction name="actionPaste"/>
     <addaction name="actionCut"/>
@@ -82,15 +84,15 @@
      <string>View</string>
     </property>
     <addaction name="actionStatus_Bar"/>
-    <addaction name="actionWord_Wrap"/>
+    <addaction name="actionSave_Log"/>
+    <addaction name="actionClear_Log"/>
    </widget>
    <widget class="QMenu" name="menuMusic">
     <property name="title">
      <string>Music</string>
     </property>
     <addaction name="actionPlaylist_1"/>
-    <addaction name="actionNew_Playlist"/>
-    <addaction name="actionShow_In_Folder"/>
+    <addaction name="actionStop_Music"/>
    </widget>
    <widget class="QMenu" name="menuTheme">
     <property name="title">
@@ -105,8 +107,8 @@
     </property>
     <addaction name="actionCalculator"/>
     <addaction name="actionTimer"/>
-    <addaction name="separator"/>
     <addaction name="actionCalendar"/>
+    <addaction name="actionCanvas"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -117,11 +119,17 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
    <attribute name="toolBarArea">
-    <enum>RightToolBarArea</enum>
+    <enum>BottomToolBarArea</enum>
    </attribute>
    <attribute name="toolBarBreak">
     <bool>false</bool>
@@ -129,6 +137,14 @@
    <addaction name="actionNew"/>
    <addaction name="actionOpen"/>
    <addaction name="actionSave_as"/>
+   <addaction name="actionCalculator"/>
+   <addaction name="actionTimer"/>
+   <addaction name="actionCalendar"/>
+   <addaction name="actionCanvas"/>
+   <addaction name="actionUndo"/>
+   <addaction name="actionRedo"/>
+   <addaction name="actionPlaylist_1"/>
+   <addaction name="actionStop_Music"/>
   </widget>
   <action name="actionNew">
    <property name="icon">
@@ -155,15 +171,6 @@
    </property>
    <property name="text">
     <string>Save As</string>
-   </property>
-  </action>
-  <action name="actionSave">
-   <property name="icon">
-    <iconset>
-     <normaloff>:/IMAGE/Icons/Save_B.png</normaloff>:/IMAGE/Icons/Save_B.png</iconset>
-   </property>
-   <property name="text">
-    <string>Save</string>
    </property>
   </action>
   <action name="actionClose_Tab">
@@ -196,19 +203,9 @@
     <string>Find Previous</string>
    </property>
   </action>
-  <action name="actionReplace">
-   <property name="text">
-    <string>Replace</string>
-   </property>
-  </action>
   <action name="actionStatus_Bar">
    <property name="text">
     <string>Status Bar</string>
-   </property>
-  </action>
-  <action name="actionWord_Wrap">
-   <property name="text">
-    <string>Word Wrap</string>
    </property>
   </action>
   <action name="actionRedo">
@@ -219,11 +216,6 @@
   <action name="actionPlaylist_1">
    <property name="text">
     <string>Open Playlist</string>
-   </property>
-  </action>
-  <action name="actionNew_Playlist">
-   <property name="text">
-    <string>New Playlist</string>
    </property>
   </action>
   <action name="actionPrint">
@@ -261,11 +253,6 @@
     <string>Dark</string>
    </property>
   </action>
-  <action name="actionShow_In_Folder">
-   <property name="text">
-    <string>Show In Folder</string>
-   </property>
-  </action>
   <action name="actionTimer">
    <property name="text">
     <string>Timer</string>
@@ -274,6 +261,26 @@
   <action name="actionCalendar">
    <property name="text">
     <string>Calendar</string>
+   </property>
+  </action>
+  <action name="actionStop_Music">
+   <property name="text">
+    <string>Stop Music</string>
+   </property>
+  </action>
+  <action name="actionCanvas">
+   <property name="text">
+    <string>Canvas</string>
+   </property>
+  </action>
+  <action name="actionSave_Log">
+   <property name="text">
+    <string>Save Log</string>
+   </property>
+  </action>
+  <action name="actionClear_Log">
+   <property name="text">
+    <string>Clear Log</string>
    </property>
   </action>
  </widget>

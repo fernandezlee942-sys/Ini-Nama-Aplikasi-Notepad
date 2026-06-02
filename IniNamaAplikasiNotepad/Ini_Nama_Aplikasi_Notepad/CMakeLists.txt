@@ -11,6 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets PrintSupport)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets PrintSupport)
+find_package(Qt${QT_VERSION_MAJOR} OPTIONAL_COMPONENTS Multimedia)
+
 
 set(PROJECT_SOURCES
     main.cpp
@@ -29,6 +31,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         calculator.h calculator.cpp calculator.ui
         timer.h timer.cpp timer.ui
         calendar.h calendar.cpp calendar.ui
+        canvas.h canvas.cpp canvas.ui
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET Ini_Nama_Aplikasi_Notepad APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
@@ -52,6 +55,11 @@ target_link_libraries(Ini_Nama_Aplikasi_Notepad PRIVATE
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::PrintSupport
 )
+
+if(Qt${QT_VERSION_MAJOR}Multimedia_FOUND)
+    target_compile_definitions(Ini_Nama_Aplikasi_Notepad PRIVATE HAS_MULTIMEDIA)
+    target_link_libraries(Ini_Nama_Aplikasi_Notepad PRIVATE Qt${QT_VERSION_MAJOR}::Multimedia)
+endif()
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
