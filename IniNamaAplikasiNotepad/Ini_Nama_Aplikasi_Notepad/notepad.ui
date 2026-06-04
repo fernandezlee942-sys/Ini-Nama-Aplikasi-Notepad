@@ -62,7 +62,6 @@
     <addaction name="actionNew"/>
     <addaction name="actionOpen"/>
     <addaction name="actionSave_as"/>
-    <addaction name="actionPrint"/>
     <addaction name="actionClose_Tab"/>
     <addaction name="actionExit"/>
    </widget>
