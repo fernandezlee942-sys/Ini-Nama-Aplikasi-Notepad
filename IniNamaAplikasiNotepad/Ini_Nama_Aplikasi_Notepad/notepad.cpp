@@ -1,3 +1,5 @@
+#include <QCloseEvent>
+
 #include "notepad.h"
 #include "./ui_notepad.h"
 #include "timer.h"
@@ -164,46 +166,10 @@ void Notepad::on_tabWidget_tabCloseRequested(int index)
         tabPage->deleteLater();
     }
 }
-
 void Notepad::on_actionExit_triggered()
 {
-    // Cek seluruh tab secara bergantian sebelum benar-benar menutup aplikasi
-    for (int i = 0; i < ui->tabWidget->count(); ++i) {
-        QWidget *tabPage = ui->tabWidget->widget(i);
-        if (!tabPage) continue;
-
-        QTextEdit *editor = tabPage->findChild<QTextEdit*>();
-
-        // Jika tidak ketemu lewat findChild, cek apakah widget tab itu sendiri adalah QTextEdit
-        if (!editor) {
-            editor = qobject_cast<QTextEdit*>(tabPage);
-        }
-
-        // Jika ada tab yang isinya sempat diubah user dan belum di-save (isModified == true)
-        if (editor && editor->document()->isModified()) {
-            ui->tabWidget->setCurrentIndex(i); // Pindahkan fokus layar ke tab yang belum disimpan tersebut
-
-            // Ambil nama tab bersih (buang karakter bintang jika ada)
-            QString tabName = ui->tabWidget->tabText(i).remove("*");
-
-            QMessageBox::StandardButton balasan;
-            balasan = QMessageBox::warning(this, "Simpan Perubahan?",
-                                           QString("Dokumen '%1' telah diubah.\nIngin menyimpan sebelum keluar?").arg(tabName),
-                                           QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
-
-            if (balasan == QMessageBox::Save) {
-                on_actionSave_as_triggered(); // Paksa buka dialog simpan dulu
-                return; // Tunda exit agar user bisa menyelesaikan dialog simpan
-            }
-            else if (balasan == QMessageBox::Cancel) {
-                return; // Batalkan total proses keluar, kembali ke aplikasi
-            }
-            // Jika memilih Discard, loop akan lanjut ke tab berikutnya tanpa menyimpan
-        }
-    }
-
-    // Jika semua tab lolos pengecekan (semua sudah disimpan/bersih), matikan aplikasi secara aman
-    QApplication::quit();
+    // Cukup panggil close(), ini otomatis akan memicu closeEvent di bawah!
+    this->close();
 }
 
 void Notepad::updateTabTitle()
@@ -1195,4 +1161,59 @@ void Notepad::on_actionClear_Log_triggered()
     QMessageBox::information(this, "Success", "Semua riwayat log berhasil dibersihkan!");
 }
 
+void Notepad::closeEvent(QCloseEvent *event)
+{
+    // 1. CEK TAB BELUM DISIMPAN TERLEBIH DAHULU (Benteng Pertahanan Pertama)
+    // Kita lakukan looping ngecek apakah ada dokumen yang isinya dimodifikasi tapi belum di-save
+    for (int i = 0; i < ui->tabWidget->count(); ++i) {
+        QWidget *tabPage = ui->tabWidget->widget(i);
+        if (!tabPage) continue;
 
+        QTextEdit *editor = tabPage->findChild<QTextEdit*>();
+        if (!editor) {
+            editor = qobject_cast<QTextEdit*>(tabPage);
+        }
+
+        if (editor && editor->document()->isModified()) {
+            ui->tabWidget->setCurrentIndex(i);
+            QString tabName = ui->tabWidget->tabText(i).remove("*");
+
+            QMessageBox::StandardButton balasan;
+            balasan = QMessageBox::warning(this, "Simpan Perubahan?",
+                                           QString("Dokumen '%1' telah diubah.\nIngin menyimpan sebelum keluar?").arg(tabName),
+                                           QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+
+            if (balasan == QMessageBox::Save) {
+                on_actionSave_as_triggered();
+                event->ignore();
+                return;
+            }
+            else if (balasan == QMessageBox::Cancel) {
+                event->ignore();
+                return;
+            }
+            // Jika memilih Discard, loop lanjut tanpa menyimpan
+        }
+    }
+
+    // 2. JIKA SEMUA TAB SUDAH AMAN & LOLOS SENSOR, BARU PAKSA TUTUP SEMUA SUB-FITUR
+    // Di titik ini, aplikasi sudah 100% pasti akan keluar, jadi aman menghancurkan objek di heap
+    if (m_activeTimer != nullptr) {
+        m_activeTimer->close(); // Memicu ~Timer() -> matikan audio biner, stop QTimer
+    }
+
+    if (m_activeCalculator != nullptr) {
+        m_activeCalculator->close();
+    }
+
+    if (m_activeCalendar != nullptr) {
+        m_activeCalendar->close();
+    }
+
+    if (m_activeCanvas != nullptr) {
+        m_activeCanvas->close();
+    }
+
+    // 3. TERIMA PERINTAH CLOSE TOTAL
+    event->accept();
+}
