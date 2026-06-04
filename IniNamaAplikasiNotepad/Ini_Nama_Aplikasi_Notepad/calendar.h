@@ -29,7 +29,6 @@ private slots:
     void on_calendarWidget_clicked(const QDate &date);
     void on_calendarWidget_currentPageChanged(int year, int month);
     void on_pushButton_2_clicked(); // Slot untuk Delete Task
-    void on_pushButton_3_clicked(); // Slot untuk Save Task (Instan)
 
 private:
     Ui::Calendar *ui;

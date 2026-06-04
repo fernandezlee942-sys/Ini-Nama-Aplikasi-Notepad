@@ -189,20 +189,6 @@ void Calendar::on_pushButton_2_clicked()
     }
 }
 
-// pushButton_3: Tombol SAVE TASK (Instan tanpa lineEdit_4)
-void Calendar::on_pushButton_3_clicked()
-{
-    // Langsung timpa data terbaru ke C:/Ini_Nama_Aplikasi_Notepad/Files/Task.txt
-    saveTasksToFile();
-
-    // Re-render UI untuk memastikan data benar-benar sinkron
-    updateCalendarColors();
-    updateTaskListView();
-    updateCalendarTextEdit();
-
-    QMessageBox::information(this, "Sukses", "Seluruh data tugas berhasil diperbarui ke Task.txt!");
-}
-
 // ==================== TAB 1: CALENDAR LOGIC & HIGHLIGHT ====================
 void Calendar::updateCalendarColors()
 {
