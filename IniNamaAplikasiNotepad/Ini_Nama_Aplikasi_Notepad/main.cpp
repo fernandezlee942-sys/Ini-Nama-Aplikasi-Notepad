@@ -22,6 +22,11 @@
 #include <QPalette>
 #include <QStyle>
 #include <QImageReader>
+
+
+#include <QSharedMemory>
+#include <QMessageBox>
+
 //widgets, event handling, mouse movement
 
 int main(int argc, char *argv[])
@@ -46,6 +51,21 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
     // ini g perlu diperhatiin, kerjanya cmn kek jalanin aplikasi sesuai apa yang kita ketik
+
+    QSharedMemory sharedMemory("NotepadKelompok6SaktiUniqueKey123");
+
+    // Coba tempelkan (attach) ke memori bersama.
+    // Jika bernilai TRUE, artinya aplikasi sudah pernah dibuka sebelumnya dan aktif di RAM.
+    if (sharedMemory.attach()) {
+        QMessageBox::warning(nullptr, "Aplikasi Sudah Berjalan",
+                             "Aplikasi Notepad sudah terbuka di latar belakang!");
+        return 0; // LANGSUNG TUTUP PROSES KEDUA DI SINI! Window tidak akan sempat ganda.
+    }
+
+    // Jika aman (aplikasi pertama), buat alokasi memori bersama baru berukuran 1 byte
+    if (!sharedMemory.create(1)) {
+        return 0;
+    }
 
     QApplication::setStyle(QStyleFactory::create("Fusion"));
 
@@ -137,4 +157,4 @@ int main(int argc, char *argv[])
 // You dont normally temper with main.cpp all of this comments is just in case ur curious abt wht's happening here
 
 
-// Jika mau coba di cpp kek test print label komentari Notepad w; ampe w.show(); trus buat kodenya di main.cpp baru di runa
+// Jika mau coba di cpp kek test print label komentari Notepad w; ampe w.show(); trus buat kodenya di main.cpp baru di run
