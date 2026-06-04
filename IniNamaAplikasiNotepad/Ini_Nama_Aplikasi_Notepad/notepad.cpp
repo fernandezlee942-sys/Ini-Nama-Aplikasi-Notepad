@@ -58,9 +58,10 @@ Notepad::Notepad(QWidget *parent):
         mediaPlayer->setAudioOutput(audioOutput);
     #endif
 
-    ekstrakMusicResource(":/Mp3/Mp3/lagu1.mp3", "2_23_AM_2.mp3");
-    ekstrakMusicResource(":/Mp3/Mp3/lagu2.mp3", "10C_2.mp3");
-    ekstrakMusicResource(":/Mp3/Mp3/lagu3.mp3", "SUMMER_TRIANGLE_2.mp3");
+    ekstrakMusicResource(":/Mp3/Mp3/2_23_AM_2.mp3", "2_23_AM_2.mp3");
+    ekstrakMusicResource(":/Mp3/Mp3/10C_2.mp3", "10C_2.mp3");
+    ekstrakMusicResource(":/Mp3/Mp3/SUMMER_TRIANGLE_2.mp3", "SUMMER_TRIANGLE_2.mp3");
+    ekstrakMusicResource(":/Mp3/Mp3/Ringtone.mp3", "Ringtone.mp3");
 
     // Buat label penampung status Find secara permanen di pojok kanan status bar
     if (this->statusBar()) {

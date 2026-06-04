@@ -112,6 +112,12 @@
          <bold>true</bold>
         </font>
        </property>
+       <property name="styleSheet">
+        <string notr="true">QCheckBox::indicator {
+    border: 1px solid red;
+    border-radius: 2px;
+}</string>
+       </property>
        <property name="text">
         <string>Eraser</string>
        </property>
