@@ -8,6 +8,9 @@
 #include <QEvent>
 #include <QShortcut>
 #include <QKeySequence>
+#include <QCloseEvent>
+#include <QMessageBox>
+
 
 Canvas::Canvas(QWidget *parent, bool isDark)
     : QWidget(parent)
@@ -146,28 +149,31 @@ void Canvas::handleMousePress(QMouseEvent *event)
     if (event->button() == Qt::LeftButton) {
         lastPoint = event->pos();
         redoStack.clear();
+        m_isModified = true; // Tandai bahwa kanvas sudah berubah
     }
 }
 
 void Canvas::handleMouseMove(QMouseEvent *event)
 {
     if (event->buttons() & Qt::LeftButton) {
+        // Hitung rasio
+        double scaleX = (double)pixmap.width() / ui->drawingArea->width();
+        double scaleY = (double)pixmap.height() / ui->drawingArea->height();
+
+        // Map koordinat mouse ke koordinat pixmap
+        QPoint currentPoint = QPoint(event->pos().x() * scaleX, event->pos().y() * scaleY);
+        QPoint prevPoint = QPoint(lastPoint.x() * scaleX, lastPoint.y() * scaleY);
+
         QPainter painter(&pixmap);
 
-        // --- LOGIKA DETERMINASI BRUSH VS ERASER ---
-        QColor activeColor = penColor; // Default: Pakai warna pena asli tema (Kuning/Hitam)
+        // ... (sisanya sama, gunakan activeColor)
+        QColor activeColor = ui->checkBox->isChecked() ? canvasBgColor : penColor;
+        QPen pen(activeColor, penWidth * scaleX, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin); // Scale penWidth juga agar konsisten
 
-        if (ui->checkBox->isChecked()) {
-            activeColor = canvasBgColor; // Jika dicentang, ubah warna pena mirip warna background (Menghapus)
-        }
-        // ------------------------------------------
-
-        // Terapkan activeColor ke objek QPen
-        QPen pen(activeColor, penWidth, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
         painter.setPen(pen);
+        painter.drawLine(prevPoint, currentPoint);
 
-        painter.drawLine(lastPoint, event->pos());
-        lastPoint = event->pos();
+        lastPoint = event->pos(); // Simpan koordinat asli mouse untuk next iteration
         ui->drawingArea->update();
     }
 }
@@ -182,7 +188,10 @@ void Canvas::handleMouseRelease(QMouseEvent *event)
 void Canvas::handlePaint()
 {
     QPainter painter(ui->drawingArea);
-    painter.drawPixmap(0, 0, pixmap);
+    // Gunakan IgnoreAspectRatio agar gambar memenuhi seluruh widget
+    painter.drawPixmap(0, 0, pixmap.scaled(ui->drawingArea->size(),
+                                           Qt::IgnoreAspectRatio,
+                                           Qt::SmoothTransformation));
 }
 
 void Canvas::undo()
@@ -208,6 +217,7 @@ void Canvas::clearCanvas()
 {
     pixmap.fill(canvasBgColor);
     saveCurrentState();
+    m_isModified = false; // Reset setelah dibersihkan
     ui->drawingArea->update();
 }
 
@@ -234,9 +244,6 @@ void Canvas::openImage()
             ui->drawingArea->update();
             QMessageBox::information(this, "Success", "Gambar berhasil dimuat ke Kanvas!");
 
-            // =========================================================================
-            // INTEGRASI LOG: CATAT AKTIVITAS OPEN GAMBAR KANVAS
-            // =========================================================================
             QString logPath = "C:/Ini_Nama_Aplikasi_Notepad/Files/savelog.txt";
             QFile logFile(logPath);
             if (logFile.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
@@ -252,6 +259,7 @@ void Canvas::openImage()
             QMessageBox::warning(this, "Error", "Gagal membuka file gambar.");
         }
     }
+    m_isModified = false;
 }
 
 void Canvas::saveImage()
@@ -265,27 +273,26 @@ void Canvas::saveImage()
         tr("PNG Files (*.png);;JPEG Files (*.jpg *.jpeg);;All Files (*)")
         );
 
-    if (!filePath.isEmpty()) {
-        if (pixmap.save(filePath)) {
-            QMessageBox::information(this, "Success", "Gambar coretan berhasil disimpan!");
+    // Jika user menekan Cancel, filePath akan kosong
+    if (filePath.isEmpty()) return;
 
-            // =========================================================================
-            // INTEGRASI LOG: CATAT AKTIVITAS SAVE GAMBAR KANVAS
-            // =========================================================================
-            QString logPath = "C:/Ini_Nama_Aplikasi_Notepad/Files/savelog.txt";
-            QFile logFile(logPath);
-            if (logFile.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
-                QTextStream logOut(&logFile);
-                QString waktuSekarang = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
-                QFileInfo fileInfo(filePath);
+    if (pixmap.save(filePath)) {
+        m_isModified = false;
 
-                logOut << "[" << waktuSekarang << "] [Canvas] Berhasil menyimpan gambar: " << fileInfo.fileName() << "\n";
-                logFile.close();
-            }
+        QMessageBox::information(this, "Success", "Gambar coretan berhasil disimpan!");
 
-        } else {
-            QMessageBox::warning(this, "Error", "Gagal menyimpan gambar.");
+        QString logPath = "C:/Ini_Nama_Aplikasi_Notepad/Files/savelog.txt";
+        QFile logFile(logPath);
+        if (logFile.open(QFile::WriteOnly | QFile::Append | QFile::Text)) {
+            QTextStream logOut(&logFile);
+            QString waktuSekarang = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+            QFileInfo fileInfo(filePath);
+
+            logOut << "[" << waktuSekarang << "] [Canvas] Berhasil menyimpan gambar: " << fileInfo.fileName() << "\n";
+            logFile.close();
         }
+    } else {
+        QMessageBox::warning(this, "Error", "Gagal menyimpan gambar.");
     }
 }
 
@@ -317,4 +324,32 @@ void Canvas::updateBrushPreview()
 
     // Tempelkan hasil gambar lingkaran ke QLabel ui->brushPreview
     ui->brushPreview->setPixmap(pix);
+}
+
+void Canvas::closeEvent(QCloseEvent *event)
+{
+    // Jika tidak ada perubahan, langsung tutup saja
+    if (!m_isModified) {
+        event->accept();
+        return;
+    }
+
+    // Hanya muncul jika m_isModified == true
+    QMessageBox::StandardButton resBtn = QMessageBox::question(this, "Canvas",
+                                                               "Ada perubahan yang belum disimpan. Ingin menyimpannya?",
+                                                               QMessageBox::Cancel | QMessageBox::No | QMessageBox::Yes,
+                                                               QMessageBox::Yes);
+    if (resBtn == QMessageBox::Yes) {
+        saveImage();
+        // Cek lagi: jika setelah save masih modified (user cancel di dialog), jangan tutup
+        if (m_isModified) {
+            event->ignore();
+        } else {
+            event->accept();
+        }
+    } else if (resBtn == QMessageBox::No) {
+        event->accept();
+    } else {
+        event->ignore();
+    }
 }

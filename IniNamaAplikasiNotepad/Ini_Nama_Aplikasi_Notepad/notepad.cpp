@@ -82,7 +82,7 @@ Notepad::Notepad(QWidget *parent):
 
     // 2. Pintasan Manual Ctrl + W untuk Menutup Tab Aktif
     QShortcut *closeTabShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_W), this);
-    connect(closeTabShortcut, &QShortcut::activated, this, &Notepad::on_shortcutCloseTab_triggered);
+    connect(closeTabShortcut, &QShortcut::activated, ui->actionClose_Tab, &QAction::trigger);
 
     // 1. Ctrl + F untuk memicu dialog cari teks pertama kali
     QShortcut *findShortcut = new QShortcut(QKeySequence(Qt::CTRL | Qt::Key_F), this);
@@ -136,12 +136,12 @@ QTextEdit* Notepad::getActiveEditor()
 }
 
 // Fungsi penjembatan khusus pintasan keyboard Ctrl + W
-void Notepad::on_shortcutCloseTab_triggered()
+void Notepad::handleCloseTabShortcut() // Tanda titik koma dihapus di sini!
 {
     // 1. Cari tahu indeks tab mana yang saat ini sedang ditonton oleh user
     int currentIndex = ui->tabWidget->currentIndex();
 
-    // 2. Jika ada tab yang terbuka (indeks valid/bukan -1), oper indeksnya ke fungsi penghapus milikmu
+    // 2. Jika ada tab yang terbuka, oper indeksnya ke fungsi penghapus
     if (currentIndex != -1) {
         on_tabWidget_tabCloseRequested(currentIndex);
     }
@@ -369,49 +369,52 @@ void Notepad::on_actionSave_as_triggered()
 
 void Notepad::on_actionOpen_triggered()
 {
-    // Ambil lokasi file dari storage lewat dialog box
-    QString filename = QFileDialog::getOpenFileName(this, "Open the file");
-    if (filename.isEmpty()) return; // Jika user menekan tombol 'Cancel' / batal buka file
+    // 1. Tentukan path default yang sama dengan tempat menyimpan file
+    QString defaultPath = "C:/Ini_Nama_Aplikasi_Notepad/Files";
 
-    // Siapkan objek file untuk dibaca teksnya
+    // 2. Buka file dialog dengan mengarahkan ke defaultPath
+    QString filename = QFileDialog::getOpenFileName(this,
+                                                    tr("Open the file"),
+                                                    defaultPath,
+                                                    tr("All Files (*.*);;Text Files (*.txt);;HTML Files (*.html);;C++ Files (*.cpp);;Python Files (*.py)"));
+
+    // Jika user menekan tombol 'Cancel'
+    if (filename.isEmpty()) return;
+
+    // 3. Siapkan objek file untuk dibaca
     QFile file(filename);
     if(!file.open(QIODevice::ReadOnly | QFile::Text)){
         QMessageBox::warning(this, "Warning", "Cannot open file: " + file.errorString());
         return;
     }
 
-    // Ekstrak data teks dari file menggunakan stream reader
     QTextStream in(&file);
     QString text = in.readAll();
-    file.close(); // Jangan lupa ditutup kembali filenya setelah dibaca
+    file.close();
 
-    // Lahirkan objek QTextEdit baru di memori Heap khusus untuk menampung file ini
+    // 4. Buat editor baru
     QTextEdit *newEditor = new QTextEdit(this);
 
-    // PERBAIKAN DI SINI: Deteksi cara memuat dokumen berdasarkan ekstensi file
+    // 5. Load konten berdasarkan ekstensi
     if (filename.endsWith(".html", Qt::CaseInsensitive)) {
-        newEditor->setHtml(text); // 🖼️ Render kode biner Base64 menjadi gambar asli di layar
+        newEditor->setHtml(text);
     } else {
-        newEditor->setPlainText(text); // 📄 Muat teks biasa tanpa render tag kode untuk .txt, .cpp, .py
+        newEditor->setPlainText(text);
     }
 
-    // Potong alamat path panjang menjadi nama filenya saja untuk judul tab (Contoh: "tugas.txt")
+    // 6. Setup tab dan properti
     QFileInfo fileInfo(filename);
-    QString shortName = fileInfo.fileName();
+    int tabIndex = ui->tabWidget->addTab(newEditor, fileInfo.fileName());
 
-    // Masukkan editor baru tersebut ke dalam QTabWidget sebagai tab baru
-    int tabIndex = ui->tabWidget->addTab(newEditor, shortName);
-
-    // Langsung pindahkan fokus layar user ke tab file yang baru dibuka tersebut
     ui->tabWidget->setCurrentIndex(tabIndex);
-
-    // KUNCI AMAN: Simpan alamat full path asli ke properti privat editor ini (pengganti currentFile)
     newEditor->setProperty("filePath", filename);
+    newEditor->setFocus();
 
-    // Hubungkan ke pendeteksi ketikan agar jika setelah dibuka teksnya diedit, bintang (*) bisa muncul
+    // 7. Koneksi sinyal agar tab menunjukkan tanda (*) jika diubah
     connect(newEditor, &QTextEdit::textChanged, this, &Notepad::updateTabTitle);
 
-    newEditor->setFocus(); // <─── Memaksa kursor langsung aktif di tab yang baru dibuka tanpa ritual Ctrl+T & Ctrl+W!
+    // Pastikan status bar terupdate saat file dibuka
+    updateStatusBarData();
 }
 
 
@@ -509,38 +512,6 @@ void Notepad::eksekusiPasteGambarSakti()
 
         // Pastikan teks biasa juga mengembalikan kursor secara otomatis
         activeEditor->setFocus(Qt::OtherFocusReason);
-    }
-}
-
-void Notepad::on_actionInsert_Image_triggered()
-{
-    // 1. Ambil objek teks editor yang saat ini sedang aktif di depan layar
-    QTextEdit *activeEditor = getActiveEditor();
-    if (!activeEditor) return; // Antisipasi jika tidak ada tab yang terbuka
-
-    // 2. Buka dialog Windows/Linux Explorer untuk memilih file gambar
-    QString filePath = QFileDialog::getOpenFileName(this,
-                                                    tr("Pilih Gambar untuk Dimasukkan"), "",
-                                                    tr("Images (*.png *.jpg *.jpeg *.bmp *.gif)"));
-
-    // 3. Jika user tidak menekan cancel (file path tidak kosong)
-    if (!filePath.isEmpty()) {
-        // Ambil posisi kursor ketikan user saat ini di tab aktif
-        QTextCursor cursor = activeEditor->textCursor();
-
-        // Buat format objek gambar dan masukkan path lokal gambar tersebut
-        QTextImageFormat imageFormat;
-        imageFormat.setName(filePath);
-
-        // Opsional: Kamu bisa batasi ukuran lebar gambar agar tidak merusak layout (misal: lebar 400px)
-        // imageFormat.setWidth(400);
-
-        // 4. Masukkan gambar tepat di posisi kursor berada
-        cursor.insertImage(imageFormat);
-
-        // Pemicu agar tab memunculkan tanda bintang (*) karena dokumen telah dimodifikasi
-        activeEditor->document()->setModified(true);
-        updateTabTitle();
     }
 }
 
@@ -924,7 +895,7 @@ void Notepad::ekstrakMusicResource(const QString &resourcePath, const QString &t
 // 1. CLOSE TAB: Berperan persis seperti shortcut Ctrl + W
 void Notepad::on_actionClose_Tab_triggered()
 {
-    on_shortcutCloseTab_triggered();
+    handleCloseTabShortcut();;
 }
 
 // Variabel global internal khusus diletakkan di luar fungsi (di atas on_actionFind_triggered)
@@ -1187,16 +1158,13 @@ void Notepad::on_actionClear_Log_triggered()
 
 void Notepad::closeEvent(QCloseEvent *event)
 {
-    // 1. CEK TAB BELUM DISIMPAN TERLEBIH DAHULU (Benteng Pertahanan Pertama)
-    // Kita lakukan looping ngecek apakah ada dokumen yang isinya dimodifikasi tapi belum di-save
+    // 1. CEK TAB BELUM DISIMPAN
     for (int i = 0; i < ui->tabWidget->count(); ++i) {
         QWidget *tabPage = ui->tabWidget->widget(i);
         if (!tabPage) continue;
 
         QTextEdit *editor = tabPage->findChild<QTextEdit*>();
-        if (!editor) {
-            editor = qobject_cast<QTextEdit*>(tabPage);
-        }
+        if (!editor) editor = qobject_cast<QTextEdit*>(tabPage);
 
         if (editor && editor->document()->isModified()) {
             ui->tabWidget->setCurrentIndex(i);
@@ -1209,35 +1177,32 @@ void Notepad::closeEvent(QCloseEvent *event)
 
             if (balasan == QMessageBox::Save) {
                 on_actionSave_as_triggered();
-                event->ignore();
-                return;
+
+                // --- PERBAIKAN PENTING ---
+                // Cek apakah masih modified (artinya user batal/gagal save)
+                if (editor->document()->isModified()) {
+                    event->ignore(); // Batalkan penutupan
+                    return;
+                }
+                // Jika sudah tidak modified, lanjut ke tab berikutnya (loop)
             }
             else if (balasan == QMessageBox::Cancel) {
-                event->ignore();
+                event->ignore(); // Batalkan penutupan aplikasi
                 return;
             }
-            // Jika memilih Discard, loop lanjut tanpa menyimpan
         }
     }
 
-    // 2. JIKA SEMUA TAB SUDAH AMAN & LOLOS SENSOR, BARU PAKSA TUTUP SEMUA SUB-FITUR
-    // Di titik ini, aplikasi sudah 100% pasti akan keluar, jadi aman menghancurkan objek di heap
-    if (m_activeTimer != nullptr) {
-        m_activeTimer->close(); // Memicu ~Timer() -> matikan audio biner, stop QTimer
+    // 2. CEK CANVAS (Tambahan jika Canvas memiliki status modified)
+    if (m_activeCanvas != nullptr && m_activeCanvas->isModified()) { // Asumsi Anda punya fungsi isModified() di Canvas
+        // ... logika peringatan untuk canvas ...
     }
 
-    if (m_activeCalculator != nullptr) {
-        m_activeCalculator->close();
-    }
+    // 3. TUTUP SUB-FITUR
+    if (m_activeTimer) m_activeTimer->close();
+    if (m_activeCalculator) m_activeCalculator->close();
+    if (m_activeCalendar) m_activeCalendar->close();
+    if (m_activeCanvas) m_activeCanvas->close();
 
-    if (m_activeCalendar != nullptr) {
-        m_activeCalendar->close();
-    }
-
-    if (m_activeCanvas != nullptr) {
-        m_activeCanvas->close();
-    }
-
-    // 3. TERIMA PERINTAH CLOSE TOTAL
     event->accept();
 }

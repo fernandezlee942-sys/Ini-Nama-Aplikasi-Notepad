@@ -21,6 +21,7 @@ public:
     explicit Canvas(QWidget *parent = nullptr, bool isDark = false);
     ~Canvas();
 
+    bool isModified() const { return m_isModified; }
     void setupTheme(bool isDark);
 
     // PINDAHKAN KE SINI AGAR SHORTCUT DAN TOMBOL TERKONEKSI SEMPURNA
@@ -33,7 +34,7 @@ private slots:
 
 protected:
     bool eventFilter(QObject *obj, QEvent *event) override;
-
+    void closeEvent(QCloseEvent *event) override;
 private:
     Ui::Canvas *ui;
     QPixmap pixmap;
@@ -42,6 +43,7 @@ private:
     int penWidth;
     QColor canvasBgColor;
     bool m_isDark;
+    bool m_isModified = false;
 
     QVector<QImage> undoStack;
     QVector<QImage> redoStack;

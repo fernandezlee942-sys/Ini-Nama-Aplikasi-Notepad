@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>446</width>
     <height>300</height>
    </rect>
   </property>
@@ -62,11 +62,12 @@
    <item>
     <widget class="QWidget" name="drawingArea" native="true">
      <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
      </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2"/>
     </widget>
    </item>
    <item>
@@ -114,8 +115,18 @@
        </property>
        <property name="styleSheet">
         <string notr="true">QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
     border: 1px solid red;
     border-radius: 2px;
+    background-color: transparent;
+    color: red; /* Warna centang akan mengikuti warna teks ini */
+}
+
+QCheckBox::indicator:checked {
+    /* Menggunakan unicode centang */
+    image: none;
+    background-color: transparent;
 }</string>
        </property>
        <property name="text">

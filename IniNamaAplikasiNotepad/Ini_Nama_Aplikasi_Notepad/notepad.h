@@ -65,8 +65,8 @@ private slots:
     void on_tabWidget_currentChanged(int index);
     void updateTabTitle();
     void eksekusiPasteGambarSakti();
-    void on_actionInsert_Image_triggered();
-    void on_shortcutCloseTab_triggered();
+
+    void handleCloseTabShortcut();
     void on_actionPlaylist_1_triggered();
 
     void on_actionStop_Music_triggered();
