@@ -148,25 +148,48 @@ void Notepad::on_shortcutCloseTab_triggered()
 }
 
 
-// cegah leak memory
 void Notepad::on_tabWidget_tabCloseRequested(int index)
 {
-    // Cek dulu apakah tab yang mau ditutup ini adalah tab terakhir yang tersisa
+    // 1. Ambil editor yang sedang ditutup
+    QTextEdit *editor = qobject_cast<QTextEdit*>(ui->tabWidget->widget(index));
+
+    // 2. CEK STATUS SIMPAN: Jika dokumen berubah, minta konfirmasi
+    if (editor && editor->document()->isModified()) {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(this, "Simpan Perubahan",
+                                      "Terdapat perubahan pada tab ini. Apakah Anda ingin menyimpannya?",
+                                      QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
+
+        if (reply == QMessageBox::Yes) {
+            // Pindahkan fokus ke tab yang bersangkutan agar on_actionSave_as_triggered()
+            // tahu editor mana yang sedang disimpan
+            ui->tabWidget->setCurrentIndex(index);
+            on_actionSave_as_triggered();
+
+            // Setelah simpan, cek lagi apakah masih modified (jika user cancel saat save as)
+            if (editor->document()->isModified()) return;
+        }
+        else if (reply == QMessageBox::Cancel) {
+            return; // Batalkan proses penutupan tab
+        }
+        // Jika pilih No, lanjut ke bawah untuk menghapus
+    }
+
+    // 3. LOGIKA PENUTUPAN TAB
+    // Jika tab yang mau ditutup adalah tab terakhir, panggil exit
     if (ui->tabWidget->count() == 1) {
-        // Jika ini tab terakhir, alihkan langsung ke fungsi Exit utama kita
-        // agar dilakukan pengecekan status simpan (isModified) secara otomatis!
         on_actionExit_triggered();
         return;
     }
 
-    // Jika tab yang ditutup bukan yang terakhir (misal masih ada 3 tab lain),
-    // hapus tab yang diklik seperti biasa
+    // Jika masih ada banyak tab, hapus tab yang diklik
     QWidget *tabPage = ui->tabWidget->widget(index);
     ui->tabWidget->removeTab(index);
     if (tabPage) {
         tabPage->deleteLater();
     }
 }
+
 void Notepad::on_actionExit_triggered()
 {
     // Cukup panggil close(), ini otomatis akan memicu closeEvent di bawah!
